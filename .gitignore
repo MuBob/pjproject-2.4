@@ -45,6 +45,10 @@ project.lock.json
 project.fragment.lock.json
 artifacts/
 
+*-Debug.lib
+*.bsc
+*.idb
+*.tlog
 *_p.c
 *.ilk
 *.meta
