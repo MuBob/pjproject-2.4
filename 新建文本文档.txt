@@ -1,0 +1,7 @@
+--id sip:03@124.248.41.181 --registrar sip:124.248.41.181;transport=tls --use-tls  --realm * --username 03  --password 11111111  --add-codec ilbc  --ilbc-mode 20 --stun-srv stun.pjsip.org   --use-srtp 2 --srtp-secure  0  
+
+ --id sip:tyb999@sip.linphone.org --registrar sip:sip.linphone.org;transport=tls --use-tls  --realm * --username tyb999  --password 123123123  --add-codec ilbc  --ilbc-mode 20 --stun-srv stun.pjsip.org   --use-srtp 2 --srtp-secure  0  
+
+
+File open error!
+: Permission denied

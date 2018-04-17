@@ -1,0 +1,2 @@
+#TargetFrameworkVersion=v4.0:PlatformToolSet=v140:EnableManagedIncrementalBuild=false:VCToolArchitecture=Native32Bit:WindowsTargetPlatformVersion=8.1
+Release-Static|Win32|D:\Program\MicroSIP\pjproject-2.4-20170411\pjproject-2.4\|

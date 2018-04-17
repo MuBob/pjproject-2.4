@@ -1,0 +1,333 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug-Dynamic|Win32">
+      <Configuration>Debug-Dynamic</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug-Dynamic|x64">
+      <Configuration>Debug-Dynamic</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug-Static|Win32">
+      <Configuration>Debug-Static</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug-Static|x64">
+      <Configuration>Debug-Static</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release-Dynamic|Win32">
+      <Configuration>Release-Dynamic</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release-Dynamic|x64">
+      <Configuration>Release-Dynamic</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release-Static|Win32">
+      <Configuration>Release-Static</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release-Static|x64">
+      <Configuration>Release-Static</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{C71D2EC0-7D9E-4A9E-B979-C0F475009FB9}</ProjectGuid>
+    <RootNamespace>pjsua_libsteg</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Static|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-Dynamic|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Dynamic|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-Static|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Static|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-Dynamic|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Dynamic|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-Static|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release-Static|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\build\vs\pjproject-vs8-release-static-defaults.props" />
+    <Import Project="..\..\..\build\vs\pjproject-vs8-win32-release-defaults.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug-Dynamic|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\build\vs\pjproject-vs8-debug-dynamic-defaults.props" />
+    <Import Project="..\..\..\build\vs\pjproject-vs8-win32-common-defaults.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release-Dynamic|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\build\vs\pjproject-vs8-release-dynamic-defaults.props" />
+    <Import Project="..\..\..\build\vs\pjproject-vs8-win32-release-defaults.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug-Static|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\build\vs\pjproject-vs8-debug-static-defaults.props" />
+    <Import Project="..\..\..\build\vs\pjproject-vs8-win32-common-defaults.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\build\vs\pjproject-vs8-release-dynamic-defaults.props" />
+    <Import Project="..\..\..\build\vs\pjproject-vs8-win32-release-defaults.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\build\vs\pjproject-vs8-debug-static-defaults.props" />
+    <Import Project="..\..\..\build\vs\pjproject-vs8-win32-common-defaults.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release-Static|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\build\vs\pjproject-vs8-release-static-defaults.props" />
+    <Import Project="..\..\..\build\vs\pjproject-vs8-win64-release-defaults.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug-Dynamic|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\build\vs\pjproject-vs8-debug-dynamic-defaults.props" />
+    <Import Project="..\..\..\build\vs\pjproject-vs8-win64-common-defaults.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release-Dynamic|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\build\vs\pjproject-vs8-release-dynamic-defaults.props" />
+    <Import Project="..\..\..\build\vs\pjproject-vs8-win64-release-defaults.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug-Static|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\build\vs\pjproject-vs8-debug-static-defaults.props" />
+    <Import Project="..\..\..\build\vs\pjproject-vs8-win64-common-defaults.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\build\vs\pjproject-vs8-release-dynamic-defaults.props" />
+    <Import Project="..\..\..\build\vs\pjproject-vs8-win64-release-defaults.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\build\vs\pjproject-vs8-debug-static-defaults.props" />
+    <Import Project="..\..\..\build\vs\pjproject-vs8-win64-common-defaults.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>.\output\$(ProjectName)-$(TargetCPU)-$(PlatformName)-vc$(VSVer)-$(Configuration)\</OutDir>
+    <IntDir>$(OutDir)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\pjsua_libsteg\iLBC.h" />
+    <ClInclude Include="..\..\pjsua_libsteg\iLBC_define.h" />
+    <ClInclude Include="..\..\pjsua_libsteg\rtp\jmutex.h" />
+    <ClInclude Include="..\..\pjsua_libsteg\rtp\jmutexautolock.h" />
+    <ClInclude Include="..\..\pjsua_libsteg\rtp\jthread.h" />
+    <ClInclude Include="..\..\pjsua_libsteg\rtp\rtcpapppacket.h" />
+    <ClInclude Include="..\..\pjsua_libsteg\rtp\rtcpbyepacket.h" />
+    <ClInclude Include="..\..\pjsua_libsteg\rtp\rtcpcompoundpacket.h" />
+    <ClInclude Include="..\..\pjsua_libsteg\rtp\rtcpcompoundpacketbuilder.h" />
+    <ClInclude Include="..\..\pjsua_libsteg\rtp\rtcppacket.h" />
+    <ClInclude Include="..\..\pjsua_libsteg\rtp\rtcppacketbuilder.h" />
+    <ClInclude Include="..\..\pjsua_libsteg\rtp\rtcprrpacket.h" />
+    <ClInclude Include="..\..\pjsua_libsteg\rtp\rtcpscheduler.h" />
+    <ClInclude Include="..\..\pjsua_libsteg\rtp\rtcpsdesinfo.h" />
+    <ClInclude Include="..\..\pjsua_libsteg\rtp\rtcpsdespacket.h" />
+    <ClInclude Include="..\..\pjsua_libsteg\rtp\rtcpsrpacket.h" />
+    <ClInclude Include="..\..\pjsua_libsteg\rtp\rtcpunknownpacket.h" />
+    <ClInclude Include="..\..\pjsua_libsteg\rtp\rtpaddress.h" />
+    <ClInclude Include="..\..\pjsua_libsteg\rtp\rtpcollisionlist.h" />
+    <ClInclude Include="..\..\pjsua_libsteg\rtp\rtpconfig.h" />
+    <ClInclude Include="..\..\pjsua_libsteg\rtp\rtpconfig_win.h" />
+    <ClInclude Include="..\..\pjsua_libsteg\rtp\rtpdebug.h" />
+    <ClInclude Include="..\..\pjsua_libsteg\rtp\rtpdefines.h" />
+    <ClInclude Include="..\..\pjsua_libsteg\rtp\rtperrors.h" />
+    <ClInclude Include="..\..\pjsua_libsteg\rtp\rtphashtable.h" />
+    <ClInclude Include="..\..\pjsua_libsteg\rtp\rtpinternalsourcedata.h" />
+    <ClInclude Include="..\..\pjsua_libsteg\rtp\rtpipv4address.h" />
+    <ClInclude Include="..\..\pjsua_libsteg\rtp\rtpipv4destination.h" />
+    <ClInclude Include="..\..\pjsua_libsteg\rtp\rtpipv6address.h" />
+    <ClInclude Include="..\..\pjsua_libsteg\rtp\rtpipv6destination.h" />
+    <ClInclude Include="..\..\pjsua_libsteg\rtp\rtpkeyhashtable.h" />
+    <ClInclude Include="..\..\pjsua_libsteg\rtp\rtplibraryversion.h" />
+    <ClInclude Include="..\..\pjsua_libsteg\rtp\rtpmemorymanager.h" />
+    <ClInclude Include="..\..\pjsua_libsteg\rtp\rtpmemoryobject.h" />
+    <ClInclude Include="..\..\pjsua_libsteg\rtp\rtppacket.h" />
+    <ClInclude Include="..\..\pjsua_libsteg\rtp\rtppacketbuilder.h" />
+    <ClInclude Include="..\..\pjsua_libsteg\rtp\rtppollthread.h" />
+    <ClInclude Include="..\..\pjsua_libsteg\rtp\rtprandom.h" />
+    <ClInclude Include="..\..\pjsua_libsteg\rtp\rtprawpacket.h" />
+    <ClInclude Include="..\..\pjsua_libsteg\rtp\rtpsession.h" />
+    <ClInclude Include="..\..\pjsua_libsteg\rtp\rtpsessionparams.h" />
+    <ClInclude Include="..\..\pjsua_libsteg\rtp\rtpsessionsources.h" />
+    <ClInclude Include="..\..\pjsua_libsteg\rtp\rtpsourcedata.h" />
+    <ClInclude Include="..\..\pjsua_libsteg\rtp\rtpsources.h" />
+    <ClInclude Include="..\..\pjsua_libsteg\rtp\rtpstructs.h" />
+    <ClInclude Include="..\..\pjsua_libsteg\rtp\rtptimeutilities.h" />
+    <ClInclude Include="..\..\pjsua_libsteg\rtp\rtptransmitter.h" />
+    <ClInclude Include="..\..\pjsua_libsteg\rtp\rtptypes.h" />
+    <ClInclude Include="..\..\pjsua_libsteg\rtp\rtptypes_win.h" />
+    <ClInclude Include="..\..\pjsua_libsteg\rtp\rtpudpv4transmitter.h" />
+    <ClInclude Include="..\..\pjsua_libsteg\rtp\rtpudpv6transmitter.h" />
+    <ClInclude Include="..\..\pjsua_libsteg\stdafx.h" />
+    <ClInclude Include="..\..\pjsua_libsteg\StegiLBC.h" />
+    <ClInclude Include="..\..\pjsua_libsteg\StegLSB.h" />
+    <ClInclude Include="..\..\pjsua_libsteg\StegRTP.h" />
+    <ClInclude Include="..\..\pjsua_libsteg\StegSuit.h" />
+    <ClInclude Include="..\..\pjsua_libsteg\targetver.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\pjsua_libsteg\rtp\jmutex.cpp" />
+    <ClCompile Include="..\..\pjsua_libsteg\rtp\jthread.cpp" />
+    <ClCompile Include="..\..\pjsua_libsteg\rtp\rtcpapppacket.cpp" />
+    <ClCompile Include="..\..\pjsua_libsteg\rtp\rtcpbyepacket.cpp" />
+    <ClCompile Include="..\..\pjsua_libsteg\rtp\rtcpcompoundpacket.cpp" />
+    <ClCompile Include="..\..\pjsua_libsteg\rtp\rtcpcompoundpacketbuilder.cpp" />
+    <ClCompile Include="..\..\pjsua_libsteg\rtp\rtcppacket.cpp" />
+    <ClCompile Include="..\..\pjsua_libsteg\rtp\rtcppacketbuilder.cpp" />
+    <ClCompile Include="..\..\pjsua_libsteg\rtp\rtcprrpacket.cpp" />
+    <ClCompile Include="..\..\pjsua_libsteg\rtp\rtcpscheduler.cpp" />
+    <ClCompile Include="..\..\pjsua_libsteg\rtp\rtcpsdesinfo.cpp" />
+    <ClCompile Include="..\..\pjsua_libsteg\rtp\rtcpsdespacket.cpp" />
+    <ClCompile Include="..\..\pjsua_libsteg\rtp\rtcpsrpacket.cpp" />
+    <ClCompile Include="..\..\pjsua_libsteg\rtp\rtpcollisionlist.cpp" />
+    <ClCompile Include="..\..\pjsua_libsteg\rtp\rtpdebug.cpp" />
+    <ClCompile Include="..\..\pjsua_libsteg\rtp\rtperrors.cpp" />
+    <ClCompile Include="..\..\pjsua_libsteg\rtp\rtpinternalsourcedata.cpp" />
+    <ClCompile Include="..\..\pjsua_libsteg\rtp\rtpipv4address.cpp" />
+    <ClCompile Include="..\..\pjsua_libsteg\rtp\rtpipv6address.cpp" />
+    <ClCompile Include="..\..\pjsua_libsteg\rtp\rtplibraryversion.cpp" />
+    <ClCompile Include="..\..\pjsua_libsteg\rtp\rtppacket.cpp" />
+    <ClCompile Include="..\..\pjsua_libsteg\rtp\rtppacketbuilder.cpp" />
+    <ClCompile Include="..\..\pjsua_libsteg\rtp\rtppollthread.cpp" />
+    <ClCompile Include="..\..\pjsua_libsteg\rtp\rtprandom.cpp" />
+    <ClCompile Include="..\..\pjsua_libsteg\rtp\rtpsession.cpp" />
+    <ClCompile Include="..\..\pjsua_libsteg\rtp\rtpsessionparams.cpp" />
+    <ClCompile Include="..\..\pjsua_libsteg\rtp\rtpsessionsources.cpp" />
+    <ClCompile Include="..\..\pjsua_libsteg\rtp\rtpsourcedata.cpp" />
+    <ClCompile Include="..\..\pjsua_libsteg\rtp\rtpsources.cpp" />
+    <ClCompile Include="..\..\pjsua_libsteg\rtp\rtptimeutilities.cpp" />
+    <ClCompile Include="..\..\pjsua_libsteg\rtp\rtpudpv4transmitter.cpp" />
+    <ClCompile Include="..\..\pjsua_libsteg\rtp\rtpudpv6transmitter.cpp" />
+    <ClCompile Include="..\..\pjsua_libsteg\stdafx.cpp" />
+    <ClCompile Include="..\..\pjsua_libsteg\StegLSB.cpp" />
+    <ClCompile Include="..\..\pjsua_libsteg\StegRTP.cpp" />
+    <ClCompile Include="..\..\pjsua_libsteg\StegSuit.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
