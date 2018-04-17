@@ -34,24 +34,24 @@ extern UINT mode20_30;
 //	NEW_FILE_ARRIVED		= (int)0x00008,
 //};
 //#ifndef __AFXWIN_H__
-//	#error "ÔÚ°üº¬´ËÎÄ¼şÖ®Ç°°üº¬¡°stdafx.h¡±ÒÔÉú³É PCH ÎÄ¼ş"
+//	#error "åœ¨åŒ…å«æ­¤æ–‡ä»¶ä¹‹å‰åŒ…å«â€œstdafx.hâ€ä»¥ç”Ÿæˆ PCH æ–‡ä»¶"
 //#endif
 
-struct SIABuffer   // Ó¦ÓÃ²ã»º³åÇø½á¹¹
+struct SIABuffer   // åº”ç”¨å±‚ç¼“å†²åŒºç»“æ„
 {
-	BYTE * Storage;   // »º³åÇø
-	UINT Length;      // Êı¾İ³¤¶È
-	BYTE * Cursor;    // ¶ÁÖ¸Õë 
+	BYTE * Storage;   // ç¼“å†²åŒº
+	UINT Length;      // æ•°æ®é•¿åº¦
+	BYTE * Cursor;    // è¯»æŒ‡é’ˆ 
 };
 
-struct STMFrame    // STM²ãÖ¡½á¹¹
+struct STMFrame    // STMå±‚å¸§ç»“æ„
 {
 	BYTE * Frame;  // limited by the length of relating field in the head
-	UINT Length;   // Ö¡³¤¶È
-	UINT Time;     // µÈ´ıÊ±¼ä
+	UINT Length;   // å¸§é•¿åº¦
+	UINT Time;     // ç­‰å¾…æ—¶é—´
 };
 /*
-enum STATUS   // Á¬½Ó×´Ì¬
+enum STATUS   // è¿æ¥çŠ¶æ€
 {
 	IDLE,  SYNSENT,  SYNCONF,  SYNRECV,  SYNREPL,  ESTAB
 };
@@ -60,17 +60,17 @@ enum STATUS   // Á¬½Ó×´Ì¬
 class CStegSuit
 {
 public:
-	void Create(pj_pool_t * pool);     // ¹¹ÔìÀà£¬¼°³õÊ¼»¯
-	void Allocate();    // ·ÖÅäÄÚ´æ¿Õ¼ä
+	void Create(pj_pool_t * pool);     // æ„é€ ç±»ï¼ŒåŠåˆå§‹åŒ–
+	void Allocate();    // åˆ†é…å†…å­˜ç©ºé—´
 	void Configure();
-	void Clean();      // ÊÍ·ÅÄÚ´æ
+	void Clean();      // é‡Šæ”¾å†…å­˜
 	void Control( UINT Command );
 // 
 // 	UINT Send (void * pSrc, int length, int type);
 // 	UINT Receive (void * pDst, int maxlength, int type);
 // 	UINT CStegSuit::GetSecMsg(BYTE * SecretMessage);
 // 	UINT CStegSuit::Retransmission();
-// 	UINT CStegSuit::STMSdata(int *datatype);		//ÏòSIAÉêÇëÊı¾İ
+// 	UINT CStegSuit::STMSdata(int *datatype);		//å‘SIAç”³è¯·æ•°æ®
 // 	UINT CStegSuit::STMSheader(int datatype);
 // 	UINT CStegSuit::Embedheader(void * pCarrier);
 // 	UINT CStegSuit::STMR(void * pCarrier, char SecMsg);	
@@ -79,7 +79,7 @@ public:
 	UINT Receive (void * pDst, int maxlength, int type);
 	UINT Embedding( void * pCarrier,UINT RTPheadlen, /*CAudioBase * pACIn*/char* pPcmIn );
 	UINT Retransmission();
-	UINT STMSdata(int *datatype);		//ÏòSIAÉêÇëÊı¾İ
+	UINT STMSdata(int *datatype);		//å‘SIAç”³è¯·æ•°æ®
 	UINT SAESdata( void * pCarrier,UINT len, /*CAudioBase * pACIn*/char* pPcmIn);
 	UINT STMSheader(int datatype);
 	UINT SAESheader(void * pCarrier);
@@ -100,7 +100,7 @@ public:
 
 public:
 
-	UINT CarrierType;    // ÔØÌåÀàĞÍ
+	UINT CarrierType;    // è½½ä½“ç±»å‹
 	UINT SIADU, Harves;
 	UINT m_Seclev;
 	int quit_flag;
@@ -131,9 +131,9 @@ protected:
 	BYTE * m_FrmSCursor, * m_FrmRCursor;
 	UINT m_FrmSLength, m_RTPSeq;
 	BYTE m_CheckTable[256];
-	UINT m_ActualByte;			//Ô¤ÑİºóÊµ¼ÊÄÜÇ¶ÈëµÄ×Ö½ÚÊı
-	std::queue<STMFrame> m_Retrans; //Ñ¹ÈëÖØ´«¶ÓÁĞ
-	STMFrame m_Resend;		//ÖØ´«Ö¸Õë
+	UINT m_ActualByte;			//é¢„æ¼”åå®é™…èƒ½åµŒå…¥çš„å­—èŠ‚æ•°
+	std::queue<STMFrame> m_Retrans; //å‹å…¥é‡ä¼ é˜Ÿåˆ—
+	STMFrame m_Resend;		//é‡ä¼ æŒ‡é’ˆ
 	
 	CStegLSB * m_pAudio;
 	CStegLSB * m_pRTP;
@@ -141,15 +141,15 @@ protected:
 
 	//SSW: need to be modified for iLBC
 	// ssw iLBC
-	//char m_chEmdSecMsg[2];		//Ç¶ÈëµÄ»úÃÜĞÅÏ¢
-	//char m_chRtrSecMsg[2];		//ÌáÈ¡µÄ»úÃÜĞÅÏ¢
-	char m_chEmdSecMsg[35];		//Ç¶ÈëµÄ»úÃÜĞÅÏ¢
-	char m_chRtrSecMsg[35];		//ÌáÈ¡µÄ»úÃÜĞÅÏ¢
+	//char m_chEmdSecMsg[2];		//åµŒå…¥çš„æœºå¯†ä¿¡æ¯
+	//char m_chRtrSecMsg[2];		//æå–çš„æœºå¯†ä¿¡æ¯
+	char m_chEmdSecMsg[35];		//åµŒå…¥çš„æœºå¯†ä¿¡æ¯
+	char m_chRtrSecMsg[35];		//æå–çš„æœºå¯†ä¿¡æ¯
 	//ssw iLBC
 	//char m_pFrmBuf[24*3];
-	//THZ: ËõĞ¡±àÂë½á¹û»º³åÇøµ½Ò»Ö¡
-	char m_pFrmBuf[50];		//ssw: ÓïÒô±àÂë½á¹û£¨´øÒş²Ø»ò²»´øÒş²Ø£©
-	//char m_pFrmBuf[50 * 3];		//ssw: ÓïÒô±àÂë½á¹û£¨´øÒş²Ø»ò²»´øÒş²Ø£©
+	//THZ: ç¼©å°ç¼–ç ç»“æœç¼“å†²åŒºåˆ°ä¸€å¸§
+	char m_pFrmBuf[50];		//ssw: è¯­éŸ³ç¼–ç ç»“æœï¼ˆå¸¦éšè—æˆ–ä¸å¸¦éšè—ï¼‰
+	//char m_pFrmBuf[50 * 3];		//ssw: è¯­éŸ³ç¼–ç ç»“æœï¼ˆå¸¦éšè—æˆ–ä¸å¸¦éšè—ï¼‰
 // 	
 // #if 0
 // 	CStegLSB * m_pAudio;
