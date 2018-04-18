@@ -6,7 +6,8 @@
 #include "ConDlg.h"
 #include "global.h"
 #include "afxdialogex.h"
-#include "../../third_party/pjsua_libsteg/StegSuit.h"
+//#include "../../third_party/pjsua_libsteg/StegSuit.h"
+#include "../../third_party/pjsua_libsteg_nosecret/StegSuit.h"
 #include "mainDlg.h"
 
 extern CStegSuit m_pSteg; // //lpc 2016.12.15
@@ -109,7 +110,7 @@ void ConDlg::OnBnClickedButtonSendfile()
 		}
 		if ((AfxMessageBox(_T("Send \"") + filename+ _T("\"?"), MB_YESNO)) == IDYES)
 		{
-			//20161209 ´Ë´¦Ó¦ÓĞÊı¾İ´¦Àí´úÂë
+			//20161209 æ­¤å¤„åº”æœ‰æ•°æ®å¤„ç†ä»£ç 
 
 			//CTime t = CTime::GetCurrentTime();
 			//CString tstr = t.Format(_T("Hour: %H  Min: %M  Sec: %S\n"));
@@ -165,7 +166,7 @@ void ConDlg::Enable(BOOL bEnable /* = TRUE */)
 
 }
 
-//SIA²ãÊı¾İ·¢ËÍÍê±Ï
+//SIAå±‚æ•°æ®å‘é€å®Œæ¯•
 LRESULT ConDlg::OnSIAClear(WPARAM w, LPARAM l)
 {
 	UINT type = (UINT)w;
@@ -177,10 +178,10 @@ LRESULT ConDlg::OnSIAClear(WPARAM w, LPARAM l)
 		//m_pSteg.steg_status = NONE;
 		return 1;
 	}
-	//Èç¹ûÊÇ2ÔòÊÇ¶ş½øÖÆÎÄ¼ş
+	//å¦‚æœæ˜¯2åˆ™æ˜¯äºŒè¿›åˆ¶æ–‡ä»¶
 	if (type == 2)
 	{
-		//ÎÄ¼ş³¤¶È
+		//æ–‡ä»¶é•¿åº¦
 		if (m_SFStep == 1)
 		{
 			if (m_fileS.m_hFile != CFile::hFileNull)
@@ -197,12 +198,12 @@ LRESULT ConDlg::OnSIAClear(WPARAM w, LPARAM l)
 			m_SndLength = 0;
 			m_SFStep = 2;
 		}
-		/*µÚ¶ş²½´«ÎÄ¼ş*/
+		/*ç¬¬äºŒæ­¥ä¼ æ–‡ä»¶*/
 		else if (m_SFStep == 2)
 		{
 			BYTE * tempread = new BYTE[m_pSteg.SIADU];
 			UINT length = m_fileS.Read(tempread, m_pSteg.SIADU);
-			m_SFP.Format(_T("ÕıÔÚ·¢ËÍÎÄ¼ş£º%s\r\nÒÑÍê³É%d/%d×Ö½Ú(%2.0f%%)"),
+			m_SFP.Format(_T("æ­£åœ¨å‘é€æ–‡ä»¶ï¼š%s\r\nå·²å®Œæˆ%d/%då­—èŠ‚(%2.0f%%)"),
 				m_fileS.GetFileName().GetBuffer(), m_SndLength, m_SLength, float(m_SndLength) / float(m_SLength) * 100);
 			REShow(0);
 			m_pSteg.lock();
@@ -221,7 +222,7 @@ LRESULT ConDlg::OnSIAClear(WPARAM w, LPARAM l)
 			m_pSteg.lock();
 			m_pSteg.bFileSent = false;
 			m_pSteg.unlock();
-			m_SFP.Format(_T("·¢ËÍÎÄ¼ş£º%s  ÒÑÍê³É"), m_fileS.GetFileName().GetBuffer());
+			m_SFP.Format(_T("å‘é€æ–‡ä»¶ï¼š%s  å·²å®Œæˆ"), m_fileS.GetFileName().GetBuffer());
 			m_fileS.Close();
 			m_SFStep = 0;
 			REShow(1);
@@ -429,7 +430,7 @@ void ConDlg::REShow(int caller)
 //	return 0;
 //}
 
-/**·¢ËÍÏûÏ¢
+/**å‘é€æ¶ˆæ¯
 */
 
 void ConDlg::OnBnClickedButtonSendmsg()
@@ -448,7 +449,7 @@ void ConDlg::OnBnClickedButtonSendmsg()
 	// air 2017.7.25
 	if (tmp.GetLength() + 1 > m_pSteg.SIADU)
 	{
-		AfxMessageBox(_T("ÏûÏ¢×Ö·ûÊı³¬¹ıÏŞÖÆ£¡"));
+		AfxMessageBox(_T("æ¶ˆæ¯å­—ç¬¦æ•°è¶…è¿‡é™åˆ¶ï¼"));
 		return;
 	}
 	m_pSteg.lock();
@@ -461,7 +462,7 @@ void ConDlg::OnBnClickedButtonSendmsg()
 	CString tstr = t.Format(_T("[%H:%M:%S]:"));
 	m_Line = rtf::grey+ tstr + rtf::red +  str;
 
-//	m_Line = rtf::red + _T("[±¾µØ]£º ") + str;
+//	m_Line = rtf::red + _T("[æœ¬åœ°]ï¼š ") + str;
 
 	REShow(0);
 	m_Line = _T("");
@@ -491,11 +492,11 @@ LRESULT  ConDlg::OnSIArrive(WPARAM w, LPARAM l)
 			CStringA strAnsi = (LPCSTR)Msg;
 			CString temp;
 			temp = strAnsi;
-//air			m_Line.Format(_T("¶Ô·½£º%s"), temp);
+//air			m_Line.Format(_T("å¯¹æ–¹ï¼š%s"), temp);
 			CTime t = CTime::GetCurrentTime();
 			CString tstr = t.Format(_T("[%H:%M:%S]:"));
 			m_Line = rtf::grey + tstr + rtf::blue + temp;
-//			m_Line = rtf::blue + _T("[¶Ô·½]£º ") + temp;
+//			m_Line = rtf::blue + _T("[å¯¹æ–¹]ï¼š ") + temp;
 			REShow(0);
 			m_Line = _T("");
 			m_pSteg.length = 0;			
@@ -550,7 +551,7 @@ LRESULT  ConDlg::OnSIArrive(WPARAM w, LPARAM l)
 				m_RLength = TLength;
 				m_RcvLength = 0;
 				m_RFStep = 2;
-				m_RFP.Format(_T("ÕıÔÚ½ÓÊÕÀ´×Ô¶Ô·½µÄÎÄ¼ş£º%s.\r\nÒÑÍê³É0/%d×Ö½Ú"),
+				m_RFP.Format(_T("æ­£åœ¨æ¥æ”¶æ¥è‡ªå¯¹æ–¹çš„æ–‡ä»¶ï¼š%s.\r\nå·²å®Œæˆ0/%då­—èŠ‚"),
 					m_RFName.GetBuffer(), m_RLength);
 				//test
 				//printf("when m_RFStep == 1 , m_RFStep = %d\n",m_RFStep);
@@ -573,7 +574,7 @@ LRESULT  ConDlg::OnSIArrive(WPARAM w, LPARAM l)
 				m_fileR.Write(Msg, ret);
 				m_fileR.Flush();
 				m_RcvLength += ret;
-				m_RFP.Format(_T("ÕıÔÚ½ÓÊÕÀ´×Ô¶Ô·½µÄÎÄ¼ş£º%s\r\nÒÑÍê³É%d/%d×Ö½Ú(%2.0f%%)"),
+				m_RFP.Format(_T("æ­£åœ¨æ¥æ”¶æ¥è‡ªå¯¹æ–¹çš„æ–‡ä»¶ï¼š%s\r\nå·²å®Œæˆ%d/%då­—èŠ‚(%2.0f%%)"),
 					m_RFName.GetBuffer(), m_RcvLength, m_RLength, float(m_RcvLength) / float(m_RLength) * 100);
 				REShow(0);
 			}
@@ -603,7 +604,7 @@ BOOL ConDlg::PreTranslateMessage(MSG* pMsg)
 	// TODO: Add your specialized code here and/or call the base class
 	if (VK_RETURN   == pMsg->wParam)
 	{
-		OnBnClickedButtonSendmsg();//ÕâÀïÊÇÄã¶Ô»°¿òÉÏÄ³¸öbuttonµÄÏìÓ¦º¯ÊıÃû
+		OnBnClickedButtonSendmsg();//è¿™é‡Œæ˜¯ä½ å¯¹è¯æ¡†ä¸ŠæŸä¸ªbuttonçš„å“åº”å‡½æ•°å
 		return 1;
 	}
 	return CDialog::PreTranslateMessage(pMsg);

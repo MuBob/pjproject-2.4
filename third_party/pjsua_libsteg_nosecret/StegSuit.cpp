@@ -1,30 +1,8 @@
-//#include "stdafx.h"
-//#include <tchar.h>
 #include <iostream>
 #include "StegSuit.h"
-#include "StegiLBC.h"
 #include <pj/os.h>
 
 #include <pj/string.h>
-//#include <pjsua-lib/pjsua.h>
-//#include <pjsua-lib/pjsua_internal.h>
-//extern   pjsua_data pjsua_var;
-//#include "../../pjmedia/include/pjmedia/rtp.h"
-//#include <pjsua_internal.h>
-
-
-//ssw
-//#include "StegTalk.h"
-
-//#ifdef _DEBUG
-//#define new DEBUG_NEW
-//#endif
-
-iLBC_Enc_Inst_t Enc_Inst;
-iLBC_Dec_Inst_t Dec_Inst;
-UINT mode20_30;
-
-//extern 
 
 void CStegSuit::lock_init(pj_pool_t * pool)
 {
@@ -57,82 +35,17 @@ void CStegSuit::unlock()
 
 void  on_pager_wrapper1(pj_str_t *from, pj_str_t* to, pj_str_t *body, pj_str_t* mimetype);
 
-/*
-static int PJ_THREAD_FUNC foo(void* pM)
-{
-
-
-	CStegSuit *m_pSteg = (CStegSuit *)pM;
-	while (m_pSteg->quit_flag == 0){
-		//·ÖÅäÄÚ´æ±£´æĞÅÏ¢
-		if (m_pSteg->steg_status == NEW_MESSAGE_ARRIVED){
-			char *Msg = new char[m_pSteg->SIADU];
-			memset(Msg, 0, sizeof(char)* m_pSteg->SIADU);
-			//TCHAR * Msg = new TCHAR[m_pSteg->SIADU];
-			//memset(Msg, 0, sizeof(TCHAR)* m_pSteg->SIADU);
-
-			//test
-			//printf("when OnSIArrive called ,type = %d\n",type);
-			//test
-			UINT type = 1;
-			if (type == 1)
-			{
-				//ÀàĞÍÎªÏûÏ¢£¬½«ÄÚÈİÍ¨¹ım_StegµÄReceiveº¯Êı£¬»ñÈ¡µ½MsgÖĞ
-				m_pSteg->lock();
-				m_pSteg->length = m_pSteg->Receive((void *)Msg, m_pSteg->SIADU, 1);
-				m_pSteg->unlock();
-
-				//ÏÔÊ¾ÏûÏ¢
-				if (m_pSteg->length != 0)
-				{
-					
-					m_pSteg->msg_1 = pj_str(Msg);
-					m_pSteg->lock();
-					m_pSteg->steg_status = NEW_MESSAGE_OVER;
-					m_pSteg->unlock();
-					pj_str_t from = pj_str("ttt");
-					pj_str_t to = pj_str("bbb");
-					pj_str_t mime = pj_str("Text/Plain");
-					std::cout << "ÊÕµ½Òş±ÎÏûÏ¢" << std::endl;
-					//std::cout << "-----------------------------" << std::endl;
-					
-					//on_pager_wrapper1(&from, &to,&mime, &msg_1);
-					
-
-					//std::cout << "¶Ô·½: " << Msg << std::endl;
-				}
-				//delete[] Msg;
-				
-				//return 1;
-			}
-			
-			delete[] Msg;
-		
-		
-		}
-		else
-			pj_thread_sleep(100);
-	}
-	return 0;
-
-}
-*/
 void CStegSuit::Create(pj_pool_t * pool)
 {
 	quit_flag = 0;
-//	steg_status = NONE;
-	//air
 	bMessageArrived=false;
 	bFileArrived = false;
 	bFileSent = false;
 
-	//lock init
-	//SLock.Init();
+
 	SLock = NULL;
 	lock_init(pool);
 	
-	initEncode(&Enc_Inst, mode20_30);
-	initDecode(&Dec_Inst, mode20_30, 1);
 
 	SD[0].Storage = SD[1].Storage = RC[0].Storage = RC[1].Storage = NULL;
 	SD[0].Cursor = SD[1].Cursor = RC[0].Cursor = RC[1].Cursor = NULL;
@@ -152,8 +65,8 @@ void CStegSuit::Create(pj_pool_t * pool)
 	}
 	m_Crt.Frame = NULL; m_Crt.Length = 0; m_Crt.Time = 0;
 	m_Rcv.Frame = NULL; m_Rcv.Length = 0; m_Rcv.Time = 0;
-	m_Resend.Frame =NULL; m_Resend.Frame=0; m_Resend.Time=0; //ÖØ´«
-	m_retranstep = 0;	//ÖØ´«²½Öè
+	m_Resend.Frame =NULL; m_Resend.Frame=0; m_Resend.Time=0; //é‡ä¼ 
+	m_retranstep = 0;	//é‡ä¼ æ­¥éª¤
 
 	m_FrmSLength = 0; m_RTPSeq = 0;
 	m_FrmS = NULL;  m_FrmR = NULL;
@@ -190,18 +103,9 @@ void CStegSuit::Create(pj_pool_t * pool)
 
 void CStegSuit::Allocate()
 {
-	//SSW: need to be modified for iLBC
-	//ssw iLBC
-	//SSW: need to be modified for 20ms ilbc
-	//maxSAE = 1 + m_pRTP->GetParam(2);
-	//changed for 20ms
-	if(mode20_30==20)
-		maxSAE = iLBC_SAEDU_20 + m_pRTP->GetParam(2);
-	else
-		maxSAE = iLBC_SAEDU_30 + m_pRTP->GetParam(2);
+	maxSAE = 1 + m_pRTP->GetParam(2);
 
 	maxSTM = maxSAE * m_nSegment;
-	//SIADU = 100;
 	SIADU = (maxSTM-3)*16*((maxSTM-3)*16>=MAX_PATH*2) + MAX_PATH*2*((maxSTM-3)*16<MAX_PATH*2);
 
 	Harves = SIADU/2;
@@ -218,12 +122,12 @@ void CStegSuit::Allocate()
 	}
 	m_Crt.Frame = new BYTE[maxSTM];
 	m_Rcv.Frame = new BYTE[maxSTM];
-	m_Resend.Frame = new BYTE[maxSTM];		//ÖØ´«
+	m_Resend.Frame = new BYTE[maxSTM];		//é‡ä¼ 
 
 	m_FrmS = new BYTE[maxSTM]; 
-	m_FrmSCursor = m_FrmS;		//·¢ËÍÖ¸Õë
+	m_FrmSCursor = m_FrmS;		//å‘é€æŒ‡é’ˆ
 	m_FrmR = new BYTE[maxSTM+maxSAE];  
-	m_FrmRCursor = m_FrmR;		//½ÓÊÕÖ¸Õë
+	m_FrmRCursor = m_FrmR;		//æ¥æ”¶æŒ‡é’ˆ
 	memset( m_FrmR, 0, maxSTM+maxSAE );
 
 	m_pRTP->InitPosBook();
@@ -250,7 +154,7 @@ void CStegSuit::Clean()
 	if (m_FrmS!=NULL) delete [] m_FrmS;  m_FrmS = NULL;
 	if (m_FrmR!=NULL) delete [] m_FrmR;  m_FrmR = NULL;
 
-	if (m_Resend.Frame!=NULL) delete [] m_Resend.Frame; m_Resend.Frame = NULL;	//ÖØ´«
+	if (m_Resend.Frame!=NULL) delete [] m_Resend.Frame; m_Resend.Frame = NULL;	//é‡ä¼ 
 	if (thread != NULL) // air
 	{
 		pj_thread_join(thread);
@@ -270,20 +174,11 @@ void CStegSuit::Clean()
 
 void CStegSuit::Control( UINT Command )
 {
-	
-	//SSW: need to be modified for 20ms ilbc
-	//SAEDU = 1;	//Ò»¸öRTP°üÖĞÈı¸öÖ¡¹²Ç¶ÈëÒ»¸ö×Ö½Ú
-	if( Command == 0 )
-		SAEDU=iLBC_SAEDU_20;
-	else if( Command == 2 )
-		SAEDU = iLBC_SAEDU_30;
-	else
-	SAEDU=iLBC_SAEDU_20;
-
-	STMDU = SAEDU * m_nSegment + 3;			//.iniÖĞÉèÖÃm_nSegment = 1, STM°üÍ·3×Ö½Ú (24bit)
+	SAEDU = 1;  //ä¸€ä¸ªRTPåŒ…ä¸­ä¸‰ä¸ªå¸§å…±åµŒå…¥ä¸€ä¸ªå­—èŠ‚
+	STMDU = SAEDU * m_nSegment + 3;			//.iniä¸­è®¾ç½®m_nSegment = 1, STMåŒ…å¤´3å­—èŠ‚ (24bit)
 }
 
-//0ÖÁ255µÄÊı£¬ÔÚ¶ş½øÖÆ±íÊ¾ÏÂ£¬Ã¿Î»Ïà¼ÓµÄÆæÅ¼ĞÔ;Êı×éÓÃÓÚÆæÅ¼Ğ£Ñé
+//0è‡³255çš„æ•°ï¼Œåœ¨äºŒè¿›åˆ¶è¡¨ç¤ºä¸‹ï¼Œæ¯ä½ç›¸åŠ çš„å¥‡å¶æ€§;æ•°ç»„ç”¨äºå¥‡å¶æ ¡éªŒ
 void CStegSuit::MakeCheckTable()
 {
 	for ( int i=0; i<256; i++ )
@@ -295,7 +190,7 @@ void CStegSuit::MakeCheckTable()
 	}
 }
 
-//½«½çÃæĞÅÏ¢ºÍÎÄ¼ş»º´æÖÁÒş±ÎÏûÏ¢Ó¦ÓÃ²ã»º³åÇø(SD)
+//å°†ç•Œé¢ä¿¡æ¯å’Œæ–‡ä»¶ç¼“å­˜è‡³éšè”½æ¶ˆæ¯åº”ç”¨å±‚ç¼“å†²åŒº(SD)
 UINT CStegSuit::Send(void * pSrc, int length, int type)
 {
 	if ( ( (UINT) length > SIADU ) || (type != 1 && type != 2) || pSrc == NULL) return 0;
@@ -316,7 +211,7 @@ UINT CStegSuit::Send(void * pSrc, int length, int type)
 	}
 	return 1;
 }
-//½ÓÊÕ
+//æ¥æ”¶
 UINT CStegSuit::Receive(void * pDst, int maxlength, int type)
 {
 	if ( type == 1 )
@@ -332,15 +227,6 @@ UINT CStegSuit::Receive(void * pDst, int maxlength, int type)
 				RC[0].Length = 0;
 				return i;
 			}
-
-			//if ( RC[0].Storage[i] == 0 && RC[0].Storage[i+1] == 0 && (i+1)/2 <= (UINT) maxlength) 
-			//{
-			//	_tcscpy_s((TCHAR *)pDst, maxlength, (TCHAR *)RC[0].Storage);
-			//	memset ((void *)RC[0].Storage, 1, SIADU);
-			//	RC[0].Cursor = RC[0].Storage;
-			//	RC[0].Length = 0;
-			//	return (i+1)/2;
-			//}
 		}
 		return 0;
 	}
@@ -393,8 +279,8 @@ UINT CStegSuit::Receive(void * pDst, int maxlength, int type)
 	return 0;
 }
 
-//½ÓÊÕ·½¼ìÑéÊÕµ½°üÊÇ·ñÔÚ´ı½ÓÊÕ´°¿ÚÄÚ
-//¼ìÑéSeqÓëLastRSEQÊÇ·ñ·ûºÏ£¬¼´Seq-LastRSEQ=0~7,SeqÎªµ±Ç°Ö¡ĞòºÅ£¬LastRSEQÎªÉÏ´Î´¦ÀíµÄÖ¡ĞòºÅ
+//æ¥æ”¶æ–¹æ£€éªŒæ”¶åˆ°åŒ…æ˜¯å¦åœ¨å¾…æ¥æ”¶çª—å£å†…
+//æ£€éªŒSeqä¸LastRSEQæ˜¯å¦ç¬¦åˆï¼Œå³Seq-LastRSEQ=0~7,Seqä¸ºå½“å‰å¸§åºå·ï¼ŒLastRSEQä¸ºä¸Šæ¬¡å¤„ç†çš„å¸§åºå·
 bool CStegSuit::Between (UINT Seq, UINT LastRSEQ)
 {
 	bool Hit = false;
@@ -409,7 +295,7 @@ bool CStegSuit::Between (UINT Seq, UINT LastRSEQ)
 	return Hit;
 }
 
-//·¢ËÍ·½¼ìÑé¶Ô·½ÊÇ·ñÊÕµ½Õâ¸ö°ü
+//å‘é€æ–¹æ£€éªŒå¯¹æ–¹æ˜¯å¦æ”¶åˆ°è¿™ä¸ªåŒ…
 //
 bool CStegSuit::Inside(UINT Seq, UINT LastRANN)
 {
@@ -428,27 +314,27 @@ bool CStegSuit::Inside(UINT Seq, UINT LastRANN)
 	return Hit;
 }
 
-//RTP°ü£¬RTP°üÍ·³¤¶È£¬ÓïÒô
+//RTPåŒ…ï¼ŒRTPåŒ…å¤´é•¿åº¦ï¼Œè¯­éŸ³
 UINT CStegSuit::Embedding( void * pCarrier,UINT RTPheadlen, char* pPcmIn )
 {
-	int datatype = 0;	//Êı¾İÀàĞÍ
+	int datatype = 0;	//æ•°æ®ç±»å‹
 	char* pPcm = pPcmIn;
 	//ssw ilbc
-	//Control( 1 );	//Éè¶¨SAEºÍSTM´óĞ¡
+	//Control( 1 );	//è®¾å®šSAEå’ŒSTMå¤§å°
 	//SSW: need to be modified for 20ms ilbc
 	Control( this->m_Seclev );
 
-	Retransmission(); //ÖØ´«¼ì²â
-	if(STMSdata(&datatype) == 1)	//==1 ±íÊ¾ÖØ´«
+	Retransmission(); //é‡ä¼ æ£€æµ‹
+	if(STMSdata(&datatype) == 1)	//==1 è¡¨ç¤ºé‡ä¼ 
 	{
-		SAESdata(pCarrier, RTPheadlen, pPcm);	//Ç¶ÈëÊı¾İ
- 		if(m_ActualByte == m_Resend.Length - 3 )	//ÖØ´«³É¹¦£¬ÒªÇóÖØ´«µÄ×Ö½ÚÊı
+		SAESdata(pCarrier, RTPheadlen, pPcm);	//åµŒå…¥æ•°æ®
+ 		if(m_ActualByte == m_Resend.Length - 3 )	//é‡ä¼ æˆåŠŸï¼Œè¦æ±‚é‡ä¼ çš„å­—èŠ‚æ•°
  		{
 			delete [] m_Retrans.front().Frame;
 			m_Retrans.front().Frame = NULL;
-			m_Retrans.pop();	//Ç¶Èë³É¹¦£¬¶ªÆú
-			STMSheader(datatype);	//×é×°STM°üÍ·
-			SAESheader(pCarrier);	//Ç¶ÈëSTM°üÍ·
+			m_Retrans.pop();	//åµŒå…¥æˆåŠŸï¼Œä¸¢å¼ƒ
+			STMSheader(datatype);	//ç»„è£…STMåŒ…å¤´
+			SAESheader(pCarrier);	//åµŒå…¥STMåŒ…å¤´
 
 			memset(m_Resend.Frame, 0, maxSTM);
 			m_Resend.Length = 0;
@@ -457,16 +343,16 @@ UINT CStegSuit::Embedding( void * pCarrier,UINT RTPheadlen, char* pPcmIn )
 		}
 	}
 
-	//ÖØÇ¶ÈëÊ§°Ü»òÕı³£·¢ËÍ
+	//é‡åµŒå…¥å¤±è´¥æˆ–æ­£å¸¸å‘é€
 	memset(m_Resend.Frame, 0 ,maxSTM);
 	m_Resend.Length = 0;
 	m_Resend.Time = 0;
 
-	SAESdata(pCarrier, RTPheadlen, pPcm);	//Ç¶ÈëÊı¾İ
-	STMSheader(datatype);	//×é×°STM°üÍ·,²¢ĞŞ¸ÄSIA»º´æ
-	SAESheader(pCarrier);	//Ç¶ÈëSTM°üÍ·
+	SAESdata(pCarrier, RTPheadlen, pPcm);	//åµŒå…¥æ•°æ®
+	STMSheader(datatype);	//ç»„è£…STMåŒ…å¤´,å¹¶ä¿®æ”¹SIAç¼“å­˜
+	SAESheader(pCarrier);	//åµŒå…¥STMåŒ…å¤´
 
-	m_retranstep = 0; //¿ªÆôÖØ´«
+	m_retranstep = 0; //å¼€å¯é‡ä¼ 
 
 	return 3;
 
@@ -475,7 +361,7 @@ UINT CStegSuit::Embedding( void * pCarrier,UINT RTPheadlen, char* pPcmIn )
 
 UINT CStegSuit::Retransmission()
 {
-	//Î¬»¤ÖØ´«×´Ì¬
+	//ç»´æŠ¤é‡ä¼ çŠ¶æ€
 	if ( m_Threshold > HThreshold ) 
 	{
 		m_Threshold = HThreshold; 
@@ -486,11 +372,11 @@ UINT CStegSuit::Retransmission()
 		if (m_Window[i].Length != 0) m_Window[i].Time ++;  // Add time
 
 	if ( m_Window[ (m_LastRANN -1 ) & 0x7 ].Length != 0 )
-		m_Threshold = LThreshold;	//ÍøÂçÍ¨³©
+		m_Threshold = LThreshold;	//ç½‘ç»œé€šç•…
 
 	for ( UINT i=0; i<8; i++)
 	{
-		if ( m_Window[i].Length !=0 && Inside( m_Window[i].Frame[2]>>4, m_LastRANN ) )	//¶Ô·½ÒÑ´¦Àí£¬»¬¶¯´°¿Ú
+		if ( m_Window[i].Length !=0 && Inside( m_Window[i].Frame[2]>>4, m_LastRANN ) )	//å¯¹æ–¹å·²å¤„ç†ï¼Œæ»‘åŠ¨çª—å£
 		{
 			memset( m_Window[i].Frame, 0, maxSTM);
 			m_Window[i].Length = 0;
@@ -506,66 +392,66 @@ UINT CStegSuit::Retransmission()
 		if (m_Window[i].Time > delay)
 		{
 			pos = i;  
-			delay = m_Window[i].Time;		//Çó×î´óÑÓ³ÙµÄ°ü
+			delay = m_Window[i].Time;		//æ±‚æœ€å¤§å»¶è¿Ÿçš„åŒ…
 		}
 	}
-	if (m_Window[pos].Time > m_Threshold)		//ÖØ´«
+	if (m_Window[pos].Time > m_Threshold)		//é‡ä¼ 
 	{
 
-		m_Threshold += LThreshold;		//¼Ó´óÊ±¼äÃÅÏŞ
+		m_Threshold += LThreshold;		//åŠ å¤§æ—¶é—´é—¨é™
 
 		if(m_Retrans.empty() == false)
 		{
-			//ÖØ´«¶ÓÁĞÇå¿Õ
+			//é‡ä¼ é˜Ÿåˆ—æ¸…ç©º
 			delete [] m_Retrans.front().Frame;
 			m_Retrans.front().Frame = NULL;
 			m_Retrans.pop();	
 		}
-		//ÖØ´«,Ñ¹Èë¶ÓÁĞ
+		//é‡ä¼ ,å‹å…¥é˜Ÿåˆ—
 		STMFrame ReSTM;
 		ReSTM.Frame = new BYTE [STMDU];
 		memcpy( ReSTM.Frame, m_Window[pos].Frame, STMDU );
 		ReSTM.Length = m_Window[pos].Length ;
-		m_Retrans.push(ReSTM);			//Ñ¹Èë¶ÓÁĞ
+		m_Retrans.push(ReSTM);			//å‹å…¥é˜Ÿåˆ—
 		return 1;
 	}
 	return 2;
 }
 
-//µÚÒ»²½
-//·µ»Ø£º0£ºÈ«¾Ö³¬Ê±£» 1£ºÖØ´«£»2£º·¢ËÍ´°¿ÚÂú£» 3£ºÕı³£ 
-UINT CStegSuit::STMSdata(int *datatype)		//ÏòSIAÉêÇëÊı¾İ
+//ç¬¬ä¸€æ­¥
+//è¿”å›ï¼š0ï¼šå…¨å±€è¶…æ—¶ï¼› 1ï¼šé‡ä¼ ï¼›2ï¼šå‘é€çª—å£æ»¡ï¼› 3ï¼šæ­£å¸¸ 
+UINT CStegSuit::STMSdata(int *datatype)		//å‘SIAç”³è¯·æ•°æ®
 {
-	//m_CrtÎª´«¸øSAE²ãµÄSTM°ü,³õÊ¼»¯
+	//m_Crtä¸ºä¼ ç»™SAEå±‚çš„STMåŒ…,åˆå§‹åŒ–
 	memset( m_Crt.Frame, 0, maxSTM);
-	m_Crt.Length = 0;	//³¤¶ÈÖÃÁã
+	m_Crt.Length = 0;	//é•¿åº¦ç½®é›¶
 
-	if(m_retranstep == 0 && m_Retrans.empty() == false)	//ÓĞÖØ´«
+	if(m_retranstep == 0 && m_Retrans.empty() == false)	//æœ‰é‡ä¼ 
 	{
 		m_retranstep = 1;
-		memcpy( m_Resend.Frame, m_Retrans.front().Frame, STMDU );	//¶ÁÒ»¸öÖØ´«°ü
+		memcpy( m_Resend.Frame, m_Retrans.front().Frame, STMDU );	//è¯»ä¸€ä¸ªé‡ä¼ åŒ…
 		m_Resend.Length = m_Retrans.front().Length ;
-		memcpy( m_Crt.Frame, m_Resend.Frame, m_Resend.Length);	//½«ÖØ´«°üĞÎ³ÉSTMÖ¡
+		memcpy( m_Crt.Frame, m_Resend.Frame, m_Resend.Length);	//å°†é‡ä¼ åŒ…å½¢æˆSTMå¸§
 		m_Crt.Length = m_Resend.Length;
 		return 1;
 	}
-	else if( m_Window[ (m_SEQ+1)%8 ].Length != 0 )	//·¢ËÍ´°¿ÚÂú½ûÖ¹·¢ËÍ
+	else if( m_Window[ (m_SEQ+1)%8 ].Length != 0 )	//å‘é€çª—å£æ»¡ç¦æ­¢å‘é€
 	{
 		//TRACE(_T("	Window full\n"));
 		return 2;  // Window full
 	}
 	else
 	{
-		//´ÓSDÀ­Ò»¸ö×î³¤ÎªSTMDU³¤µÄÊı¾İ
+		//ä»SDæ‹‰ä¸€ä¸ªæœ€é•¿ä¸ºSTMDUé•¿çš„æ•°æ®
 		for (int i = 0; i < 2; ++i)
 		{
 			if (SD[i].Length != 0)
 			{
-				UINT len;	//Ö¡ÔØºÉ³¤¶È
+				UINT len;	//å¸§è½½è·é•¿åº¦
 				
 				if ( SD[i].Length >= STMDU - 3 ) 
 				{
-					len = STMDU - 3;	//×î´ó´«Êä³¤¶È
+					len = STMDU - 3;	//æœ€å¤§ä¼ è¾“é•¿åº¦
 				}
 				else  
 				{
@@ -574,7 +460,7 @@ UINT CStegSuit::STMSdata(int *datatype)		//ÏòSIAÉêÇëÊı¾İ
 		
 				memcpy(& m_Crt.Frame[3], SD[i].Cursor, len );
 				m_Crt.Length = len + 3;
-				*datatype = i;	//·µ»ØÊı¾İÀàĞÍ,0ÎªÏûÏ¢£¬1ÎªÎÄ¼ş
+				*datatype = i;	//è¿”å›æ•°æ®ç±»å‹,0ä¸ºæ¶ˆæ¯ï¼Œ1ä¸ºæ–‡ä»¶
 				break;
 			}
 		}	
@@ -582,49 +468,27 @@ UINT CStegSuit::STMSdata(int *datatype)		//ÏòSIAÉêÇëÊı¾İ
 	}
 }
 
-//µÚ¶ş²½£¬SAE²ãÇ¶ÈëÊı¾İ
+//ç¬¬äºŒæ­¥ï¼ŒSAEå±‚åµŒå…¥æ•°æ®
 UINT CStegSuit::SAESdata( void * pCarrier,UINT RTPheadlen, char* pPcmIn)
 {
- 	memcpy( m_FrmS, m_Crt.Frame, STMDU);	//È¡STMDU³¤¶È£¨3+1byte£©
+ 	memcpy( m_FrmS, m_Crt.Frame, STMDU);	//å–STMDUé•¿åº¦ï¼ˆ3+1byteï¼‰
 	m_FrmSLength = m_Crt.Length;
 	m_FrmSCursor = m_FrmS;
-	m_ActualByte = 0;	//ÕæÊµ´«Êä×Ö½ÚÊı
+	m_ActualByte = 0;	//çœŸå®ä¼ è¾“å­—èŠ‚æ•°
 
-	if ( m_FrmSLength > 0 )	//´ı·¢ËÍµÄSTMÖ¡Êı¾İ·Ç¿Õ
+	if ( m_FrmSLength > 0 )	//å¾…å‘é€çš„STMå¸§æ•°æ®éç©º
 	{	
 		memcpy(m_chEmdSecMsg, m_Crt.Frame + 3, m_Crt.Length - 3);
-		//memcpy(m_chEmdSecMsg, m_FrmSCursor + 3, 1);
-		//changed for 20ms
-
-
-		//THZ: ³¤¶Èµ÷ÕûÎªÒ»Ö¡µÄ³¤¶È
+		//THZ: é•¿åº¦è°ƒæ•´ä¸ºä¸€å¸§çš„é•¿åº¦
 		int bitpos[3]={0,6,4};
 		int hdTxt_pos[3]={0,9,19};
-		if(mode20_30==30)
-		{
-			bitpos[0]=0;
-			bitpos[1]=3;
-			bitpos[2]=6;
-			hdTxt_pos[0]=0;
-			hdTxt_pos[1]=11;
-			hdTxt_pos[2]=22;
-
-		}
-		//THZ: ³¤¶Èµ÷ÕûÎªÒ»Ö¡µÄ³¤¶È
+		//THZ: é•¿åº¦è°ƒæ•´ä¸ºä¸€å¸§çš„é•¿åº¦
 		for (int i = 0; i < 1; ++i)
 		{
-			//iLBC  ssw
-			//SSW: need to be modified for 20ms ilbc
-			//changed for 20ms
-			Enc_Inst.ste.bitpos=bitpos[i];
-			Enc_Inst.ste.hdTxt_pos=hdTxt_pos[i];
-			if(mode20_30==20)
-				iLBCEncode((unsigned char *)(m_pFrmBuf + 38 * i), 
-				(float *)(pPcmIn + 320 * i), &Enc_Inst, 1, m_chEmdSecMsg);
-			else
-				iLBCEncode((unsigned char *)(m_pFrmBuf + 50 * i), (float *)(pPcmIn + 480 * i), &Enc_Inst, 1, m_chEmdSecMsg);
+			Encode((unsigned char *)(m_pFrmBuf + 38 * i),
+				(float *)(pPcmIn + 320 * i), 1, m_chEmdSecMsg);
 		}
-		//m_chEmdSecMsg Ç° 34 B ÎªÒş²ØÊı¾İ
+		//m_chEmdSecMsg å‰ 34 B ä¸ºéšè—æ•°æ®
 		//m_ActualByte = 1    /*m_FrmSLength - 3;
 		m_ActualByte = m_FrmSLength - 3;
 		m_FrmSLength = 0;
@@ -632,79 +496,63 @@ UINT CStegSuit::SAESdata( void * pCarrier,UINT RTPheadlen, char* pPcmIn)
 	}
 	else
 	{
-		//THZ: ³¤¶Èµ÷ÕûÎªÒ»Ö¡µÄ³¤¶È
+		//THZ: é•¿åº¦è°ƒæ•´ä¸ºä¸€å¸§çš„é•¿åº¦
 		for (int i = 0; i < 1; ++i)
 		{
-			//iLBC ssw
-			//SSW: need to be modified for 20ms ilbc
-			//changed for 20ms
-			if(mode20_30==20)
-				iLBCEncode((unsigned char *)(m_pFrmBuf + 38 * i), 
-				(float *)(pPcmIn + 320 * i), &Enc_Inst, 0, NULL);
-			else
-				iLBCEncode((unsigned char *)(m_pFrmBuf + 50 * i), (float *)(pPcmIn + 480 * i), &Enc_Inst, 0, NULL);
-
+			Encode((unsigned char *)(m_pFrmBuf + 38 * i),
+				(float *)(pPcmIn + 320 * i), 0, NULL);
 		}
 		m_ActualByte = 0;
 	}
-	//ssw iLBC
-	//SSW: need to be modified for 20ms ilbc
-	//changed for 20ms
-	//THZ: ³¤¶Èµ÷ÕûÎªÒ»Ö¡µÄ³¤¶È
-	if(mode20_30==20)
-		memcpy((char*)pCarrier + RTPheadlen, m_pFrmBuf, 38);
-	else
-		memcpy((char*)pCarrier + RTPheadlen, m_pFrmBuf, 50);
-	//if (mode20_30 == 20)
-	//	memcpy((char*)pCarrier + RTPheadlen, m_pFrmBuf, 38 * 3);
-	//else
-	//	memcpy((char*)pCarrier + RTPheadlen, m_pFrmBuf, 50 * 3);
+	
+	//THZ: é•¿åº¦è°ƒæ•´ä¸ºä¸€å¸§çš„é•¿åº¦
+	memcpy((char*)pCarrier + RTPheadlen, m_pFrmBuf, 38);
 	
 	return 1;
 }
 
-//µÚÈı²½£¬STM×é×°°üÍ·Óò ĞŞ¸ÄSIA»º´æ
+//ç¬¬ä¸‰æ­¥ï¼ŒSTMç»„è£…åŒ…å¤´åŸŸ ä¿®æ”¹SIAç¼“å­˜
 UINT CStegSuit::STMSheader(int datatype)
 {
-	UINT len = m_ActualByte;	//Êµ¼ÊÇ¶Èë×Ö½ÚÊı
-	int i = datatype;			//Êı¾İÀ´Ô´
-	//STMÊı¾İ°üÍ·²¿
-	if(m_Resend.Length > 0)	//ÖØ´«°ü
+	UINT len = m_ActualByte;	//å®é™…åµŒå…¥å­—èŠ‚æ•°
+	int i = datatype;			//æ•°æ®æ¥æº
+	//STMæ•°æ®åŒ…å¤´éƒ¨
+	if(m_Resend.Length > 0)	//é‡ä¼ åŒ…
 	{
-		//ÖØĞ´Ò»´Î
-		memcpy( m_Crt.Frame, m_Resend.Frame, m_Resend.Length);	//½«ÖØ´«°üĞÎ³ÉSTMÖ¡
+		//é‡å†™ä¸€æ¬¡
+		memcpy( m_Crt.Frame, m_Resend.Frame, m_Resend.Length);	//å°†é‡ä¼ åŒ…å½¢æˆSTMå¸§
 		m_Crt.Length = m_Resend.Length;
-		m_Crt.Frame[2] = (m_Crt.Frame[2] & 0xF0) +((m_LastRSEQ+1)%16 );	//ÖØ´«½öĞŞ¸ÄÒ»¸öµØ·½		
+		m_Crt.Frame[2] = (m_Crt.Frame[2] & 0xF0) +((m_LastRSEQ+1)%16 );	//é‡ä¼ ä»…ä¿®æ”¹ä¸€ä¸ªåœ°æ–¹		
 	}
-	else	//ĞÂ°ü
+	else	//æ–°åŒ…
 	{
 		UINT odd = 0;
 		
-		//ÆæÅ¼Ğ£Ñé
+		//å¥‡å¶æ ¡éªŒ
 		for ( UINT k = 0; k < len; k++ )
 		{
 			odd = odd + m_CheckTable[ *( SD[i].Cursor+k ) ];	
 		}
 		odd = odd%2;
 
-		if(len > 0)		//»úÃÜĞÅÏ¢°ü
+		if(len > 0)		//æœºå¯†ä¿¡æ¯åŒ…
 		{
-			m_SEQ = (m_SEQ+1) % 16;		//·Ö¶Î±êºÅ£¬Êı¾İÌ«³¤¿ÉÄÜ»á·ÖÆ¬·¢ËÍ
+			m_SEQ = (m_SEQ+1) % 16;		//åˆ†æ®µæ ‡å·ï¼Œæ•°æ®å¤ªé•¿å¯èƒ½ä¼šåˆ†ç‰‡å‘é€
 			m_Crt.Frame[0] = 0x40 + 8*(i+1) + (len & 0x7) ;
 			m_Crt.Frame[1] = ( len >> 3 ) + ( odd << 7 );
 			m_Crt.Frame[2] = ( m_SEQ << 4 ) + ( (m_LastRSEQ+1)%16 );
-			m_Crt.Length = len + 3;		//¶ÔSAE²ãÀ´ËµµÄÊı¾İ´óĞ¡£¬°üÀ¨STMÍ·
+			m_Crt.Length = len + 3;		//å¯¹SAEå±‚æ¥è¯´çš„æ•°æ®å¤§å°ï¼ŒåŒ…æ‹¬STMå¤´
 	
-			SD[i].Length -= len;		//»¬¶¯´°¿Ú
+			SD[i].Length -= len;		//æ»‘åŠ¨çª—å£
 			SD[i].Cursor += len;		//
 	
-			memcpy ( m_Window[ m_SEQ & 0x7 ].Frame, m_Crt.Frame, STMDU );	//¼ÓÈë·¢ËÍ»¬¶¯´°¿Ú
-			m_Window[ m_SEQ & 0x7 ].Length = m_Crt.Length;					//¼ÓÈë·¢ËÍ»¬¶¯´°¿Ú
+			memcpy ( m_Window[ m_SEQ & 0x7 ].Frame, m_Crt.Frame, STMDU );	//åŠ å…¥å‘é€æ»‘åŠ¨çª—å£
+			m_Window[ m_SEQ & 0x7 ].Length = m_Crt.Length;					//åŠ å…¥å‘é€æ»‘åŠ¨çª—å£
 			//TRACE(_T("Send: %d\n"), m_SEQ);
 
-			if (SD[i].Length == 0)				//ÒşÃØĞÅÏ¢Ó¦ÓÃ²ãÊı¾İ·¢ËÍÍê±Ï
+			if (SD[i].Length == 0)				//éšç§˜ä¿¡æ¯åº”ç”¨å±‚æ•°æ®å‘é€å®Œæ¯•
 			{
-				//Ó¦ÓÃ²ãÊı¾İ·¢ËÍÍê±Ï£¬TODO£º¶Ô½Ó¿Ú²ã·¢ËÍÌáÊ¾
+				//åº”ç”¨å±‚æ•°æ®å‘é€å®Œæ¯•ï¼ŒTODOï¼šå¯¹æ¥å£å±‚å‘é€æç¤º
 				//AfxGetMainWnd()->PostMessage(WM_SIACLEAR, (UINT)(i + 1), 0);
 				if (i == 1)
 				{
@@ -712,13 +560,13 @@ UINT CStegSuit::STMSheader(int datatype)
 				}
 			}
 		}
-		else	//¿Õ°ü£¬ÎŞ»úÃÜĞÅÏ¢
+		else	//ç©ºåŒ…ï¼Œæ— æœºå¯†ä¿¡æ¯
 		{
-			UINT seq = ( m_LastRANN + 16 - 1)%16;		//·Ö¶Î±êºÅÎª¶Ô·½½ÓÊÕ´°¿ÚÍâ
+			UINT seq = ( m_LastRANN + 16 - 1)%16;		//åˆ†æ®µæ ‡å·ä¸ºå¯¹æ–¹æ¥æ”¶çª—å£å¤–
 			m_Crt.Frame[0] = 0x40 + 8*(i+1) + (len & 0x7) ;
 			m_Crt.Frame[1] = ( len >> 3 ) + ( odd << 7 );
 			m_Crt.Frame[2] = ( seq << 4 ) + ( (m_LastRSEQ+1)%16 );
-			m_Crt.Length = len + 3;		//¶ÔSAE²ãÀ´ËµµÄÊı¾İ´óĞ¡
+			m_Crt.Length = len + 3;		//å¯¹SAEå±‚æ¥è¯´çš„æ•°æ®å¤§å°
 		}
 
 	}	
@@ -727,31 +575,31 @@ UINT CStegSuit::STMSheader(int datatype)
 
 
 
-//µÚËÄ²½£¬Ç¶ÈëSTMÍ·Óò
+//ç¬¬å››æ­¥ï¼ŒåµŒå…¥STMå¤´åŸŸ
 UINT CStegSuit::SAESheader(void * pCarrier)
 {
-	memcpy( m_FrmS, m_Crt.Frame, 3);	//È¡STMDUÍ·Óò
+	memcpy( m_FrmS, m_Crt.Frame, 3);	//å–STMDUå¤´åŸŸ
 	m_FrmSLength = 3;
 	m_FrmSCursor = m_FrmS;
 
 	m_pRTP->PreparePosBook();
 
-	m_pRTP->Embed( m_FrmSCursor, 3, NULL, 0, (BYTE *) pCarrier);		//STMÍ·Óò3×Ö½ÚÌîÈëRTP
+	m_pRTP->Embed( m_FrmSCursor, 3, NULL, 0, (BYTE *) pCarrier);		//STMå¤´åŸŸ3å­—èŠ‚å¡«å…¥RTP
 
 	return 1;
 }
 
-//ÌáÈ¡»úÃÜĞÅÏ¢
+//æå–æœºå¯†ä¿¡æ¯
 UINT CStegSuit::Retriving(void *hdr, void * pCarrier, char* pPcmOut)
 {
-  	if(SAER(hdr, pCarrier, pPcmOut))		//ÌáÈ¡ ×é³ÉSTMÖ¡
+  	if(SAER(hdr, pCarrier, pPcmOut))		//æå– ç»„æˆSTMå¸§
 	{
 		STMR();
 	}
 	return 1;
 }
 
-//SAE²ãÌáÈ¡
+//SAEå±‚æå–
 UINT CStegSuit::SAER(void *hdr, void * pCarrier, char* pPcmOut)
 {
 	//rtppacket
@@ -760,91 +608,46 @@ UINT CStegSuit::SAER(void *hdr, void * pCarrier, char* pPcmOut)
 	BYTE *DstPacket = new BYTE [12];
 	//ssw iLBC
 	//SSW: need to be modified for 20ms ilbc
-	//THZ: ³¤¶Èµ÷ÕûÎªÒ»Ö¡µÄ³¤¶È
+	//THZ: é•¿åº¦è°ƒæ•´ä¸ºä¸€å¸§çš„é•¿åº¦
 	BYTE *DstData = new BYTE [50];
 	//BYTE *DstData = new BYTE[50 * 3];
 	//BYTE *DstData = new BYTE [24*3];
 
 	memcpy(DstPacket, hdr, 12);
-	//ssw iLBC
-	//SSW: need to be modified for 20ms ilbc
-	//changed for 20ms
-	//THZ: ³¤¶Èµ÷ÕûÎªÒ»Ö¡µÄ³¤¶È
-	if(mode20_30==20)
-		memcpy(DstData, pCarrier, 38);
-	else
-		memcpy(DstData, pCarrier, 50);
-	//if (mode20_30 == 20)
-	//	memcpy(DstData, Pack->GetPayloadData(), 38 * 3);
-	//else
-	//	memcpy(DstData, Pack->GetPayloadData(), 50 * 3);
+	//THZ: é•¿åº¦è°ƒæ•´ä¸ºä¸€å¸§çš„é•¿åº¦
+	memcpy(DstData, pCarrier, 38);
 
 	m_pRTP->PreparePosBook();
-	m_pRTP->Extract( m_FrmRCursor, 3, NULL, 0, DstPacket );	//´ÓRTPÖĞ»ñÈ¡STMÍ·Óò
+	m_pRTP->Extract( m_FrmRCursor, 3, NULL, 0, DstPacket );	//ä»RTPä¸­è·å–STMå¤´åŸŸ
 
 	UINT len = ( m_FrmRCursor[0] & 0x7 ) + ( ( m_FrmRCursor[1] & 0x7F ) * 8 ) ;
 	/*printf("len = %d\n",len);*/
 
 	if( len > 0 )
 	{
-		//changed for 20ms
-		//if(len > iLBC_SAEDU_30)	//³¤¶È²»ÕıÈ·£¬²»ÊÇ»úÃÜĞÅÏ¢µÄ°ü£¬¶ªÆú
-		if( (len > iLBC_SAEDU_20 && mode20_30==20) ||(len > iLBC_SAEDU_30 && mode20_30==30) )
+
+		if( len > SAEDU )//é•¿åº¦ä¸æ­£ç¡®ï¼Œä¸æ˜¯æœºå¯†ä¿¡æ¯çš„åŒ…ï¼Œä¸¢å¼ƒ
 		{
 			delete [] DstPacket;
 			delete [] DstData;
 			return 0;		
 		}
 
-		//iLBC ssw
-		//SSW: need to be modified for 20ms ilbc
-		//changed for 20ms
-		//THZ: ³¤¶Èµ÷ÕûÎªÒ»Ö¡µÄ³¤¶È
+		//THZ: é•¿åº¦è°ƒæ•´ä¸ºä¸€å¸§çš„é•¿åº¦
 		int bitpos[3]={0,6,4};
 		int hdTxt_pos[3]={0,9,19};
-		if(mode20_30==30)
-		{
-			bitpos[0]=0;
-			bitpos[1]=3;
-			bitpos[2]=6;
-			hdTxt_pos[0]=0;
-			hdTxt_pos[1]=11;
-			hdTxt_pos[2]=22;
-
-		}
-		//int bitpos[3]={0,3,6};
-		//int hdTxt_pos[3]={0,11,22};
-		//THZ: ³¤¶Èµ÷ÕûÎªÒ»Ö¡µÄ³¤¶È
 		for (int i = 0; i < 1; ++i)
 		{
-			//iLBC  ssw
-			Dec_Inst.ste.bitpos=bitpos[i];
-			Dec_Inst.ste.hdTxt_pos=hdTxt_pos[i];
-			//changed for 20ms
-			if(mode20_30==20)
-				iLBCDecode((float *)(pPcmOut + 320 * i), (unsigned char *)(DstData + 38 * i), &Dec_Inst,1, 1, m_chRtrSecMsg );
-			else
-				iLBCDecode((float *)(pPcmOut + 480 * i), (unsigned char *)(DstData + 50 * i), &Dec_Inst, 1, 1, m_chRtrSecMsg);
+			Decode((float *)(pPcmOut + 320 * i), (unsigned char *)(DstData + 38 * i), 1, m_chRtrSecMsg);
 		}
-		//changed for 20ms
-
-		if(mode20_30==20)
-			memcpy(m_FrmRCursor + 3, (BYTE*)m_chRtrSecMsg, iLBC_SAEDU_20);
-		else
-			memcpy(m_FrmRCursor + 3, (BYTE*)m_chRtrSecMsg, iLBC_SAEDU_30);
+		memcpy(m_FrmRCursor + 3, (BYTE*)m_chRtrSecMsg, SAEDU);
 	}
 	else
 	{
-		//THZ: ³¤¶Èµ÷ÕûÎªÒ»Ö¡µÄ³¤¶È
+		//THZ: é•¿åº¦è°ƒæ•´ä¸ºä¸€å¸§çš„é•¿åº¦
 		for (int i = 0; i < 1; ++i)
 		{
-			//iLBC ssw 
-			//SSW: need to be modified for 20ms ilbc
-			//changed for 20ms
-			if (mode20_30 == 20)
-				iLBCDecode((float *)(pPcmOut + 320 * i), (unsigned char *)(DstData + 38 * i), &Dec_Inst, 1, 0, NULL);
-			else
-				iLBCDecode((float *)(pPcmOut + 480 * i), (unsigned char *)(DstData + 50 * i), &Dec_Inst, 1, 0, NULL);
+			Decode((float *)(pPcmOut + 320 * i), (unsigned char *)(DstData + 38 * i), 0, NULL);
 		}
 
 	}
@@ -855,7 +658,7 @@ UINT CStegSuit::SAER(void *hdr, void * pCarrier, char* pPcmOut)
 
 UINT PrintMessage(CStegSuit* m_pSteg)
 {
-	//·ÖÅäÄÚ´æ±£´æĞÅÏ¢
+	//åˆ†é…å†…å­˜ä¿å­˜ä¿¡æ¯
 	char *Msg = new char[m_pSteg->SIADU];
 	memset(Msg, 0, sizeof(char)* m_pSteg->SIADU);
 	//TCHAR * Msg = new TCHAR[m_pSteg->SIADU];
@@ -867,17 +670,17 @@ UINT PrintMessage(CStegSuit* m_pSteg)
 	UINT type = 1;
 	if (type == 1)
 	{
-		//ÀàĞÍÎªÏûÏ¢£¬½«ÄÚÈİÍ¨¹ım_StegµÄReceiveº¯Êı£¬»ñÈ¡µ½MsgÖĞ
+		//ç±»å‹ä¸ºæ¶ˆæ¯ï¼Œå°†å†…å®¹é€šè¿‡m_Stegçš„Receiveå‡½æ•°ï¼Œè·å–åˆ°Msgä¸­
 		m_pSteg->lock();
 		UINT length = m_pSteg->Receive((void *)Msg, m_pSteg->SIADU, 1);
 		m_pSteg->unlock();
 
-		//ÏÔÊ¾ÏûÏ¢
+		//æ˜¾ç¤ºæ¶ˆæ¯
 		if (length != 0)
 		{
-			std::cout << "ÊÕµ½Òş±ÎÏûÏ¢" << std::endl;
+			std::cout << "æ”¶åˆ°éšè”½æ¶ˆæ¯" << std::endl;
 			std::cout << "-----------------------------" << std::endl;
-			std::cout << "¶Ô·½: " << Msg << std::endl;
+			std::cout << "å¯¹æ–¹: " << Msg << std::endl;
 		}
 		delete[] Msg;
 		return 1;
@@ -889,54 +692,54 @@ UINT PrintMessage(CStegSuit* m_pSteg)
 }
 UINT CStegSuit::STMR()
 {
-	memcpy(m_Rcv.Frame, m_FrmR, STMDU);		//»ñÈ¡»úÃÜĞÅÏ¢	m_FrmRCursor = m_FrmR;
+	memcpy(m_Rcv.Frame, m_FrmR, STMDU);		//è·å–æœºå¯†ä¿¡æ¯	m_FrmRCursor = m_FrmR;
 	memset( m_FrmR, 0, maxSTM+maxSAE );
 
-	//´¦Àí°üÍ·Óò
+	//å¤„ç†åŒ…å¤´åŸŸ
 	UINT Syn = m_Rcv.Frame[0] & 0xE0;
 	UINT Seq = ( m_Rcv.Frame[2] >> 4 ) & 0xF; // cache window sequence
 	UINT len = ( m_Rcv.Frame[0] & 0x7 ) + ( ( m_Rcv.Frame[1] & 0x7F ) * 8 ) ;
 	UINT odd = 0;
 
-	if( (Syn & 0xE0) == 0x40 )		//·ÀÖ¹½ÓÊÕµ½·Ç»úÃÜĞÅÏ¢°ü
+	if( (Syn & 0xE0) == 0x40 )		//é˜²æ­¢æ¥æ”¶åˆ°éæœºå¯†ä¿¡æ¯åŒ…
 	{
-		if(len == 0)	//¿Õ°üµÄ×÷ÓÃÊÇÈ·ÈÏ
-			m_LastRANN = m_Rcv.Frame[2] & 0xF;		//Îª·¢ËÍ¶ËÆğÊ¼ĞòºÅ
+		if(len == 0)	//ç©ºåŒ…çš„ä½œç”¨æ˜¯ç¡®è®¤
+			m_LastRANN = m_Rcv.Frame[2] & 0xF;		//ä¸ºå‘é€ç«¯èµ·å§‹åºå·
 		else
 		{
 			for ( UINT i = 0; i < len; i++ )
 			{
 				odd = odd + m_CheckTable[ m_Rcv.Frame[3+i] ];
 			}
-			if ( (odd%2) != ( ( m_Rcv.Frame[1]>>7 ) & 0x1 ) ) return 0;	//ÆæÅ¼Ğ£Ñé
+			if ( (odd%2) != ( ( m_Rcv.Frame[1]>>7 ) & 0x1 ) ) return 0;	//å¥‡å¶æ ¡éªŒ
 
 
-			//SeqÓëLastRSEQ·ûºÏ¾Í´¦Àí½ÓÊÕĞÅÏ¢,SeqÎªµ±Ç°Ö¡ĞòºÅ£¬LastRSEQÎªÉÏ´Î´¦ÀíµÄÖ¡ĞòºÅ
+			//Seqä¸LastRSEQç¬¦åˆå°±å¤„ç†æ¥æ”¶ä¿¡æ¯,Seqä¸ºå½“å‰å¸§åºå·ï¼ŒLastRSEQä¸ºä¸Šæ¬¡å¤„ç†çš„å¸§åºå·
 			if ( Between( Seq, m_LastRSEQ) )
 			{
-				//»ñÈ¡»úÃÜĞÅÏ¢ÖÁ½ÓÊÕ»¬¶¯´°¿Ú£¬ÕâÀï²¢²»¿¼ÂÇË³Ğò
+				//è·å–æœºå¯†ä¿¡æ¯è‡³æ¥æ”¶æ»‘åŠ¨çª—å£ï¼Œè¿™é‡Œå¹¶ä¸è€ƒè™‘é¡ºåº
 				memcpy ( m_Cache[ Seq & 0x7 ].Frame, m_Rcv.Frame, STMDU );
 				m_Cache[ Seq & 0x7 ].Length = 1; // denote there is a valid frame
-				m_LastRANN = m_Rcv.Frame[2] & 0xF;		//Îª·¢ËÍ¶ËÆğÊ¼ĞòºÅ
-			}	//ÆäËûÎªÖØ·¢µÄ°ü,È·ÈÏºÅÃ»ÓĞÊ±Ğ§ĞÔ
+				m_LastRANN = m_Rcv.Frame[2] & 0xF;		//ä¸ºå‘é€ç«¯èµ·å§‹åºå·
+			}	//å…¶ä»–ä¸ºé‡å‘çš„åŒ…,ç¡®è®¤å·æ²¡æœ‰æ—¶æ•ˆæ€§
 			
 		}		
 	}
 
-	//°´ĞòÌá½»Êı¾İ
+	//æŒ‰åºæäº¤æ•°æ®
 	bool NewRequst1 = false, NewRequst2 = false; 
-	while ( m_Cache[ (m_LastRSEQ+1) & 0x7 ].Length != 0 )		//±£Ö¤Ë³Ğò
+	while ( m_Cache[ (m_LastRSEQ+1) & 0x7 ].Length != 0 )		//ä¿è¯é¡ºåº
 	{
-		memcpy ( m_Rcv.Frame, m_Cache[ (m_LastRSEQ+1) & 0x7 ].Frame, STMDU );	//°´Ğò´¦ÀíÒ»¸öÊı¾İ
+		memcpy ( m_Rcv.Frame, m_Cache[ (m_LastRSEQ+1) & 0x7 ].Frame, STMDU );	//æŒ‰åºå¤„ç†ä¸€ä¸ªæ•°æ®
 		UINT Seq = ( m_Rcv.Frame[2] >> 4 ) & 0xF;
 		UINT len = ( m_Rcv.Frame[0] & 0x7 ) + ( ( m_Rcv.Frame[1] & 0x7F ) * 8 );
 		UINT type = ( m_Rcv.Frame[0] >> 3 ) & 0x3;
 
-		m_Cache[ (m_LastRSEQ+1) & 0x7 ].Length = 0;		//»¬¶¯´°¿ÚÏòÇ°ÒÆ¶¯
+		m_Cache[ (m_LastRSEQ+1) & 0x7 ].Length = 0;		//æ»‘åŠ¨çª—å£å‘å‰ç§»åŠ¨
 
-		m_LastRSEQ = Seq;		//LastRSEQ±íÊ¾¼º·½ÒÑ¾­´¦ÀíµÄĞòºÅ
+		m_LastRSEQ = Seq;		//LastRSEQè¡¨ç¤ºå·±æ–¹å·²ç»å¤„ç†çš„åºå·
 
-		if ( len != 0 )	//°´ĞòÌá½»
+		if ( len != 0 )	//æŒ‰åºæäº¤
 		{
 			if ( type == 1 ) NewRequst1 = true;
 			if ( type == 2 ) NewRequst2 = true;
@@ -947,11 +750,11 @@ UINT CStegSuit::STMR()
 			RC[type-1].Length += len;
 		}
 	}
-	//Ò»±ßÌá½»Ò»±ß¾Í¿ÉÒÔÏÔÊ¾
-	//·¢ËÍÏûÏ¢ÌáÊ¾UI½çÃæ×ö³öÏÔÊ¾
+	//ä¸€è¾¹æäº¤ä¸€è¾¹å°±å¯ä»¥æ˜¾ç¤º
+	//å‘é€æ¶ˆæ¯æç¤ºUIç•Œé¢åšå‡ºæ˜¾ç¤º
 	if (NewRequst1)
 	{
-		//ĞÂ¿ªÒ»¸öÏß³Ì£¬µ÷ÓÃPrintMessage£¬»òÕßÖ±½Ó°ÑPrintMessageµÄº¯ÊıÄÚÈİ¿½¹ıÈ¥
+		//æ–°å¼€ä¸€ä¸ªçº¿ç¨‹ï¼Œè°ƒç”¨PrintMessageï¼Œæˆ–è€…ç›´æ¥æŠŠPrintMessageçš„å‡½æ•°å†…å®¹æ‹·è¿‡å»
 
 		this->bMessageArrived = true;
 		
@@ -969,3 +772,31 @@ UINT CStegSuit::STMR()
 	return 1;
 }
 
+#include <pjmedia/alaw_ulaw.h>
+UINT CStegSuit::Encode(unsigned char *encoded_data, float *block, short bHide, char *hdTxt)
+{
+//	iLBCEncode(encoded_data, block, &Enc_Inst, bHide, hdTxt);
+	int length = 0;
+	if (hdTxt!=NULL)
+	{
+		length = sizeof(hdTxt);
+	}
+	for (size_t i = 0; i < length; ++i, ++block)
+	{
+		*block=pjmedia_linear2ulaw(hdTxt[i]);  //pcmu
+	}
+}
+UINT CStegSuit::Decode(float *decblock, unsigned char *bytes, int mode, char *msg)
+{
+//	iLBCDecode(decblock, bytes, &Dec_Inst, mode, msg);
+	int length = 0;
+	if (decblock != NULL)
+	{
+		length = sizeof(decblock);
+	}
+	pj_uint8_t *src = (pj_uint8_t*)decblock;
+	for (size_t i = 0; i < length; ++i)
+	{
+		*msg++ = (pj_uint16_t)pjmedia_ulaw2linear(*src++);  //pcmu
+	}
+}

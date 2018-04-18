@@ -10,21 +10,12 @@
 //#include "UsefulTools.h"
 //#include "../Voice/AC7231.h"
 #include <queue>
-extern "C"
-{
-	#include "iLBC.h"
-	#include "iLBC_define.h"
-	#include "iLBC_decode.h"
-	#include "iLBC_encode.h"
-}
 
 #include <pj/types.h>
 #include <pj/lock.h>
 //#include <pjsip/sip_types.h>
 
-extern iLBC_Enc_Inst_t Enc_Inst;
-extern iLBC_Dec_Inst_t Dec_Inst;
-extern UINT mode20_30;
+
 //enum steg_state
 //{
 //	NONE					= (int)0x00000, 
@@ -87,7 +78,16 @@ public:
 	UINT Retriving(void *hdr, void * pCarrier,/*CAudioBase * pACOut*/char* pPcmOut);
 	UINT SAER(void *hdr, void * pCarrier,/*CAudioBase * pACOut */char* pPcmOut);
 	UINT STMR();
-	//UINT CStegSuit::PrintMessage(UINT type);
+	
+	UINT Encode(unsigned char *encoded_data,  //编码后的数据
+		float *block,//要编码的数据
+		short bHide,
+		char *hdTxt
+		);
+	UINT Decode(float *decblock,  //要解码的数据
+		unsigned char *bytes,  //解码后的数据
+		int mode,
+		char *msg);
 
 	//lock
 	//JMutex SLock;

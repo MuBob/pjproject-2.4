@@ -19,7 +19,8 @@
  */
 
 #include <pjsua-lib/pjsua.h>
-#include "../../third_party/pjsua_libsteg/StegSuit.h"
+//#include "../../third_party/pjsua_libsteg/StegSuit.h"
+#include "../../third_party/pjsua_libsteg_nosecret/StegSuit.h"
 #include "pjsua_app_common.h"
 
 #define THIS_FILE	"pjsua_app_legacy.c"
@@ -680,7 +681,7 @@ static void ui_send_secret_message()
 	int length = 0;
 	char *pSrc;
 
-	printf("ÊäÈëÏûÏ¢ÄÚÈİ\n±¾µØ: ");
+	printf("è¾“å…¥æ¶ˆæ¯å†…å®¹\næœ¬åœ°: ");
 
 	//char buf[128];
 	char text[128];
@@ -1760,7 +1761,7 @@ void legacy_main()
 	    ui_detect_nat_type();
 	    break;
 
-		//THZ: ·¢ËÍÃØÃÜĞÅÏ¢
+		//THZ: å‘é€ç§˜å¯†ä¿¡æ¯
 	case 'w':
 		ui_send_secret_message();
 		break;
