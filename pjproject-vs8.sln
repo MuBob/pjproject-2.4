@@ -95,7 +95,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "microsip", "MicroSIP-3.12.1
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pjsua_libsteg", "third_party\build\pjsua_libsteg\pjsua_libsteg.vcxproj", "{C71D2EC0-7D9E-4A9E-B979-C0F475009FB9}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pjsua_libsteg_nosecret", "third_party\build\pjsua_libsteg_nosecret\pjsua_libsteg_nosecret\pjsua_libsteg_nosecret.vcxproj", "{06562FF4-D8FB-455A-B6A4-10FE3CC08B6F}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pjsua_libsteg_nosecret", "third_party\build\pjsua_libsteg_nosecret\pjsua_libsteg_nosecret.vcxproj", "{06562FF4-D8FB-455A-B6A4-10FE3CC08B6F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
