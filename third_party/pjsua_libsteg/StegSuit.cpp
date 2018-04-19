@@ -1016,6 +1016,13 @@ void CStegSuit::Decode(float *decblock, unsigned char *bytes, int mode, char *ms
 	pj_uint8_t *src = (pj_uint8_t*)decblock;
 	for (size_t i = 0; i < length; ++i)
 	{
-		*msg++ = (pj_uint16_t)pjmedia_ulaw2linear(*src++);  //pcmu
+		if (msg==NULL)
+		{
+			*bytes++ = (pj_uint16_t)pjmedia_ulaw2linear(*src++);  //pcmu
+		}
+		else
+		{
+			*msg++ = (pj_uint16_t)pjmedia_ulaw2linear(*src++);  //pcmu
+		}
 	}
 }

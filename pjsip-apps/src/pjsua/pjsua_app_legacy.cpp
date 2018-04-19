@@ -19,8 +19,7 @@
  */
 
 #include <pjsua-lib/pjsua.h>
-//#include "../../third_party/pjsua_libsteg/StegSuit.h"
-#include "../../third_party/pjsua_libsteg_nosecret/StegSuit.h"
+#include "../../third_party/pjsua_libsteg/StegSuit.h"
 #include "pjsua_app_common.h"
 
 #define THIS_FILE	"pjsua_app_legacy.c"

@@ -38,8 +38,7 @@
 
 #include <iostream>
 
-//#include <third_party/pjsua_libsteg/StegSuit.h>
-#include <third_party/pjsua_libsteg_nosecret/StegSuit.h>
+#include <third_party/pjsua_libsteg/StegSuit.h>
 
  CStegSuit m_pSteg;
 //extern struct pjsua_data pjsua_var;

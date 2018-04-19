@@ -39,9 +39,6 @@
 
 #include <Wtsapi32.h>
 
-
- //#include <pjsua_libsteg/StegSuit.h>   //lpc 2016.12.15
-
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -84,7 +81,7 @@ static void on_reg_state2(pjsua_acc_id acc_id, pjsua_reg_info *info)
 // 	int length = 0;
 // 	char *pSrc;
 // 
-// 	printf("ÊäÈëÏûÏ¢ÄÚÈİ\n±¾µØ: ");
+// 	printf("è¾“å…¥æ¶ˆæ¯å†…å®¹\næœ¬åœ°: ");
 // 
 // 	//char buf[128];
 // 	char text[128];
@@ -1481,7 +1478,7 @@ LRESULT CmainDlg::onShellExecute(WPARAM wParam, LPARAM lParam)
 	return 0;
 }
 
-//2018/2/7 10:30 ³ÌĞò¿ª»úºóÖ´ĞĞµÄÊ×¶Î´úÂë
+//2018/2/7 10:30 ç¨‹åºå¼€æœºåæ‰§è¡Œçš„é¦–æ®µä»£ç 
 LRESULT CmainDlg::onPowerBroadcast(WPARAM wParam, LPARAM lParam)
 {
 	if (wParam == PBT_APMRESUMEAUTOMATIC)
@@ -2405,7 +2402,7 @@ void CmainDlg::DialNumber(CString params)
 		}
 	}
 }
-//TODO:2018/2/7 15:24 ²¦ºÅµ÷ÓÃ
+//TODO:2018/2/7 15:24 æ‹¨å·è°ƒç”¨
 void CmainDlg::MakeCall(CString number)
 {
 	number.Trim();

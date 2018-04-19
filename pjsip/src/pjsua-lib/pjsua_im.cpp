@@ -19,8 +19,7 @@
  */
 #include <pjsua-lib/pjsua.h>
 #include <pjsua-lib/pjsua_internal.h>
-//#include <pjsua_libsteg/StegSuit.h>
-#include <pjsua_libsteg_nosecret/StegSuit.h>
+#include <pjsua_libsteg/StegSuit.h>
 #define THIS_FILE   "pjsua_im.h"
 //CStegSuit m_pSteg;
 extern acc_intfo_t  acc_info_local;
