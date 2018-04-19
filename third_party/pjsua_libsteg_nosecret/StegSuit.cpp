@@ -773,7 +773,7 @@ UINT CStegSuit::STMR()
 }
 
 #include <pjmedia/alaw_ulaw.h>
-UINT CStegSuit::Encode(unsigned char *encoded_data, float *block, short bHide, char *hdTxt)
+void CStegSuit::Encode(unsigned char *encoded_data, float *block, short bHide, char *hdTxt)
 {
 //	iLBCEncode(encoded_data, block, &Enc_Inst, bHide, hdTxt);
 	int length = 0;
@@ -786,7 +786,7 @@ UINT CStegSuit::Encode(unsigned char *encoded_data, float *block, short bHide, c
 		*block=pjmedia_linear2ulaw(hdTxt[i]);  //pcmu
 	}
 }
-UINT CStegSuit::Decode(float *decblock, unsigned char *bytes, int mode, char *msg)
+void CStegSuit::Decode(float *decblock, unsigned char *bytes, int mode, char *msg)
 {
 //	iLBCDecode(decblock, bytes, &Dec_Inst, mode, msg);
 	int length = 0;
