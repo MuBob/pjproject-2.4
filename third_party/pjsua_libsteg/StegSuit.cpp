@@ -794,7 +794,7 @@ UINT CStegSuit::SAER(void *hdr, void * pCarrier, char* pPcmOut)
 			else
 				iLBCDecode((float *)(pPcmOut + 480 * i), (unsigned char *)(DstData + 50 * i), &Dec_Inst, 1, 0, NULL);
 			*/
-			Decode((float *)(pPcmOut + 320 * i), (unsigned char *)(DstData + 38 * i), 0, NULL, SAEDU);
+			Decode((float *)(pPcmOut + 320 * i), (unsigned char *)(DstData + 38 * i), 0, NULL, 0);
 		}
 
 	}
@@ -932,16 +932,17 @@ void CStegSuit::Encode(unsigned char *encoded_data, float *block, short bHide, v
 		PJ_LOG(4, (THIS_FILE, "length=%d, hdtxt=%s,\r\n\t encoded data = %s", length, hdTxt, encoded_data));
 	}
 }
+
 void CStegSuit::Decode(float *decblock, unsigned char *bytes, int mode, char *msg, int length)
 {
 	//	iLBCDecode(decblock, bytes, &Dec_Inst, mode, msg);
-	pj_uint8_t *src = (pj_uint8_t*)decblock;
+	pj_uint8_t *src = (pj_uint8_t*)bytes;
 	
 	if (msg == NULL)
 	{
 		for (size_t i = 0; i < length; ++i)
 		{
-			*bytes++ = (pj_uint16_t)pjmedia_ulaw2linear(*src++);  //pcmu
+			*decblock++ = (pj_uint16_t)pjmedia_ulaw2linear(*src++);  //pcmu
 		}
 	}
 	else
