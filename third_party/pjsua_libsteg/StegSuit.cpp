@@ -939,13 +939,13 @@ void CStegSuit::Encode(unsigned char *encoded_data, float *block, short bHide, c
 	{
 		length = sizeof(hdTxt);
 	}
-	for (size_t i = 0; i < length; ++i, ++encoded_data)
-	{
-		*encoded_data = pjmedia_linear2ulaw(hdTxt[i]);  //pcmu
+	if(length>0){
+		for (size_t i = 0; i < length; ++i, ++encoded_data)
+		{
+			*encoded_data = pjmedia_linear2ulaw(hdTxt[i]);  //pcmu
+		}
+		PJ_LOG(4, (THIS_FILE, "length=%d, hdtxt=%s,\r\n\t encoded data = %s", length, hdTxt, encoded_data));
 	}
-	PJ_LOG(4, (THIS_FILE, "length=%s, encoded data = %s", length, encoded_data));
-//	TRACE("----------Encode:length=%s, encoded_data=%s\r", length, encoded_data);
-	
 }
 void CStegSuit::Decode(float *decblock, unsigned char *bytes, int mode, char *msg)
 {
@@ -956,17 +956,20 @@ void CStegSuit::Decode(float *decblock, unsigned char *bytes, int mode, char *ms
 		length = sizeof(decblock);
 	}
 	pj_uint8_t *src = (pj_uint8_t*)decblock;
-	for (size_t i = 0; i < length; ++i)
+	if (length>0)
 	{
-		if (msg==NULL)
+		for (size_t i = 0; i < length; ++i)
 		{
-			*bytes++ = (pj_uint16_t)pjmedia_ulaw2linear(*src++);  //pcmu
+			if (msg == NULL)
+			{
+				*bytes++ = (pj_uint16_t)pjmedia_ulaw2linear(*src++);  //pcmu
+			}
+			else
+			{
+				*msg++ = (pj_uint16_t)pjmedia_ulaw2linear(*src++);  //pcmu
+			}
 		}
-		else
-		{
-			*msg++ = (pj_uint16_t)pjmedia_ulaw2linear(*src++);  //pcmu
-		}
+		PJ_LOG(4, (THIS_FILE, "length=%s, decoded msg = %s", length, msg));
 	}
-	PJ_LOG(4, (THIS_FILE, "length=%s, decoded msg = %s", length, msg));
-//	TRACE("----------Decode:length=%s, msg=%s\r", length, msg);
+
 }
