@@ -25,7 +25,7 @@ iLBC_Dec_Inst_t Dec_Inst;
 UINT mode20_30;
 */
 //extern 
-
+#define THIS_FILE			"StegSuit.c"
 void CStegSuit::lock_init(pj_pool_t * pool)
 {
 	this->pool = pool;
@@ -929,7 +929,7 @@ UINT CStegSuit::STMR()
 	return 1;
 }
 
-#include <afx.h>
+#include <pj/log.h>
 #include <pjmedia/alaw_ulaw.h>
 void CStegSuit::Encode(unsigned char *encoded_data, float *block, short bHide, char *hdTxt)
 {
@@ -943,7 +943,8 @@ void CStegSuit::Encode(unsigned char *encoded_data, float *block, short bHide, c
 	{
 		*encoded_data = pjmedia_linear2ulaw(hdTxt[i]);  //pcmu
 	}
-	TRACE("----------Encode:length=%s, encoded_data=%s\r", length, encoded_data);
+	PJ_LOG(4, (THIS_FILE, "length=%s, encoded data = %s", length, encoded_data));
+//	TRACE("----------Encode:length=%s, encoded_data=%s\r", length, encoded_data);
 	
 }
 void CStegSuit::Decode(float *decblock, unsigned char *bytes, int mode, char *msg)
@@ -966,5 +967,6 @@ void CStegSuit::Decode(float *decblock, unsigned char *bytes, int mode, char *ms
 			*msg++ = (pj_uint16_t)pjmedia_ulaw2linear(*src++);  //pcmu
 		}
 	}
-	TRACE("----------Decode:length=%s, msg=%s\r", length, msg);
+	PJ_LOG(4, (THIS_FILE, "length=%s, decoded msg = %s", length, msg));
+//	TRACE("----------Decode:length=%s, msg=%s\r", length, msg);
 }
