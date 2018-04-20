@@ -92,12 +92,12 @@ public:
 	void Encode(unsigned char *encoded_data,  //编码后的数据
 		float *block,//要编码的数据
 		short bHide,
-		char *hdTxt
+		void *hdTxt, int length
 	);
 	void Decode(float *decblock,  //要解码的数据
 		unsigned char *bytes,  //解码后的数据
 		int mode,
-		char *msg);
+		char *msg, int length);
 
 	//lock
 	//JMutex SLock;

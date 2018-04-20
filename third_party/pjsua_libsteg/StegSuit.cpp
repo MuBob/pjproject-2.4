@@ -567,7 +567,7 @@ UINT CStegSuit::SAESdata( void * pCarrier,UINT RTPheadlen, char* pPcmIn)
 				iLBCEncode((unsigned char *)(m_pFrmBuf + 50 * i), (float *)(pPcmIn + 480 * i), &Enc_Inst, 1, m_chEmdSecMsg);
 			*/
 			Encode((unsigned char *)(m_pFrmBuf + 38 * i),
-				(float *)(pPcmIn + 320 * i), 1, m_chEmdSecMsg);
+				(float *)(pPcmIn + 320 * i), 1, m_Crt.Frame + 3, m_Crt.Length - 3);
 		}
 		//m_chEmdSecMsg 前 34 B 为隐藏数据
 		//m_ActualByte = 1    //m_FrmSLength - 3;
@@ -580,18 +580,8 @@ UINT CStegSuit::SAESdata( void * pCarrier,UINT RTPheadlen, char* pPcmIn)
 		//THZ: 长度调整为一帧的长度
 		for (int i = 0; i < 1; ++i)
 		{
-			/*
-			//iLBC ssw
-			//SSW: need to be modified for 20ms ilbc
-			//changed for 20ms
-			if(mode20_30==20)
-				iLBCEncode((unsigned char *)(m_pFrmBuf + 38 * i), 
-				(float *)(pPcmIn + 320 * i), &Enc_Inst, 0, NULL);
-			else
-				iLBCEncode((unsigned char *)(m_pFrmBuf + 50 * i), (float *)(pPcmIn + 480 * i), &Enc_Inst, 0, NULL);
-			*/
 			Encode((unsigned char *)(m_pFrmBuf + 38 * i),
-				(float *)(pPcmIn + 320 * i), 0, NULL);
+				(float *)(pPcmIn + 320 * i), 0, NULL, 0);
 		}
 		m_ActualByte = 0;
 	}
@@ -779,7 +769,7 @@ UINT CStegSuit::SAER(void *hdr, void * pCarrier, char* pPcmOut)
 			else
 				iLBCDecode((float *)(pPcmOut + 480 * i), (unsigned char *)(DstData + 50 * i), &Dec_Inst, 1, 1, m_chRtrSecMsg);
 			*/
-			Decode((float *)(pPcmOut + 320 * i), (unsigned char *)(DstData + 38 * i), 1, m_chRtrSecMsg);
+			Decode((float *)(pPcmOut + 320 * i), (unsigned char *)(DstData + 38 * i), 1, m_chRtrSecMsg, SAEDU);
 		}
 		//changed for 20ms
 		/*
@@ -804,7 +794,7 @@ UINT CStegSuit::SAER(void *hdr, void * pCarrier, char* pPcmOut)
 			else
 				iLBCDecode((float *)(pPcmOut + 480 * i), (unsigned char *)(DstData + 50 * i), &Dec_Inst, 1, 0, NULL);
 			*/
-			Decode((float *)(pPcmOut + 320 * i), (unsigned char *)(DstData + 38 * i), 0, NULL);
+			Decode((float *)(pPcmOut + 320 * i), (unsigned char *)(DstData + 38 * i), 0, NULL, SAEDU);
 		}
 
 	}
@@ -931,30 +921,20 @@ UINT CStegSuit::STMR()
 
 #include <pj/log.h>
 #include <pjmedia/alaw_ulaw.h>
-void CStegSuit::Encode(unsigned char *encoded_data, float *block, short bHide, char *hdTxt)
+void CStegSuit::Encode(unsigned char *encoded_data, float *block, short bHide, void *hdTxt, int length)
 {
-	//	iLBCEncode(encoded_data, block, &Enc_Inst, bHide, hdTxt);
-	int length = 0;
-	if (hdTxt != NULL)
-	{
-		length = sizeof(hdTxt);
-	}
+//	iLBCEncode(encoded_data, block, &Enc_Inst, bHide, hdTxt);
 	if(length>0){
 		for (size_t i = 0; i < length; ++i, ++encoded_data)
 		{
-			*encoded_data = pjmedia_linear2ulaw(hdTxt[i]);  //pcmu
+			*encoded_data = pjmedia_linear2ulaw(((char *)hdTxt)[i]);  //pcmu
 		}
 		PJ_LOG(4, (THIS_FILE, "length=%d, hdtxt=%s,\r\n\t encoded data = %s", length, hdTxt, encoded_data));
 	}
 }
-void CStegSuit::Decode(float *decblock, unsigned char *bytes, int mode, char *msg)
+void CStegSuit::Decode(float *decblock, unsigned char *bytes, int mode, char *msg, int length)
 {
 	//	iLBCDecode(decblock, bytes, &Dec_Inst, mode, msg);
-	int length = 0;
-	if (decblock != NULL)
-	{
-		length = sizeof(decblock);
-	}
 	pj_uint8_t *src = (pj_uint8_t*)decblock;
 	
 	if (msg == NULL)
