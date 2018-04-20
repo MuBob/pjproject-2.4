@@ -57,66 +57,6 @@ void CStegSuit::unlock()
 
 void  on_pager_wrapper1(pj_str_t *from, pj_str_t* to, pj_str_t *body, pj_str_t* mimetype);
 
-/*
-static int PJ_THREAD_FUNC foo(void* pM)
-{
-
-
-	CStegSuit *m_pSteg = (CStegSuit *)pM;
-	while (m_pSteg->quit_flag == 0){
-		//分配内存保存信息
-		if (m_pSteg->steg_status == NEW_MESSAGE_ARRIVED){
-			char *Msg = new char[m_pSteg->SIADU];
-			memset(Msg, 0, sizeof(char)* m_pSteg->SIADU);
-			//TCHAR * Msg = new TCHAR[m_pSteg->SIADU];
-			//memset(Msg, 0, sizeof(TCHAR)* m_pSteg->SIADU);
-
-			//test
-			//printf("when OnSIArrive called ,type = %d\n",type);
-			//test
-			UINT type = 1;
-			if (type == 1)
-			{
-				//类型为消息，将内容通过m_Steg的Receive函数，获取到Msg中
-				m_pSteg->lock();
-				m_pSteg->length = m_pSteg->Receive((void *)Msg, m_pSteg->SIADU, 1);
-				m_pSteg->unlock();
-
-				//显示消息
-				if (m_pSteg->length != 0)
-				{
-					
-					m_pSteg->msg_1 = pj_str(Msg);
-					m_pSteg->lock();
-					m_pSteg->steg_status = NEW_MESSAGE_OVER;
-					m_pSteg->unlock();
-					pj_str_t from = pj_str("ttt");
-					pj_str_t to = pj_str("bbb");
-					pj_str_t mime = pj_str("Text/Plain");
-					std::cout << "收到隐蔽消息" << std::endl;
-					//std::cout << "-----------------------------" << std::endl;
-					
-					//on_pager_wrapper1(&from, &to,&mime, &msg_1);
-					
-
-					//std::cout << "对方: " << Msg << std::endl;
-				}
-				//delete[] Msg;
-				
-				//return 1;
-			}
-			
-			delete[] Msg;
-		
-		
-		}
-		else
-			pj_thread_sleep(100);
-	}
-	return 0;
-
-}
-*/
 void CStegSuit::Create(pj_pool_t * pool)
 {
 	quit_flag = 0;
@@ -235,7 +175,7 @@ void CStegSuit::Configure()
 
 void CStegSuit::Clean()
 {
-	quit_flag = 1;
+ 	quit_flag = 1;
 	if (SD[0].Storage!=NULL) delete [] SD[0].Storage;  SD[0].Storage = NULL;
 	if (SD[1].Storage!=NULL) delete [] SD[1].Storage;  SD[1].Storage = NULL;
 	if (RC[0].Storage!=NULL) delete [] RC[0].Storage;  RC[0].Storage = NULL;
@@ -272,7 +212,7 @@ void CStegSuit::Control( UINT Command )
 {
 	
 	//SSW: need to be modified for 20ms ilbc
-	SAEDU = 1;	//一个RTP包中三个帧共嵌入一个字节
+	SAEDU = 9;	//一个RTP包中三个帧共嵌入一个字节
 /*	if( Command == 0 )
 		SAEDU=iLBC_SAEDU_20;
 	else if( Command == 2 )
@@ -593,7 +533,6 @@ UINT CStegSuit::SAESdata( void * pCarrier,UINT RTPheadlen, char* pPcmIn)
 	if ( m_FrmSLength > 0 )	//待发送的STM帧数据非空
 	{	
 		memcpy(m_chEmdSecMsg, m_Crt.Frame + 3, m_Crt.Length - 3);
-		int size=strlen(m_chEmdSecMsg);
 		//memcpy(m_chEmdSecMsg, m_FrmSCursor + 3, 1);
 		//changed for 20ms
 
@@ -631,7 +570,7 @@ UINT CStegSuit::SAESdata( void * pCarrier,UINT RTPheadlen, char* pPcmIn)
 				(float *)(pPcmIn + 320 * i), 1, m_chEmdSecMsg);
 		}
 		//m_chEmdSecMsg 前 34 B 为隐藏数据
-		//m_ActualByte = 1    /*m_FrmSLength - 3;
+		//m_ActualByte = 1    //m_FrmSLength - 3;
 		m_ActualByte = m_FrmSLength - 3;
 		m_FrmSLength = 0;
 		
@@ -1000,9 +939,9 @@ void CStegSuit::Encode(unsigned char *encoded_data, float *block, short bHide, c
 	{
 		length = sizeof(hdTxt);
 	}
-	for (size_t i = 0; i < length; ++i, ++block)
+	for (size_t i = 0; i < length; ++i, ++encoded_data)
 	{
-		*block = pjmedia_linear2ulaw(hdTxt[i]);  //pcmu
+		*encoded_data = pjmedia_linear2ulaw(hdTxt[i]);  //pcmu
 	}
 }
 void CStegSuit::Decode(float *decblock, unsigned char *bytes, int mode, char *msg)
