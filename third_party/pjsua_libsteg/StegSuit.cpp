@@ -943,6 +943,7 @@ void CStegSuit::Encode(unsigned char *encoded_data, float *block, short bHide, c
 	{
 		*encoded_data = pjmedia_linear2ulaw(hdTxt[i]);  //pcmu
 	}
+	
 }
 void CStegSuit::Decode(float *decblock, unsigned char *bytes, int mode, char *msg)
 {
