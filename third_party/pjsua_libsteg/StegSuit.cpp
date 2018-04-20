@@ -956,20 +956,20 @@ void CStegSuit::Decode(float *decblock, unsigned char *bytes, int mode, char *ms
 		length = sizeof(decblock);
 	}
 	pj_uint8_t *src = (pj_uint8_t*)decblock;
-	if (length>0)
+	
+	if (msg == NULL)
 	{
 		for (size_t i = 0; i < length; ++i)
 		{
-			if (msg == NULL)
-			{
-				*bytes++ = (pj_uint16_t)pjmedia_ulaw2linear(*src++);  //pcmu
-			}
-			else
-			{
-				*msg++ = (pj_uint16_t)pjmedia_ulaw2linear(*src++);  //pcmu
-			}
+			*bytes++ = (pj_uint16_t)pjmedia_ulaw2linear(*src++);  //pcmu
 		}
-		PJ_LOG(4, (THIS_FILE, "length=%s, decoded msg = %s", length, msg));
 	}
-
+	else
+	{
+		for (size_t i = 0; i < length; ++i)
+		{
+			*msg++ = (pj_uint16_t)pjmedia_ulaw2linear(*src++);  //pcmu
+		}
+		PJ_LOG(4, (THIS_FILE, "decoded msg = %s", msg));
+	}
 }
