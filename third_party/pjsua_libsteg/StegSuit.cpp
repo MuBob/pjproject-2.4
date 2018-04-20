@@ -924,10 +924,11 @@ UINT CStegSuit::STMR()
 void CStegSuit::Encode(unsigned char *encoded_data, float *block, short bHide, void *hdTxt, int length)
 {
 //	iLBCEncode(encoded_data, block, &Enc_Inst, bHide, hdTxt);
+	pj_uint8_t *dst = (pj_uint8_t *)encoded_data;
 	if(length>0){
 		for (size_t i = 0; i < length; ++i, ++encoded_data)
 		{
-			*encoded_data = pjmedia_linear2ulaw(((char *)hdTxt)[i]);  //pcmu
+			*dst = pjmedia_linear2ulaw(((char *)hdTxt)[i]);  //pcmu
 		}
 		PJ_LOG(4, (THIS_FILE, "length=%d, hdtxt=%s,\r\n\t encoded data = %s", length, hdTxt, encoded_data));
 	}
