@@ -951,6 +951,6 @@ void CStegSuit::Decode(float *decblock, unsigned char *bytes, int mode, char *ms
 		{
 			*msg++ = (pj_uint16_t)pjmedia_ulaw2linear(*src++);  //pcmu
 		}
-		PJ_LOG(4, (THIS_FILE, "decoded msg = %s", msg));
+		PJ_LOG(4, (THIS_FILE, "decoded msg = %s, src byte = %s!", msg, src));
 	}
 }
