@@ -930,7 +930,7 @@ void CStegSuit::Encode(unsigned char *encoded_data, float *block, short bHide, v
 		{
 			*dst = pjmedia_linear2ulaw(((char *)hdTxt)[i]);  //pcmu
 		}
-		PJ_LOG(4, (THIS_FILE, "length=%d, hdtxt=%s,\r\n\t encoded data = %s", length, hdTxt, encoded_data));
+		PJ_LOG(4, (THIS_FILE, "length=%d, hdtxt=%s,\r\n\t encoded data1= %s, encoded data2= %s!", length, hdTxt, encoded_data, dst));
 	}
 }
 
