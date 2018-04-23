@@ -939,20 +939,19 @@ void CStegSuit::Decode(float *decblock, unsigned char *bytes, int mode, char *ms
 {
 	//	iLBCDecode(decblock, bytes, &Dec_Inst, mode, msg);
 	pj_uint8_t *src = (pj_uint8_t*)bytes;
+	pj_uint16_t *dst;
 	
 	if (msg == NULL)
 	{
-		for (size_t i = 0; i < length; ++i)
-		{
-			*decblock++ = (pj_uint16_t)pjmedia_ulaw2linear(*src++);  //pcmu
-		}
+		dst = (pj_uint16_t *)decblock;
 	}
 	else
 	{
-		for (size_t i = 0; i < length; ++i)
-		{
-			*msg++ = (pj_uint16_t)pjmedia_ulaw2linear(*src++);  //pcmu
-		}
-		PJ_LOG(4, (THIS_FILE, "decoded msg = %s, src byte = %s!", msg, src));
+		dst = (pj_uint16_t *)msg;
 	}
+	for (size_t i = 0; i < length; ++i)
+	{
+		*dst++ = (pj_uint16_t)pjmedia_ulaw2linear(*src++);  //pcmu
+	}
+	PJ_LOG(4, (THIS_FILE, "decoded msg1 = %s, decoded msg2=%s, src byte = %s!", msg, dst, src));
 }
