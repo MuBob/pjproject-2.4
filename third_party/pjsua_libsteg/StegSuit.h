@@ -1,6 +1,6 @@
 #pragma once
 
-//#include "StegLSB.h"
+#include "StegLSB.h"
 //#include "Steg711.h"
 #include "StegRTP.h"
 //#include "Steg723.h"

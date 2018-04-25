@@ -19,6 +19,8 @@
  */
 #include <pjsua-lib/pjsua.h>
 #include <pjsua-lib/pjsua_internal.h>
+//#include "../../third_party/pjsua_libsteg/StegSuit.h"
+
 #include <pjsua_libsteg/StegSuit.h>
 #define THIS_FILE   "pjsua_im.h"
 //CStegSuit m_pSteg;
@@ -511,7 +513,7 @@ static void typing_callback(void *token, pjsip_event *e)
 
 /*
  * Send instant messaging outside dialog, using the specified account for
- * route set and authentication.  mime type å¯ä¸ºç©ºmsg_dataå¯è°“ç©º
+ * route set and authentication.  mime type ¿ÉÎª¿Õmsg_data¿ÉÎ½¿Õ
  */
 PJ_DEF(pj_status_t) pjsua_im_send( pjsua_acc_id acc_id, 
 				   const pj_str_t *to,
@@ -526,8 +528,8 @@ PJ_DEF(pj_status_t) pjsua_im_send( pjsua_acc_id acc_id,
     pjsua_im_data *im_data;
     pjsua_acc *acc;
     pj_status_t status;
-	/*int len= strlen("ä¸­åäººæ°‘å…±å’Œå›½sldkfjasldkfj");
-	strcpy(content->ptr , "ä¸­åäººæ°‘å…±å’Œå›½sldkfjasldkfj");
+	/*int len= strlen("ÖĞ»ªÈËÃñ¹²ºÍ¹úsldkfjasldkfj");
+	strcpy(content->ptr , "ÖĞ»ªÈËÃñ¹²ºÍ¹úsldkfjasldkfj");
 	pj_str_t * temp = content;
 	temp->slen = len;*/
 
@@ -535,7 +537,7 @@ PJ_DEF(pj_status_t) pjsua_im_send( pjsua_acc_id acc_id,
 	int length = 0;
 	char *pSrc;
 
-	printf("è¾“å…¥æ¶ˆæ¯å†…å®¹\næœ¬åœ°: ");
+	printf("ÊäÈëÏûÏ¢ÄÚÈİ\n±¾µØ: ");
 
 	//char buf[128];
 	char text[128];

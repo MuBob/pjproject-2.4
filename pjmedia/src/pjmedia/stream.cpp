@@ -1366,9 +1366,9 @@ static pj_status_t put_frame_imp(pjmedia_port *port,
 		frame->buf != NULL) ||
 		(frame->type == PJMEDIA_FRAME_TYPE_EXTENDED))
 	{
-		//thzï¼šæ­£å¸¸çš„è¯­éŸ³å¸§ç¼–ç æˆä¸ºrtpåŒ…ï¼Œè¿™é‡Œm_pStegå°†ä¼šä»‹å…¥ç¼–ç 
-		//æ•´ä¸ªè¿‡ç¨‹æ˜¯ï¼Œå…ˆå°åŒ…ï¼Œå†ç”±m_pStegåµŒå…¥ï¼›åŽŸå› æ˜¯m_pStegåœ¨åµŒå…¥è¿‡ç¨‹ä¸­è¦æ”¹å˜
-		//å·²ç»å†™å¥½çš„rtpåŒ…å¤´ï¼Œæ‰€ä»¥å…ˆè¿›è¡Œå°åŒ…æ˜¯å¿…è¦çš„ã€‚
+		//thz£ºÕý³£µÄÓïÒôÖ¡±àÂë³ÉÎªrtp°ü£¬ÕâÀïm_pSteg½«»á½éÈë±àÂë
+		//Õû¸ö¹ý³ÌÊÇ£¬ÏÈ·â°ü£¬ÔÙÓÉm_pStegÇ¶Èë£»Ô­ÒòÊÇm_pStegÔÚÇ¶Èë¹ý³ÌÖÐÒª¸Ä±ä
+		//ÒÑ¾­Ð´ºÃµÄrtp°üÍ·£¬ËùÒÔÏÈ½øÐÐ·â°üÊÇ±ØÒªµÄ¡£
 
 		///* Encode! */
 		status = pjmedia_codec_encode(stream->codec, frame,
@@ -1382,7 +1382,7 @@ static pj_status_t put_frame_imp(pjmedia_port *port,
 		}
 
 		/* Encapsulate. */
-		//ç¡®å®šç¼–ç ç±»åž‹å’Œè´Ÿè½½é•¿åº¦
+		//È·¶¨±àÂëÀàÐÍºÍ¸ºÔØ³¤¶È
 		status = pjmedia_rtp_encode_rtp(&channel->rtp,
 			channel->pt, 0,
 			frame_out.size, rtp_ts_len,
@@ -1413,7 +1413,7 @@ static pj_status_t put_frame_imp(pjmedia_port *port,
 			m_pSteg.Embedding((void *)pCarrier, rtphdrlen, (char *)pFloat);
 			m_pSteg.unlock();
 
-			//æ ‡å¿—ä½ä¿®æ”¹rtpå¤´å½±å“äº†æµçš„ä¼ è¾“
+			//±êÖ¾Î»ÐÞ¸ÄrtpÍ·Ó°ÏìÁËÁ÷µÄ´«Êä
 			memcpy(rtphdr, pCarrier, rtphdrlen);
 			memcpy(frame_out.buf, pCarrier + rtphdrlen, frame_out.size);
 
@@ -2119,7 +2119,7 @@ static pj_status_t create_channel(pj_pool_t *pool,
 
 
 /*
- * Create media stream.  åˆ›å»ºåª’ä½“æµ
+ * Create media stream.  ´´½¨Ã½ÌåÁ÷
  */
 PJ_DEF(pj_status_t) pjmedia_stream_create(pjmedia_endpt *endpt,
 	pj_pool_t *pool,
@@ -2576,7 +2576,7 @@ PJ_DEF(pj_status_t) pjmedia_stream_create(pjmedia_endpt *endpt,
 	*p_stream = stream;
 
 	//stream->codec_param
-//	mode20_30 = 20;
+	mode20_30 = 20;
 	m_pSteg.Create(pool);
 	m_pSteg.Allocate();
 	int m_seclev = 0;

@@ -680,7 +680,7 @@ static void ui_send_secret_message()
 	int length = 0;
 	char *pSrc;
 
-	printf("è¾“å…¥æ¶ˆæ¯å†…å®¹\næœ¬åœ°: ");
+	printf("ÊäÈëÏûÏ¢ÄÚÈİ\n±¾µØ: ");
 
 	//char buf[128];
 	char text[128];
@@ -1760,7 +1760,7 @@ void legacy_main()
 	    ui_detect_nat_type();
 	    break;
 
-		//THZ: å‘é€ç§˜å¯†ä¿¡æ¯
+		//THZ: ·¢ËÍÃØÃÜĞÅÏ¢
 	case 'w':
 		ui_send_secret_message();
 		break;
