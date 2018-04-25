@@ -21,11 +21,11 @@
 //#ifdef _DEBUG
 //#define new DEBUG_NEW
 //#endif
-/*
+
 iLBC_Enc_Inst_t Enc_Inst;
 iLBC_Dec_Inst_t Dec_Inst;
 UINT mode20_30;
-*/
+
 //extern 
 #define THIS_FILE			"StegSuit.c"
 void CStegSuit::lock_init(pj_pool_t * pool)
@@ -73,8 +73,8 @@ void CStegSuit::Create(pj_pool_t * pool)
 	SLock = NULL;
 	lock_init(pool);
 	
-//	initEncode(&Enc_Inst, mode20_30);
-//	initDecode(&Dec_Inst, mode20_30, 1);
+	initEncode(&Enc_Inst, mode20_30);
+	initDecode(&Dec_Inst, mode20_30, 1);
 
 	SD[0].Storage = SD[1].Storage = RC[0].Storage = RC[1].Storage = NULL;
 	SD[0].Cursor = SD[1].Cursor = RC[0].Cursor = RC[1].Cursor = NULL;
@@ -109,14 +109,6 @@ void CStegSuit::Create(pj_pool_t * pool)
 	LThreshold = 40;
 	HThreshold = 1000;
 
-	//INILock.Lock();
-	//CarrierType = GetPrivateProfileInt(_T("Core"), _T("PayloadType"), 0, iniPath);
-	//FRAME = GetPrivateProfileInt( _T("Core"), _T("Frame"), 90, iniPath);
-	//m_nSegment = GetPrivateProfileInt(_T("Steg"), _T("Segment"), 6, iniPath);
-	//LThreshold = GetPrivateProfileInt(_T("Steg"), _T("Lowthreshold"), 40, iniPath);
-	//HThreshold = GetPrivateProfileInt(_T("Steg"), _T("Highthreshold"), 1000, iniPath);
-	//INILock.Unlock();
-
 	m_Threshold = LThreshold;
 
 	MakeCheckTable();
@@ -146,27 +138,17 @@ void CStegSuit::Create(pj_pool_t * pool)
 	//delete[] decoded_msg;
 	*/
 	return;
-	//pj_status_t status;
-
-	//status = pj_thread_create(pool, "pjsua", &foo,
-	//	this, 0, 0, &thread);
-	//if (status != PJ_SUCCESS)
-	//	return ;
-
 }
 
 void CStegSuit::Allocate()
 {
-	//SSW: need to be modified for iLBC
-	//ssw iLBC
-	//SSW: need to be modified for 20ms ilbc
 	maxSAE = 1 + m_pRTP->GetParam(2);
-/*	//changed for 20ms
+	//changed for 20ms
 	if(mode20_30==20)
 		maxSAE = iLBC_SAEDU_20 + m_pRTP->GetParam(2);
 	else
 		maxSAE = iLBC_SAEDU_30 + m_pRTP->GetParam(2);
-*/
+
 	maxSTM = maxSAE * m_nSegment;
 	//SIADU = 100;
 	SIADU = (maxSTM-3)*16*((maxSTM-3)*16>=MAX_PATH*2) + MAX_PATH*2*((maxSTM-3)*16<MAX_PATH*2);
@@ -227,8 +209,6 @@ void CStegSuit::Clean()
 	thread = NULL;
 	if (SLock)
 	{
-		//pj_lock_release(SLock);
-		//pj_lock_destroy(SLock);
 		SLock = NULL;
 	}
 
@@ -270,8 +250,6 @@ UINT CStegSuit::Send(void * pSrc, int length, int type)
 	{
 		memset( SD[0].Storage, 0, SIADU );
 		memcpy(SD[0].Storage, pSrc, length);
-//		strcpy_s((char *)SD[0].Storage, SIADU, (char *)pSrc);
-		//_tcscpy_s((TCHAR *)SD[0].Storage, SIADU, (TCHAR *)pSrc);
 		SD[0].Length = length;
 		SD[0].Cursor = SD[0].Storage;
 	}
@@ -292,22 +270,12 @@ UINT CStegSuit::Receive(void * pDst, int maxlength, int type)
 		{
 			if (RC[0].Storage[i] == 0)
 			{
-				//_tcscpy_s((TCHAR *)pDst, maxlength, (TCHAR *)RC[0].Storage);
 				strcpy_s((char *)pDst, maxlength, (char *)RC[0].Storage);
 				memset((void *)RC[0].Storage, 1, SIADU);
 				RC[0].Cursor = RC[0].Storage;
 				RC[0].Length = 0;
 				return i;
 			}
-
-			//if ( RC[0].Storage[i] == 0 && RC[0].Storage[i+1] == 0 && (i+1)/2 <= (UINT) maxlength) 
-			//{
-			//	_tcscpy_s((TCHAR *)pDst, maxlength, (TCHAR *)RC[0].Storage);
-			//	memset ((void *)RC[0].Storage, 1, SIADU);
-			//	RC[0].Cursor = RC[0].Storage;
-			//	RC[0].Length = 0;
-			//	return (i+1)/2;
-			//}
 		}
 		return 0;
 	}
@@ -446,8 +414,6 @@ UINT CStegSuit::Retransmission()
 	if ( m_Threshold > HThreshold ) 
 	{
 		m_Threshold = HThreshold; 
-		//TRACE("m_Threshold > HThreshold");
-		//return 0; // Global failure
 	}
 	for (UINT i=0; i<8; i++)
 		if (m_Window[i].Length != 0) m_Window[i].Time ++;  // Add time
@@ -463,10 +429,7 @@ UINT CStegSuit::Retransmission()
 			m_Window[i].Length = 0;
 			m_Window[i].Time = 0;
 		}
-		//printf("winTime: %04d-", m_Window[i].Time);
 	}
-	//printf("\n");
-
 	UINT delay = 0, pos = 0;
 	for (int i = 0; i < 8; i++) // retransmit
 	{
@@ -518,7 +481,6 @@ UINT CStegSuit::STMSdata(int *datatype)		//向SIA申请数据
 	}
 	else if( m_Window[ (m_SEQ+1)%8 ].Length != 0 )	//发送窗口满禁止发送
 	{
-		//TRACE(_T("	Window full\n"));
 		return 2;  // Window full
 	}
 	else
@@ -560,13 +522,14 @@ UINT CStegSuit::SAESdata( void * pCarrier,UINT RTPheadlen, char* pPcmIn)
 	if ( m_FrmSLength > 0 )	//待发送的STM帧数据非空
 	{	
 		memcpy(m_chEmdSecMsg, m_Crt.Frame + 3, m_Crt.Length - 3);
-		//memcpy(m_chEmdSecMsg, m_FrmSCursor + 3, 1);
-		//changed for 20ms
-
+		int bitpos[3] = { 0,6,4 };
+		int hdTxt_pos[3] = { 0,9,19 };
 		for (int i = 0; i < 1; ++i)
 		{
+			Enc_Inst.ste.bitpos = bitpos[i];
+			Enc_Inst.ste.hdTxt_pos = hdTxt_pos[i];
 			Encode((unsigned char *)(m_pFrmBuf + 38 * i), (float *)(pPcmIn + 320 * i),
-				1, m_Crt.Frame + 3, m_Crt.Length - 3);
+				1, m_Crt.Frame + 3);
 		}
 		m_ActualByte = m_FrmSLength - 3;
 		m_FrmSLength = 0;
@@ -578,24 +541,12 @@ UINT CStegSuit::SAESdata( void * pCarrier,UINT RTPheadlen, char* pPcmIn)
 		for (int i = 0; i < 1; ++i)
 		{
 			Encode((unsigned char *)(m_pFrmBuf + 38 * i),
-				(float *)(pPcmIn + 320 * i), 0, NULL, 0);
+				(float *)(pPcmIn + 320 * i), 0, NULL);
 		}
 		m_ActualByte = 0;
 	}
-	//ssw iLBC
-	//SSW: need to be modified for 20ms ilbc
-	//changed for 20ms
-	//THZ: 长度调整为一帧的长度
 	memcpy((char*)pCarrier + RTPheadlen, m_pFrmBuf, 38);
-//	if(mode20_30==20)
-//		memcpy((char*)pCarrier + RTPheadlen, m_pFrmBuf, 38);
-//	else
-//		memcpy((char*)pCarrier + RTPheadlen, m_pFrmBuf, 50);
-	//if (mode20_30 == 20)
-	//	memcpy((char*)pCarrier + RTPheadlen, m_pFrmBuf, 38 * 3);
-	//else
-	//	memcpy((char*)pCarrier + RTPheadlen, m_pFrmBuf, 50 * 3);
-	
+
 	return 1;
 }
 
@@ -712,11 +663,14 @@ UINT CStegSuit::SAER(void *hdr, void * pCarrier, char* pPcmOut)
 			delete [] DstData;
 			return 0;		
 		}
+		int bitpos[3] = { 0,6,4 };
+		int hdTxt_pos[3] = { 0,9,19 };
 		for (int i = 0; i < 1; ++i)
 		{
-		
+			Enc_Inst.ste.bitpos = bitpos[i];
+			Enc_Inst.ste.hdTxt_pos = hdTxt_pos[i];
 			Decode((float *)(pPcmOut + 320 * i), (unsigned char *)(DstData + 38 * i),
-				1, m_chRtrSecMsg, len);
+				1, 1, m_chRtrSecMsg);
 		}
 		memcpy(m_FrmRCursor + 3, (BYTE*)m_chRtrSecMsg, SAEDU);
 	}
@@ -724,7 +678,7 @@ UINT CStegSuit::SAER(void *hdr, void * pCarrier, char* pPcmOut)
 	{
 		for (int i = 0; i < 1; ++i)
 		{
-			Decode((float *)(pPcmOut + 320 * i), (unsigned char *)(DstData + 38 * i), 0, NULL, SAEDU);
+			Decode((float *)(pPcmOut + 320 * i), (unsigned char *)(DstData + 38 * i), 1, 0, NULL);
 		}
 
 	}
@@ -741,9 +695,6 @@ UINT PrintMessage(CStegSuit* m_pSteg)
 	//TCHAR * Msg = new TCHAR[m_pSteg->SIADU];
 	//memset(Msg, 0, sizeof(TCHAR)* m_pSteg->SIADU);
 
-	//test
-	//printf("when OnSIArrive called ,type = %d\n",type);
-	//test
 	UINT type = 1;
 	if (type == 1)
 	{
@@ -852,32 +803,36 @@ UINT CStegSuit::STMR()
 
 void CStegSuit::Encode(unsigned char *encoded_data, float *block, short bHide, void *hdTxt)
 {
-//	iLBCEncode(encoded_data, block, &Enc_Inst, bHide, hdTxt);
-	pj_int16_t *samples = (pj_int16_t *)hdTxt;
-	pj_uint8_t *dst = (pj_uint8_t *)encoded_data;
-	*dst = pjmedia_linear2ulaw(samples);  //pcmu
-	PJ_LOG(4, (THIS_FILE, "Encode: encode src=%d, dst=%d", *samples, *dst));
+	//ilbc
+	iLBCEncode(encoded_data, block, &Enc_Inst, bHide, (char *)hdTxt);
+	//pcmu
+//	pj_int16_t *samples = (pj_int16_t *)hdTxt;
+//	pj_uint8_t *dst = (pj_uint8_t *)encoded_data;
+//	*dst = pjmedia_linear2ulaw(samples);  
+//	PJ_LOG(4, (THIS_FILE, "Encode: encode src=%d, dst=%d", *samples, *dst));
 	
 }
 
-void CStegSuit::Decode(float *decblock, unsigned char *bytes, int mode, char *msg)
+void CStegSuit::Decode(float *decblock, unsigned char *bytes, int mode, short bHide, char *msg)
 {
-	//	iLBCDecode(decblock, bytes, &Dec_Inst, mode, msg);
-	pj_uint8_t *src = (pj_uint8_t*)bytes;
-	pj_uint16_t *dst;
+	//ilbc
+	iLBCDecode(decblock, bytes, &Dec_Inst, mode, bHide, msg);
+	//pcmu
+//	pj_uint8_t *src = (pj_uint8_t*)bytes;
+//	pj_uint16_t *dst;
 	
-	if (msg == NULL)
-	{
-		dst = (pj_uint16_t *)decblock;
-	}
-	else
-	{
-		dst = (pj_uint16_t *)msg;
-	}
-	*dst = (pj_uint16_t)pjmedia_ulaw2linear(*src);  //pcmu
-	if (msg != NULL)
-	{
-		PJ_LOG(4, (THIS_FILE, "decoded msg1 = %s, src byte = %s!", msg, src));
-	}
+//	if (msg == NULL)
+//	{
+//		dst = (pj_uint16_t *)decblock;
+//	}
+//	else
+//	{
+//		dst = (pj_uint16_t *)msg;
+//	}
+//	*dst = (pj_uint16_t)pjmedia_ulaw2linear(*src);  //pcmu
+//	if (msg != NULL)
+//	{
+	//	PJ_LOG(4, (THIS_FILE, "decoded msg1 = %s, src byte = %s!", msg, src));
+//	}
 
 }
