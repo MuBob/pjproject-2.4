@@ -130,7 +130,7 @@ protected:
 	UINT LThreshold, HThreshold;
 	UINT STMDU, SAEDU, maxSTM, maxSAE;
 
-	SIABuffer SD[2], RC[2];
+	SIABuffer SD[2], RC[2]; //SIA层数据发送和接收缓存
 
 	STMFrame m_Window[8], m_Cache[8], m_Crt, m_Rcv;
 	UINT m_SEQ, m_LastRANN, m_LastRSEQ;
@@ -138,7 +138,7 @@ protected:
 	UINT m_retranstep;
 
 	BYTE * m_FrmS, * m_FrmR;
-	BYTE * m_FrmSCursor, * m_FrmRCursor;
+	BYTE * m_FrmSCursor, * m_FrmRCursor; //当前待发送帧和待接收帧的缓存
 	UINT m_FrmSLength, m_RTPSeq;
 	BYTE m_CheckTable[256];
 	UINT m_ActualByte;			//预演后实际能嵌入的字节数

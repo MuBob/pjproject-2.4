@@ -12,6 +12,8 @@
 //#include "../../pjmedia/include/pjmedia/rtp.h"
 //#include <pjsua_internal.h>
 
+#include <pj/log.h>
+#include <pjmedia/alaw_ulaw.h>
 
 //ssw
 //#include "StegTalk.h"
@@ -118,6 +120,31 @@ void CStegSuit::Create(pj_pool_t * pool)
 	m_Threshold = LThreshold;
 
 	MakeCheckTable();
+	/*
+	int  *msg = new int(3210);
+	int *encoded_msg = new int(0);
+	int msg_length = sizeof(msg);
+	int *decoded_msg = new int(0);
+	pj_int16_t *src = (pj_int16_t *)msg;
+	pj_uint8_t *dst_encode = (pj_uint8_t *)encoded_msg;
+	pj_uint16_t *dst_decode = (pj_uint16_t *)decoded_msg;
+
+	for (size_t i = 0; i < msg_length; ++i, ++dst_encode)
+	{
+		*dst_encode = pjmedia_linear2alaw(src[i]);  //pcmu
+		PJ_LOG(4, (THIS_FILE, "Create: encode src[%d]=%d, dst[%d]=%d", i, src[i], i, *dst_encode));
+	}
+	PJ_LOG(4, (THIS_FILE, "Create:src=%s, after encoded = %s!\r", msg, encoded_msg));
+	dst_encode = (pj_uint8_t *)encoded_msg;
+	for (size_t i = 0; i < msg_length; ++i)
+	{
+		*dst_decode++ = (pj_uint16_t)pjmedia_alaw2linear(*dst_encode++);  //pcmu
+		PJ_LOG(4, (THIS_FILE, "Create:test decode src[%d]=%d, dst[%d]=%d", i, *(dst_encode-1), i, *(dst_decode-1)));
+	}
+	PJ_LOG(4, (THIS_FILE, "Create:src=%s, after decoded = %s!\r", encoded_msg, decoded_msg));
+	//delete[] encoded_msg;
+	//delete[] decoded_msg;
+	*/
 	return;
 	//pj_status_t status;
 
@@ -536,41 +563,11 @@ UINT CStegSuit::SAESdata( void * pCarrier,UINT RTPheadlen, char* pPcmIn)
 		//memcpy(m_chEmdSecMsg, m_FrmSCursor + 3, 1);
 		//changed for 20ms
 
-
-		//THZ: 长度调整为一帧的长度
-		/*
-		int bitpos[3]={0,6,4};
-		int hdTxt_pos[3]={0,9,19};
-		if(mode20_30==30)
-		{
-			bitpos[0]=0;
-			bitpos[1]=3;
-			bitpos[2]=6;
-			hdTxt_pos[0]=0;
-			hdTxt_pos[1]=11;
-			hdTxt_pos[2]=22;
-		}
-		*/
-		//THZ: 长度调整为一帧的长度
 		for (int i = 0; i < 1; ++i)
 		{
-			/*
-			//iLBC  ssw
-			//SSW: need to be modified for 20ms ilbc
-			//changed for 20ms
-			Enc_Inst.ste.bitpos=bitpos[i];
-			Enc_Inst.ste.hdTxt_pos=hdTxt_pos[i];
-			if(mode20_30==20)
-				iLBCEncode((unsigned char *)(m_pFrmBuf + 38 * i), 
-				(float *)(pPcmIn + 320 * i), &Enc_Inst, 1, m_chEmdSecMsg);
-			else
-				iLBCEncode((unsigned char *)(m_pFrmBuf + 50 * i), (float *)(pPcmIn + 480 * i), &Enc_Inst, 1, m_chEmdSecMsg);
-			*/
-			Encode((unsigned char *)(m_pFrmBuf + 38 * i),
-				(float *)(pPcmIn + 320 * i), 1, m_Crt.Frame + 3, m_Crt.Length - 3);
+			Encode((unsigned char *)(m_pFrmBuf + 38 * i), (float *)(pPcmIn + 320 * i),
+				1, m_Crt.Frame + 3, m_Crt.Length - 3);
 		}
-		//m_chEmdSecMsg 前 34 B 为隐藏数据
-		//m_ActualByte = 1    //m_FrmSLength - 3;
 		m_ActualByte = m_FrmSLength - 3;
 		m_FrmSLength = 0;
 		
@@ -636,9 +633,9 @@ UINT CStegSuit::STMSheader(int datatype)
 	
 			SD[i].Length -= len;		//滑动窗口
 			SD[i].Cursor += len;		//
-	
-			memcpy ( m_Window[ m_SEQ & 0x7 ].Frame, m_Crt.Frame, STMDU );	//加入发送滑动窗口
-			m_Window[ m_SEQ & 0x7 ].Length = m_Crt.Length;					//加入发送滑动窗口
+//TODO:Bob 加入发送滑动窗口，暂时关闭	
+//			memcpy ( m_Window[ m_SEQ & 0x7 ].Frame, m_Crt.Frame, STMDU );	//加入发送滑动窗口
+//			m_Window[ m_SEQ & 0x7 ].Length = m_Crt.Length;					//加入发送滑动窗口
 			//TRACE(_T("Send: %d\n"), m_SEQ);
 
 			if (SD[i].Length == 0)				//隐秘信息应用层数据发送完毕
@@ -694,106 +691,39 @@ UINT CStegSuit::Retriving(void *hdr, void * pCarrier, char* pPcmOut)
 UINT CStegSuit::SAER(void *hdr, void * pCarrier, char* pPcmOut)
 {
 	//rtppacket
-	//pjmedia_rtp_hdr packet;
-	//RTPPacket *Pack = (RTPPacket *) pCarrier;
-	BYTE *DstPacket = new BYTE [12];
-	//ssw iLBC
-	//SSW: need to be modified for 20ms ilbc
-	//THZ: 长度调整为一帧的长度
-	BYTE *DstData = new BYTE [50];
-	//BYTE *DstData = new BYTE[50 * 3];
-	//BYTE *DstData = new BYTE [24*3];
 
+	BYTE *DstPacket = new BYTE [12];
 	memcpy(DstPacket, hdr, 12);
-	//ssw iLBC
-	//SSW: need to be modified for 20ms ilbc
-	//changed for 20ms
-	//THZ: 长度调整为一帧的长度
+
+	BYTE *DstData = new BYTE[50];
 	memcpy(DstData, pCarrier, 38);
-//	if(mode20_30==20)
-//		memcpy(DstData, pCarrier, 38);
-//	else
-//		memcpy(DstData, pCarrier, 50);
-	//if (mode20_30 == 20)
-	//	memcpy(DstData, Pack->GetPayloadData(), 38 * 3);
-	//else
-	//	memcpy(DstData, Pack->GetPayloadData(), 50 * 3);
 
 	m_pRTP->PreparePosBook();
 	m_pRTP->Extract( m_FrmRCursor, 3, NULL, 0, DstPacket );	//从RTP中获取STM头域
 
 	UINT len = ( m_FrmRCursor[0] & 0x7 ) + ( ( m_FrmRCursor[1] & 0x7F ) * 8 ) ;
-	/*printf("len = %d\n",len);*/
 
 	if( len > 0 )
 	{
-		//changed for 20ms
-		//if(len > iLBC_SAEDU_30)	//长度不正确，不是机密信息的包，丢弃
-		//if( (len > iLBC_SAEDU_20 && mode20_30==20) ||(len > iLBC_SAEDU_30 && mode20_30==30) )
+		//长度不正确，不是机密信息的包，丢弃
 		if( len > SAEDU )
 		{
 			delete [] DstPacket;
 			delete [] DstData;
 			return 0;		
 		}
-
-		//iLBC ssw
-		//SSW: need to be modified for 20ms ilbc
-		//changed for 20ms
-		//THZ: 长度调整为一帧的长度
-		/*
-		int bitpos[3]={0,6,4};
-		int hdTxt_pos[3]={0,9,19};
-		if(mode20_30==30)
-		{
-			bitpos[0]=0;
-			bitpos[1]=3;
-			bitpos[2]=6;
-			hdTxt_pos[0]=0;
-			hdTxt_pos[1]=11;
-			hdTxt_pos[2]=22;
-
-		}*/
-		//int bitpos[3]={0,3,6};
-		//int hdTxt_pos[3]={0,11,22};
-		//THZ: 长度调整为一帧的长度
 		for (int i = 0; i < 1; ++i)
 		{
-			/*
-			//iLBC  ssw
-			Dec_Inst.ste.bitpos=bitpos[i];
-			Dec_Inst.ste.hdTxt_pos=hdTxt_pos[i];
-			//changed for 20ms
-			if(mode20_30==20)
-				iLBCDecode((float *)(pPcmOut + 320 * i), (unsigned char *)(DstData + 38 * i), &Dec_Inst,1, 1, m_chRtrSecMsg );
-			else
-				iLBCDecode((float *)(pPcmOut + 480 * i), (unsigned char *)(DstData + 50 * i), &Dec_Inst, 1, 1, m_chRtrSecMsg);
-			*/
-			Decode((float *)(pPcmOut + 320 * i), (unsigned char *)(DstData + 38 * i), 1, m_chRtrSecMsg, SAEDU);
+		
+			Decode((float *)(pPcmOut + 320 * i), (unsigned char *)(DstData + 38 * i),
+				1, m_chRtrSecMsg, len);
 		}
-		//changed for 20ms
-		/*
-		if(mode20_30==20)
-			memcpy(m_FrmRCursor + 3, (BYTE*)m_chRtrSecMsg, iLBC_SAEDU_20);
-		else
-			memcpy(m_FrmRCursor + 3, (BYTE*)m_chRtrSecMsg, iLBC_SAEDU_30);
-		*/
 		memcpy(m_FrmRCursor + 3, (BYTE*)m_chRtrSecMsg, SAEDU);
 	}
 	else
 	{
-		//THZ: 长度调整为一帧的长度
 		for (int i = 0; i < 1; ++i)
 		{
-			/*
-			//iLBC ssw 
-			//SSW: need to be modified for 20ms ilbc
-			//changed for 20ms
-			if (mode20_30 == 20)
-				iLBCDecode((float *)(pPcmOut + 320 * i), (unsigned char *)(DstData + 38 * i), &Dec_Inst, 1, 0, NULL);
-			else
-				iLBCDecode((float *)(pPcmOut + 480 * i), (unsigned char *)(DstData + 50 * i), &Dec_Inst, 1, 0, NULL);
-			*/
 			Decode((float *)(pPcmOut + 320 * i), (unsigned char *)(DstData + 38 * i), 0, NULL, 0);
 		}
 
@@ -839,7 +769,7 @@ UINT PrintMessage(CStegSuit* m_pSteg)
 }
 UINT CStegSuit::STMR()
 {
-	memcpy(m_Rcv.Frame, m_FrmR, STMDU);		//获取机密信息	m_FrmRCursor = m_FrmR;
+	memcpy(m_Rcv.Frame, m_FrmR, STMDU);		//获取机密信息	m_FrmRCursor == m_FrmR;
 	memset( m_FrmR, 0, maxSTM+maxSAE );
 
 	//处理包头域
@@ -854,6 +784,7 @@ UINT CStegSuit::STMR()
 			m_LastRANN = m_Rcv.Frame[2] & 0xF;		//为发送端起始序号
 		else
 		{
+			PJ_LOG(4, (THIS_FILE, "frame[0] = %d, frame[1] = %d, len = %d!", m_Rcv.Frame[0], m_Rcv.Frame[1], len));
 			for ( UINT i = 0; i < len; i++ )
 			{
 				odd = odd + m_CheckTable[ m_Rcv.Frame[3+i] ];
@@ -919,25 +850,37 @@ UINT CStegSuit::STMR()
 	return 1;
 }
 
-#include <pj/log.h>
-#include <pjmedia/alaw_ulaw.h>
 void CStegSuit::Encode(unsigned char *encoded_data, float *block, short bHide, void *hdTxt, int length)
 {
 //	iLBCEncode(encoded_data, block, &Enc_Inst, bHide, hdTxt);
+	/*
 	pj_int16_t *samples = (pj_int16_t *)hdTxt;
 	pj_uint8_t *dst = (pj_uint8_t *)encoded_data;
-	if(length>0){
+	if (length>0) {
 		for (size_t i = 0; i < length; ++i, ++dst)
 		{
 			*dst = pjmedia_linear2ulaw(samples[i]);  //pcmu
+			PJ_LOG(4, (THIS_FILE, "Encode: encode src[%d]=%d, dst[%d]=%d", i, samples[i], i, *(dst)));
 		}
-		PJ_LOG(4, (THIS_FILE, "length=%d, hdtxt=%s,\r\n\t encoded data1= %s, encoded data2= %s!", length, hdTxt, encoded_data, dst));
+		PJ_LOG(4, (THIS_FILE, "Encode:length=%d, hdtxt=%s,\r\n\t encoded data1= %s!\r", length, hdTxt, encoded_data));
+	}
+	*/
+	pj_int16_t *samples = (pj_int16_t *)hdTxt;
+	pj_int16_t *dst = (pj_int16_t *)encoded_data;
+	if (length>0) {
+		for (size_t i = 0; i < length; ++i, ++dst)
+		{
+			*dst = samples[i];  //pcmu
+			PJ_LOG(4, (THIS_FILE, "Encode: encode src[%d]=%d, dst[%d]=%d", i, samples[i], i, *(dst)));
+		}
+		PJ_LOG(4, (THIS_FILE, "Encode:length=%d, hdtxt=%s,\r\n\t encoded data1= %s!\r", length, hdTxt, encoded_data));
 	}
 }
 
 void CStegSuit::Decode(float *decblock, unsigned char *bytes, int mode, char *msg, int length)
 {
 	//	iLBCDecode(decblock, bytes, &Dec_Inst, mode, msg);
+	/*
 	pj_uint8_t *src = (pj_uint8_t*)bytes;
 	pj_uint16_t *dst;
 	
@@ -953,5 +896,28 @@ void CStegSuit::Decode(float *decblock, unsigned char *bytes, int mode, char *ms
 	{
 		*dst++ = (pj_uint16_t)pjmedia_ulaw2linear(*src++);  //pcmu
 	}
-	PJ_LOG(4, (THIS_FILE, "decoded msg1 = %s, decoded msg2=%s, src byte = %s!", msg, dst, src));
+	if (msg != NULL)
+	{
+		PJ_LOG(4, (THIS_FILE, "decoded msg1 = %s, src byte = %s!", msg, src));
+	}
+	*/
+	pj_int16_t *src = (pj_int16_t*)bytes;
+	pj_int16_t *dst;
+
+	if (msg == NULL)
+	{
+		dst = (pj_int16_t *)decblock;
+	}
+	else
+	{
+		dst = (pj_int16_t *)msg;
+	}
+	for (size_t i = 0; i < length; ++i)
+	{
+		*dst++ = *src++;
+	}
+	if (msg != NULL)
+	{
+		PJ_LOG(4, (THIS_FILE, "decoded msg1 = %s, src byte = %s!", msg, src));
+	}
 }
