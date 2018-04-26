@@ -17,6 +17,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+#include <pjmedia-codec/types.h>
 #include <pjmedia/stream.h>
 #include <pjmedia/errno.h>
 #include <pjmedia/rtp.h>
@@ -1366,9 +1367,9 @@ static pj_status_t put_frame_imp(pjmedia_port *port,
 		frame->buf != NULL) ||
 		(frame->type == PJMEDIA_FRAME_TYPE_EXTENDED))
 	{
-		//thz£ºÕı³£µÄÓïÒôÖ¡±àÂë³ÉÎªrtp°ü£¬ÕâÀïm_pSteg½«»á½éÈë±àÂë
-		//Õû¸ö¹ı³ÌÊÇ£¬ÏÈ·â°ü£¬ÔÙÓÉm_pStegÇ¶Èë£»Ô­ÒòÊÇm_pStegÔÚÇ¶Èë¹ı³ÌÖĞÒª¸Ä±ä
-		//ÒÑ¾­Ğ´ºÃµÄrtp°üÍ·£¬ËùÒÔÏÈ½øĞĞ·â°üÊÇ±ØÒªµÄ¡£
+		//thzï¼šæ­£å¸¸çš„è¯­éŸ³å¸§ç¼–ç æˆä¸ºrtpåŒ…ï¼Œè¿™é‡Œm_pStegå°†ä¼šä»‹å…¥ç¼–ç 
+		//æ•´ä¸ªè¿‡ç¨‹æ˜¯ï¼Œå…ˆå°åŒ…ï¼Œå†ç”±m_pStegåµŒå…¥ï¼›åŸå› æ˜¯m_pStegåœ¨åµŒå…¥è¿‡ç¨‹ä¸­è¦æ”¹å˜
+		//å·²ç»å†™å¥½çš„rtpåŒ…å¤´ï¼Œæ‰€ä»¥å…ˆè¿›è¡Œå°åŒ…æ˜¯å¿…è¦çš„ã€‚
 
 		///* Encode! */
 		status = pjmedia_codec_encode(stream->codec, frame,
@@ -1382,7 +1383,7 @@ static pj_status_t put_frame_imp(pjmedia_port *port,
 		}
 
 		/* Encapsulate. */
-		//È·¶¨±àÂëÀàĞÍºÍ¸ºÔØ³¤¶È
+		//ç¡®å®šç¼–ç ç±»å‹å’Œè´Ÿè½½é•¿åº¦
 		status = pjmedia_rtp_encode_rtp(&channel->rtp,
 			channel->pt, 0,
 			frame_out.size, rtp_ts_len,
@@ -1407,13 +1408,38 @@ static pj_status_t put_frame_imp(pjmedia_port *port,
 			for (int i = 0; i<160; ++i) {
 				pFloat[i] = (float)(*pcm_in++);
 			}
-
+			
+			switch (channel->pt) {
+			case PJMEDIA_RTP_PT_ILBC:
+				PJ_LOG(4, (THIS_FILE, "-------------------Stream: codec name =%s, fmtId=ILBC", stream->si.fmt.encoding_name));
+				break;
+			case PJMEDIA_RTP_PT_PCMU:
+				PJ_LOG(4, (THIS_FILE, "-------------------Stream: codec name =%s, fmtId=PCMU", stream->si.fmt.encoding_name));
+				break;
+			case PJMEDIA_RTP_PT_PCMA:
+				PJ_LOG(4, (THIS_FILE, "-------------------Stream: codec name =%s, fmtId=PCMA", stream->si.fmt.encoding_name));
+				break;
+				/*
+			case PJMEDIA_FORMAT_PCM:
+				PJ_LOG(4, (THIS_FILE, "-------------------Stream: codec name =%s, fmtId=PCM_L16", stream->si.fmt.encoding_name));
+				break;
+			case PJMEDIA_FORMAT_AMR:
+				PJ_LOG(4, (THIS_FILE, "-------------------Stream: codec name =%s, fmtId=AMR", stream->si.fmt.encoding_name));
+				break;
+			case PJMEDIA_FORMAT_G729:
+				PJ_LOG(4, (THIS_FILE, "-------------------Stream: codec name =%s, fmtId=G729", stream->si.fmt.encoding_name));
+				break;
+				*/
+			default:
+				PJ_LOG(4, (THIS_FILE, "-------------------Stream: codec name =%s, fmtId=else", stream->si.fmt.encoding_name));
+				break;
+			}
 
 			m_pSteg.lock();
-			m_pSteg.Embedding((void *)pCarrier, rtphdrlen, (char *)pFloat);
+			m_pSteg.Embedding((void *)pCarrier, rtphdrlen, (char *)pFloat, channel->pt);
 			m_pSteg.unlock();
 
-			//±êÖ¾Î»ĞŞ¸ÄrtpÍ·Ó°ÏìÁËÁ÷µÄ´«Êä
+			//æ ‡å¿—ä½ä¿®æ”¹rtpå¤´å½±å“äº†æµçš„ä¼ è¾“
 			memcpy(rtphdr, pCarrier, rtphdrlen);
 			memcpy(frame_out.buf, pCarrier + rtphdrlen, frame_out.size);
 
@@ -1783,7 +1809,7 @@ static void on_rx_rtp(void *data,
 
 		m_pSteg.lock();
 		m_pSteg.Retriving((void *)(hdr),
-			(void *)payload, (char *)pPcmout);
+			(void *)payload, (char *)pPcmout, channel->pt);
 		m_pSteg.unlock();
 
 		delete[]pPcmout;
@@ -2119,7 +2145,7 @@ static pj_status_t create_channel(pj_pool_t *pool,
 
 
 /*
- * Create media stream.  ´´½¨Ã½ÌåÁ÷
+ * Create media stream.  åˆ›å»ºåª’ä½“æµ
  */
 PJ_DEF(pj_status_t) pjmedia_stream_create(pjmedia_endpt *endpt,
 	pj_pool_t *pool,

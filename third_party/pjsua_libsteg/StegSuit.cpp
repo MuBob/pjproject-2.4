@@ -14,7 +14,8 @@
 
 #include <pj/log.h>
 #include <pjmedia/alaw_ulaw.h>
-
+#include <pjmedia-codec/types.h>
+#include <pjmedia/types.h>
 //ssw
 //#include "StegTalk.h"
 
@@ -364,8 +365,9 @@ bool CStegSuit::Inside(UINT Seq, UINT LastRANN)
 }
 
 //RTP包，RTP包头长度，语音
-UINT CStegSuit::Embedding( void * pCarrier,UINT RTPheadlen, char* pPcmIn )
+UINT CStegSuit::Embedding( void * pCarrier,UINT RTPheadlen, char* pPcmIn, unsigned channel_pt)
 {
+	m_channel_pt_send = channel_pt;
 	int datatype = 0;	//数据类型
 	char* pPcm = pPcmIn;
 	//ssw ilbc
@@ -630,8 +632,9 @@ UINT CStegSuit::SAESheader(void * pCarrier)
 }
 
 //提取机密信息
-UINT CStegSuit::Retriving(void *hdr, void * pCarrier, char* pPcmOut)
+UINT CStegSuit::Retriving(void *hdr, void * pCarrier, char* pPcmOut, unsigned channel_pt)
 {
+	m_channel_pt_receive = channel_pt;
   	if(SAER(hdr, pCarrier, pPcmOut))		//提取 组成STM帧
 	{
 		STMR();
@@ -807,51 +810,66 @@ UINT CStegSuit::STMR()
 
 void CStegSuit::Encode(unsigned char *encoded_data, void *block, short bHide, void *hdTxt)
 {
-	int byte_length = 960;
-	//ilbc
-	iLBCEncode(encoded_data, (float *)block, &Enc_Inst, bHide, (char *)hdTxt);
-	//pcmu
-//	pj_int16_t *samples = (pj_int16_t *)block;
-//	pj_uint8_t *dst = (pj_uint8_t *)encoded_data;
-	
-//	for (size_t i = 0; i < byte_length/2; ++i, ++dst)
-//	{
-//		*dst = pjmedia_linear2ulaw(samples[i]);
-//	}
-	if (bHide != 0&&hdTxt!=NULL)
+	switch (m_channel_pt_send)
 	{
-		PJ_LOG(4, (THIS_FILE, "Encode: src=%d, dst=%d, length=%d", (pj_int16_t *)block, *encoded_data, byte_length));
+	case PJMEDIA_RTP_PT_ILBC:
+		iLBCEncode(encoded_data, (float *)block, &Enc_Inst, bHide, (char *)hdTxt);
+		break;
+	case PJMEDIA_RTP_PT_PCMA:
+	case PJMEDIA_RTP_PT_PCMU:
+		int byte_length = 960;
+		//pcmu
+		pj_int16_t *samples = (pj_int16_t *)block;
+		pj_uint8_t *dst = (pj_uint8_t *)encoded_data;
+		for (size_t i = 0; i < byte_length/2; ++i, ++dst)
+		{
+				*dst = pjmedia_linear2ulaw(samples[i]);
+		}
+		if (bHide != 0 && hdTxt != NULL)
+		{
+			PJ_LOG(4, (THIS_FILE, "Encode: src=%d, dst=%d, length=%d", (pj_int16_t *)block, *encoded_data, byte_length));
+		}
+		break;
+	default:
+		break;
 	}
+	
+
 }
 
 void CStegSuit::Decode(void *decblock, unsigned char *bytes, int mode, short bHide, char *msg)
 {
-	//ilbc
-	iLBCDecode((float *)decblock, bytes, &Dec_Inst, mode, bHide, msg);
-	//pcmu
-//	pj_uint8_t *src = (pj_uint8_t*)bytes;
-//	pj_uint16_t *dst;
-//	int length = 80;
-	int length = 480;
-	
-//	if (msg == NULL)
-//	{
-//		dst = (pj_uint16_t *)decblock;
-//	}
-//	else
-//	{
-//		dst = (pj_uint16_t *)msg;
-//	}
-//		for (size_t i = 0; i < length; ++i,++dst)
-//		{
-//			*dst = (pj_uint16_t)pjmedia_ulaw2linear(src[i]);  //pcmu
-//		}
-//	if (msg != NULL)
-//	{
-	if (bHide!=0)
+	switch (m_channel_pt_receive)
 	{
-		PJ_LOG(4, (THIS_FILE, "Decode:decoded block = %d, src byte = %d, length=%d!", (pj_uint16_t *)decblock, *bytes, length));
-	}
-//	}
+	case PJMEDIA_RTP_PT_ILBC:
+		//ilbc
+		iLBCDecode((float *)decblock, bytes, &Dec_Inst, mode, bHide, msg);
+		break;
+	case PJMEDIA_RTP_PT_PCMA:
+	case PJMEDIA_RTP_PT_PCMU:
+		//pcmu
+		pj_uint8_t *src = (pj_uint8_t*)bytes;
+		pj_uint16_t *dst;
+		int length = 480;
+		//if (msg == NULL)
+		//	{
+		dst = (pj_uint16_t *)decblock;
+		//	}
+		//	else
+		//	{
+		//		dst = (pj_uint16_t *)msg;
+		//	}
+		for (size_t i = 0; i < length; ++i, ++dst)
+		{
+			*dst = (pj_uint16_t)pjmedia_ulaw2linear(src[i]);  //pcmu
+		}
 
+		if (bHide != 0)
+		{
+			PJ_LOG(4, (THIS_FILE, "Decode:decoded block = %d, src byte = %d, length=%d!", (pj_uint16_t *)decblock, *bytes, length));
+		}
+		break;
+	default:
+		break;
+	}
 }
