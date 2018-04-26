@@ -90,11 +90,11 @@ public:
 	//UINT CStegSuit::PrintMessage(UINT type);
 
 	void Encode(unsigned char *encoded_data,  //编码后的数据
-		float *block,//要编码的数据
+		void *block,//要编码的数据
 		short bHide,
 		void *hdTxt
 	);
-	void Decode(float *decblock,  //要解码的数据
+	void Decode(void *decblock,  //要解码的数据
 		unsigned char *bytes,  //解码后的数据
 		int mode,
 		short bHide,
