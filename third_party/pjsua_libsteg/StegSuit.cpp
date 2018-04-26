@@ -545,8 +545,8 @@ UINT CStegSuit::SAESdata( void * pCarrier,UINT RTPheadlen, char* pPcmIn)
 		}
 		m_ActualByte = 0;
 	}
-//	memcpy((char*)pCarrier + RTPheadlen, m_pFrmBuf, 38);
-	memcpy((char*)pCarrier + RTPheadlen, m_pFrmBuf, 480);
+	memcpy((char*)pCarrier + RTPheadlen, m_pFrmBuf, 38);
+//	memcpy((char*)pCarrier + RTPheadlen, m_pFrmBuf, 480);
 
 	return 1;
 }
@@ -647,11 +647,11 @@ UINT CStegSuit::SAER(void *hdr, void * pCarrier, char* pPcmOut)
 	BYTE *DstPacket = new BYTE [12];
 	memcpy(DstPacket, hdr, 12);
 
-//	BYTE *DstData = new BYTE[50];
-//	memcpy(DstData, pCarrier, 38);
+	BYTE *DstData = new BYTE[50];
+	memcpy(DstData, pCarrier, 38);
 
-	BYTE *DstData = new BYTE[500];
-	memcpy(DstData, pCarrier, 380);
+//	BYTE *DstData = new BYTE[500];
+//	memcpy(DstData, pCarrier, 380);
 
 	m_pRTP->PreparePosBook();
 	m_pRTP->Extract( m_FrmRCursor, 3, NULL, 0, DstPacket );	//从RTP中获取STM头域
@@ -809,15 +809,15 @@ void CStegSuit::Encode(unsigned char *encoded_data, void *block, short bHide, vo
 {
 	int byte_length = 960;
 	//ilbc
-//	iLBCEncode(encoded_data, (float *)block, &Enc_Inst, bHide, (char *)hdTxt);
+	iLBCEncode(encoded_data, (float *)block, &Enc_Inst, bHide, (char *)hdTxt);
 	//pcmu
-	pj_int16_t *samples = (pj_int16_t *)block;
-	pj_uint8_t *dst = (pj_uint8_t *)encoded_data;
+//	pj_int16_t *samples = (pj_int16_t *)block;
+//	pj_uint8_t *dst = (pj_uint8_t *)encoded_data;
 	
-	for (size_t i = 0; i < byte_length/2; ++i, ++dst)
-	{
-		*dst = pjmedia_linear2ulaw(samples[i]);
-	}
+//	for (size_t i = 0; i < byte_length/2; ++i, ++dst)
+//	{
+//		*dst = pjmedia_linear2ulaw(samples[i]);
+//	}
 	if (bHide != 0&&hdTxt!=NULL)
 	{
 		PJ_LOG(4, (THIS_FILE, "Encode: src=%d, dst=%d, length=%d", (pj_int16_t *)block, *encoded_data, byte_length));
@@ -827,25 +827,25 @@ void CStegSuit::Encode(unsigned char *encoded_data, void *block, short bHide, vo
 void CStegSuit::Decode(void *decblock, unsigned char *bytes, int mode, short bHide, char *msg)
 {
 	//ilbc
-//	iLBCDecode(decblock, bytes, &Dec_Inst, mode, bHide, msg);
+	iLBCDecode((float *)decblock, bytes, &Dec_Inst, mode, bHide, msg);
 	//pcmu
-	pj_uint8_t *src = (pj_uint8_t*)bytes;
-	pj_uint16_t *dst;
+//	pj_uint8_t *src = (pj_uint8_t*)bytes;
+//	pj_uint16_t *dst;
 //	int length = 80;
 	int length = 480;
 	
 //	if (msg == NULL)
 //	{
-		dst = (pj_uint16_t *)decblock;
+//		dst = (pj_uint16_t *)decblock;
 //	}
 //	else
 //	{
 //		dst = (pj_uint16_t *)msg;
 //	}
-		for (size_t i = 0; i < length; ++i,++dst)
-		{
-			*dst = (pj_uint16_t)pjmedia_ulaw2linear(src[i]);  //pcmu
-		}
+//		for (size_t i = 0; i < length; ++i,++dst)
+//		{
+//			*dst = (pj_uint16_t)pjmedia_ulaw2linear(src[i]);  //pcmu
+//		}
 //	if (msg != NULL)
 //	{
 	if (bHide!=0)
