@@ -365,7 +365,7 @@ bool CStegSuit::Inside(UINT Seq, UINT LastRANN)
 }
 
 //RTP包，RTP包头长度，语音
-UINT CStegSuit::Embedding( void * pCarrier,UINT RTPheadlen, char* pPcmIn, unsigned channel_pt)
+UINT CStegSuit::Embedding( void * pCarrier,UINT RTPheadlen, char* pPcmIn, unsigned int channel_pt)
 {
 	m_channel_pt_send = channel_pt;
 	int datatype = 0;	//数据类型
@@ -632,7 +632,7 @@ UINT CStegSuit::SAESheader(void * pCarrier)
 }
 
 //提取机密信息
-UINT CStegSuit::Retriving(void *hdr, void * pCarrier, char* pPcmOut, unsigned channel_pt)
+UINT CStegSuit::Retriving(void *hdr, void * pCarrier, char* pPcmOut, unsigned int channel_pt)
 {
 	m_channel_pt_receive = channel_pt;
   	if(SAER(hdr, pCarrier, pPcmOut))		//提取 组成STM帧
