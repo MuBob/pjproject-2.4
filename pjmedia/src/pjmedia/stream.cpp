@@ -1415,13 +1415,13 @@ static pj_status_t put_frame_imp(pjmedia_port *port,
 			{
 			case PJMEDIA_RTP_PT_ILBC:
 				m_pSteg.lock();
-//				m_pSteg.Embedding((void *)pCarrier, rtphdrlen, (char *)pFloat, channel->pt);
+				m_pSteg.Embedding((void *)pCarrier, rtphdrlen, (char *)pFloat, channel->pt);
 				m_pSteg.unlock();
 				break;
 			case PJMEDIA_RTP_PT_PCMA:
 			case PJMEDIA_RTP_PT_PCMU:
 				m_pSteg.lock();
-//				m_pSteg.Embedding((void *)pCarrier, rtphdrlen, (char *)pShort, channel->pt);
+				m_pSteg.Embedding((void *)pCarrier, rtphdrlen, (char *)pShort, channel->pt);
 				m_pSteg.unlock();
 				break;
 			default:
@@ -1798,8 +1798,7 @@ static void on_rx_rtp(void *data,
 		float *pPcmout = new float[240];
 
 		m_pSteg.lock();
-//		m_pSteg.Retriving((void *)(hdr),
-			(void *)payload, payloadlen, (char *)pPcmout, channel->pt);
+		m_pSteg.Retriving((void *)(hdr), (void *)payload, payloadlen, (char *)pPcmout, channel->pt);
 		m_pSteg.unlock();
 
 		delete[]pPcmout;
