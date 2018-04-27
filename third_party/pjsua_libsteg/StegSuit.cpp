@@ -670,7 +670,7 @@ UINT CStegSuit::SAER(void *hdr, void * pCarrier, char* pPcmOut)
 	case PJMEDIA_RTP_PT_PCMA:
 	case PJMEDIA_RTP_PT_PCMU:
 		DstData = new BYTE[500];
-		memcpy(DstData, pCarrier, 380);
+		memcpy(DstData, pCarrier, 480);
 		break;
 	default:
 		DstData = new BYTE[50];
@@ -845,11 +845,10 @@ void CStegSuit::Encode(unsigned char *encoded_data, void *block, short bHide, vo
 		break;
 	case PJMEDIA_RTP_PT_PCMA:
 	case PJMEDIA_RTP_PT_PCMU:
-		*dst = pjmedia_linear2ulaw(*samples);
-//		for (size_t i = 0; i < byte_length/2; ++i, ++dst)
-//		{
-//				*dst = pjmedia_linear2ulaw(samples[i]);
-//		}
+		for (size_t i = 0; i < byte_length/2; ++i, ++dst)
+		{
+				*dst = pjmedia_linear2ulaw(samples[i]);
+		}
 		if (bHide != 0)
 		{
 			PJ_LOG(4, (THIS_FILE, "Encode: src=%d, dst=%d, length=%d", (pj_int16_t *)block, *encoded_data, byte_length));
@@ -884,11 +883,10 @@ void CStegSuit::Decode(void *decblock, unsigned char *bytes, int mode, short bHi
 		//	{
 		//		dst = (pj_uint16_t *)msg;
 		//	}
-		*dst = (pj_uint16_t)pjmedia_ulaw2linear(*src);  //pcmu
-	//	for (size_t i = 0; i < length; ++i, ++dst)
-	//	{
-	//		*dst = (pj_uint16_t)pjmedia_ulaw2linear(src[i]);  //pcmu
-	//	}
+		for (size_t i = 0; i < length; ++i, ++dst)
+		{
+			*dst = (pj_uint16_t)pjmedia_ulaw2linear(src[i]);  //pcmu
+		}
 
 		if (bHide != 0)
 		{

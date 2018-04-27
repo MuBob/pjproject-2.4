@@ -1408,32 +1408,6 @@ static pj_status_t put_frame_imp(pjmedia_port *port,
 			for (int i = 0; i<160; ++i) {
 				pFloat[i] = (float)(*pcm_in++);
 			}
-			
-			switch (channel->pt) {
-			case PJMEDIA_RTP_PT_ILBC:
-				PJ_LOG(4, (THIS_FILE, "-------------------Stream: codec name =%s, fmtId=ILBC", stream->si.fmt.encoding_name));
-				break;
-			case PJMEDIA_RTP_PT_PCMU:
-				PJ_LOG(4, (THIS_FILE, "-------------------Stream: codec name =%s, fmtId=PCMU", stream->si.fmt.encoding_name));
-				break;
-			case PJMEDIA_RTP_PT_PCMA:
-				PJ_LOG(4, (THIS_FILE, "-------------------Stream: codec name =%s, fmtId=PCMA", stream->si.fmt.encoding_name));
-				break;
-				/*
-			case PJMEDIA_FORMAT_PCM:
-				PJ_LOG(4, (THIS_FILE, "-------------------Stream: codec name =%s, fmtId=PCM_L16", stream->si.fmt.encoding_name));
-				break;
-			case PJMEDIA_FORMAT_AMR:
-				PJ_LOG(4, (THIS_FILE, "-------------------Stream: codec name =%s, fmtId=AMR", stream->si.fmt.encoding_name));
-				break;
-			case PJMEDIA_FORMAT_G729:
-				PJ_LOG(4, (THIS_FILE, "-------------------Stream: codec name =%s, fmtId=G729", stream->si.fmt.encoding_name));
-				break;
-				*/
-			default:
-				PJ_LOG(4, (THIS_FILE, "-------------------Stream: codec name =%s, fmtId=else", stream->si.fmt.encoding_name));
-				break;
-			}
 
 			m_pSteg.lock();
 			m_pSteg.Embedding((void *)pCarrier, rtphdrlen, (char *)pFloat, channel->pt);
