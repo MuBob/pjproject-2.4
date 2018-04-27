@@ -554,7 +554,7 @@ UINT CStegSuit::SAESdata( void * pCarrier,UINT RTPheadlen, char* pPcmIn)
 		break;
 	case PJMEDIA_RTP_PT_PCMA:
 	case PJMEDIA_RTP_PT_PCMU:
-		memcpy((char*)pCarrier + RTPheadlen, m_pFrmBuf, 480);
+		memcpy((char*)pCarrier + RTPheadlen, m_pFrmBuf, 160);
 		break;
 	default:
 		memcpy((char*)pCarrier + RTPheadlen, m_pFrmBuf, 38);
@@ -642,10 +642,10 @@ UINT CStegSuit::SAESheader(void * pCarrier)
 }
 
 //提取机密信息
-UINT CStegSuit::Retriving(void *hdr, void * pCarrier, char* pPcmOut, UINT channel_pt)
+UINT CStegSuit::Retriving(void *hdr, void * pCarrier, int pCarrierLength, char* pPcmOut, UINT channel_pt)
 {
 	m_channel_pt_receive = channel_pt;
-  	if(SAER(hdr, pCarrier, pPcmOut))		//提取 组成STM帧
+  	if(SAER(hdr, pCarrier, pCarrierLength, pPcmOut))		//提取 组成STM帧
 	{
 		STMR();
 	}
@@ -653,32 +653,15 @@ UINT CStegSuit::Retriving(void *hdr, void * pCarrier, char* pPcmOut, UINT channe
 }
 
 //SAE层提取
-UINT CStegSuit::SAER(void *hdr, void * pCarrier, char* pPcmOut)
+UINT CStegSuit::SAER(void *hdr, void * pCarrier, int pCarrierLength, char* pPcmOut)
 {
 	//rtppacket
 
 	BYTE *DstPacket = new BYTE [12];
 	memcpy(DstPacket, hdr, 12);
 
-	BYTE *DstData;
-	switch (m_channel_pt_receive)
-	{
-	case PJMEDIA_RTP_PT_ILBC:
-		DstData = new BYTE[50];
-		memcpy(DstData, pCarrier, 38);
-		break;
-	case PJMEDIA_RTP_PT_PCMA:
-	case PJMEDIA_RTP_PT_PCMU:
-		DstData = new BYTE[500];
-		memcpy(DstData, pCarrier, 480);
-		break;
-	default:
-		DstData = new BYTE[50];
-		memcpy(DstData, pCarrier, 38);
-		break;
-	}
-
-
+	BYTE *DstData = new BYTE[pCarrierLength+1];
+	memcpy(DstData, pCarrier, pCarrierLength);
 
 	m_pRTP->PreparePosBook();
 	m_pRTP->Extract( m_FrmRCursor, 3, NULL, 0, DstPacket );	//从RTP中获取STM头域
@@ -700,7 +683,7 @@ UINT CStegSuit::SAER(void *hdr, void * pCarrier, char* pPcmOut)
 		{
 			Enc_Inst.ste.bitpos = bitpos[i];
 			Enc_Inst.ste.hdTxt_pos = hdTxt_pos[i];
-			Decode((pPcmOut + 320 * i), (unsigned char *)(DstData + 38 * i),
+			Decode((pPcmOut + 320 * i), (unsigned char *)(DstData + 38 * i), pCarrierLength,
 				1, 1, m_chRtrSecMsg);
 		}
 		memcpy(m_FrmRCursor + 3, (BYTE*)m_chRtrSecMsg, SAEDU);
@@ -709,7 +692,7 @@ UINT CStegSuit::SAER(void *hdr, void * pCarrier, char* pPcmOut)
 	{
 		for (int i = 0; i < 1; ++i)
 		{
-			Decode((pPcmOut + 320 * i), (unsigned char *)(DstData + 38 * i), 1, 0, NULL);
+			Decode((pPcmOut + 320 * i), (unsigned char *)(DstData + 38 * i), pCarrierLength, 1, 0, NULL);
 		}
 
 	}
@@ -834,7 +817,7 @@ UINT CStegSuit::STMR()
 
 void CStegSuit::Encode(unsigned char *encoded_data, void *block, short bHide, void *hdTxt)
 {
-	int byte_length = 960;
+	int byte_length = 320;
 	//pcmu
 	pj_int16_t *samples = (pj_int16_t *)block;
 	pj_uint8_t *dst = (pj_uint8_t *)encoded_data;
@@ -861,11 +844,10 @@ void CStegSuit::Encode(unsigned char *encoded_data, void *block, short bHide, vo
 
 }
 
-void CStegSuit::Decode(void *decblock, unsigned char *bytes, int mode, short bHide, char *msg)
+void CStegSuit::Decode(void *decblock, unsigned char *bytes, int bytes_length, int mode, short bHide, char *msg)
 {
 	pj_uint8_t *src = (pj_uint8_t*)bytes;
 	pj_uint16_t *dst;
-	int length = 480;
 	switch (m_channel_pt_receive)
 	{
 	case PJMEDIA_RTP_PT_ILBC:
@@ -883,7 +865,7 @@ void CStegSuit::Decode(void *decblock, unsigned char *bytes, int mode, short bHi
 		//	{
 		//		dst = (pj_uint16_t *)msg;
 		//	}
-		for (size_t i = 0; i < length; ++i, ++dst)
+		for (size_t i = 0; i < bytes_length; ++i, ++dst)
 		{
 			*dst = (pj_uint16_t)pjmedia_ulaw2linear(src[i]);  //pcmu
 		}

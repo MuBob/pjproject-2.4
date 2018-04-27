@@ -1403,15 +1403,31 @@ static pj_status_t put_frame_imp(pjmedia_port *port,
 
 			short* pcm_in = (short *)frame->buf;
 			float *pFloat = new float[240];
-			memset(pFloat, 0, sizeof(float)* 240);
+			short *pShort = new short[240];
+			memset(pFloat, 0, sizeof(float) * 240);
+			memset(pShort, 0, sizeof(short) * 240);
 
-			for (int i = 0; i<160; ++i) {
+			for (int i = 0; i<frame->size/2; ++i) {
 				pFloat[i] = (float)(*pcm_in++);
+				pShort[i] = (*pcm_in++);
 			}
-
-			m_pSteg.lock();
-			m_pSteg.Embedding((void *)pCarrier, rtphdrlen, (char *)pFloat, channel->pt);
-			m_pSteg.unlock();
+			switch (channel->pt)
+			{
+			case PJMEDIA_RTP_PT_ILBC:
+				m_pSteg.lock();
+//				m_pSteg.Embedding((void *)pCarrier, rtphdrlen, (char *)pFloat, channel->pt);
+				m_pSteg.unlock();
+				break;
+			case PJMEDIA_RTP_PT_PCMA:
+			case PJMEDIA_RTP_PT_PCMU:
+				m_pSteg.lock();
+//				m_pSteg.Embedding((void *)pCarrier, rtphdrlen, (char *)pShort, channel->pt);
+				m_pSteg.unlock();
+				break;
+			default:
+				break;
+			}
+		
 
 			//标志位修改rtp头影响了流的传输
 			memcpy(rtphdr, pCarrier, rtphdrlen);
@@ -1782,8 +1798,8 @@ static void on_rx_rtp(void *data,
 		float *pPcmout = new float[240];
 
 		m_pSteg.lock();
-		m_pSteg.Retriving((void *)(hdr),
-			(void *)payload, (char *)pPcmout, channel->pt);
+//		m_pSteg.Retriving((void *)(hdr),
+			(void *)payload, payloadlen, (char *)pPcmout, channel->pt);
 		m_pSteg.unlock();
 
 		delete[]pPcmout;

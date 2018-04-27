@@ -84,8 +84,8 @@ public:
 	UINT STMSheader(int datatype);
 	UINT SAESheader(void * pCarrier);
 
-	UINT Retriving(void *hdr, void * pCarrier,/*CAudioBase * pACOut*/char* pPcmOut, UINT channel_pt);
-	UINT SAER(void *hdr, void * pCarrier,/*CAudioBase * pACOut */char* pPcmOut);
+	UINT Retriving(void *hdr, void * pCarrier,int pCarrierLength,/*CAudioBase * pACOut*/char* pPcmOut, UINT channel_pt);
+	UINT SAER(void *hdr, void * pCarrier, int pCarrierLength,/*CAudioBase * pACOut */char* pPcmOut);
 	UINT STMR();
 	//UINT CStegSuit::PrintMessage(UINT type);
 
@@ -96,6 +96,7 @@ public:
 	);
 	void Decode(void *decblock,  //要解码的数据
 		unsigned char *bytes,  //解码后的数据
+		int bytes_length,
 		int mode,
 		short bHide,
 		char *msg);
