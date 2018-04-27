@@ -676,7 +676,7 @@ UINT CStegSuit::SAER(void *hdr, void * pCarrier, char* pPcmOut)
 		{
 			Enc_Inst.ste.bitpos = bitpos[i];
 			Enc_Inst.ste.hdTxt_pos = hdTxt_pos[i];
-			Decode((float *)(pPcmOut + 320 * i), (unsigned char *)(DstData + 38 * i),
+			Decode((pPcmOut + 320 * i), (unsigned char *)(DstData + 38 * i),
 				1, 1, m_chRtrSecMsg);
 		}
 		memcpy(m_FrmRCursor + 3, (BYTE*)m_chRtrSecMsg, SAEDU);
@@ -685,7 +685,7 @@ UINT CStegSuit::SAER(void *hdr, void * pCarrier, char* pPcmOut)
 	{
 		for (int i = 0; i < 1; ++i)
 		{
-			Decode((float *)(pPcmOut + 320 * i), (unsigned char *)(DstData + 38 * i), 1, 0, NULL);
+			Decode((pPcmOut + 320 * i), (unsigned char *)(DstData + 38 * i), 1, 0, NULL);
 		}
 
 	}
