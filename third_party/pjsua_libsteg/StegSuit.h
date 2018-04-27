@@ -77,14 +77,14 @@ public:
 
 	UINT Send (void * pSrc, int length, int type);
 	UINT Receive (void * pDst, int maxlength, int type);
-	UINT Embedding( void * pCarrier,UINT RTPheadlen, /*CAudioBase * pACIn*/char* pPcmIn, unsigned int channel_pt);
+	UINT Embedding( void * pCarrier,UINT RTPheadlen, /*CAudioBase * pACIn*/char* pPcmIn, UINT channel_pt);
 	UINT Retransmission();
 	UINT STMSdata(int *datatype);		//向SIA申请数据
 	UINT SAESdata( void * pCarrier,UINT len, /*CAudioBase * pACIn*/char* pPcmIn);
 	UINT STMSheader(int datatype);
 	UINT SAESheader(void * pCarrier);
 
-	UINT Retriving(void *hdr, void * pCarrier,/*CAudioBase * pACOut*/char* pPcmOut, unsigned int channel_pt);
+	UINT Retriving(void *hdr, void * pCarrier,/*CAudioBase * pACOut*/char* pPcmOut, UINT channel_pt);
 	UINT SAER(void *hdr, void * pCarrier,/*CAudioBase * pACOut */char* pPcmOut);
 	UINT STMR();
 	//UINT CStegSuit::PrintMessage(UINT type);

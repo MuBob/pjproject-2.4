@@ -365,7 +365,7 @@ bool CStegSuit::Inside(UINT Seq, UINT LastRANN)
 }
 
 //RTP包，RTP包头长度，语音
-UINT CStegSuit::Embedding( void * pCarrier,UINT RTPheadlen, char* pPcmIn, unsigned int channel_pt)
+UINT CStegSuit::Embedding( void * pCarrier,UINT RTPheadlen, char* pPcmIn, UINT channel_pt)
 {
 	m_channel_pt_send = channel_pt;
 	int datatype = 0;	//数据类型
@@ -547,9 +547,19 @@ UINT CStegSuit::SAESdata( void * pCarrier,UINT RTPheadlen, char* pPcmIn)
 		}
 		m_ActualByte = 0;
 	}
-	memcpy((char*)pCarrier + RTPheadlen, m_pFrmBuf, 38);
-//	memcpy((char*)pCarrier + RTPheadlen, m_pFrmBuf, 480);
-
+	switch (m_channel_pt_send)
+	{
+	case PJMEDIA_RTP_PT_ILBC:
+		memcpy((char*)pCarrier + RTPheadlen, m_pFrmBuf, 38);
+		break;
+	case PJMEDIA_RTP_PT_PCMA:
+	case PJMEDIA_RTP_PT_PCMU:
+		memcpy((char*)pCarrier + RTPheadlen, m_pFrmBuf, 480);
+		break;
+	default:
+		memcpy((char*)pCarrier + RTPheadlen, m_pFrmBuf, 38);
+		break;
+	}
 	return 1;
 }
 
@@ -632,7 +642,7 @@ UINT CStegSuit::SAESheader(void * pCarrier)
 }
 
 //提取机密信息
-UINT CStegSuit::Retriving(void *hdr, void * pCarrier, char* pPcmOut, unsigned int channel_pt)
+UINT CStegSuit::Retriving(void *hdr, void * pCarrier, char* pPcmOut, UINT channel_pt)
 {
 	m_channel_pt_receive = channel_pt;
   	if(SAER(hdr, pCarrier, pPcmOut))		//提取 组成STM帧
@@ -650,11 +660,25 @@ UINT CStegSuit::SAER(void *hdr, void * pCarrier, char* pPcmOut)
 	BYTE *DstPacket = new BYTE [12];
 	memcpy(DstPacket, hdr, 12);
 
-	BYTE *DstData = new BYTE[50];
-	memcpy(DstData, pCarrier, 38);
+	BYTE *DstData;
+	switch (m_channel_pt_receive)
+	{
+	case PJMEDIA_RTP_PT_ILBC:
+		DstData = new BYTE[50];
+		memcpy(DstData, pCarrier, 38);
+		break;
+	case PJMEDIA_RTP_PT_PCMA:
+	case PJMEDIA_RTP_PT_PCMU:
+		DstData = new BYTE[500];
+		memcpy(DstData, pCarrier, 380);
+		break;
+	default:
+		DstData = new BYTE[50];
+		memcpy(DstData, pCarrier, 38);
+		break;
+	}
 
-//	BYTE *DstData = new BYTE[500];
-//	memcpy(DstData, pCarrier, 380);
+
 
 	m_pRTP->PreparePosBook();
 	m_pRTP->Extract( m_FrmRCursor, 3, NULL, 0, DstPacket );	//从RTP中获取STM头域
@@ -810,6 +834,10 @@ UINT CStegSuit::STMR()
 
 void CStegSuit::Encode(unsigned char *encoded_data, void *block, short bHide, void *hdTxt)
 {
+	int byte_length = 960;
+	//pcmu
+	pj_int16_t *samples = (pj_int16_t *)block;
+	pj_uint8_t *dst = (pj_uint8_t *)encoded_data;
 	switch (m_channel_pt_send)
 	{
 	case PJMEDIA_RTP_PT_ILBC:
@@ -817,15 +845,12 @@ void CStegSuit::Encode(unsigned char *encoded_data, void *block, short bHide, vo
 		break;
 	case PJMEDIA_RTP_PT_PCMA:
 	case PJMEDIA_RTP_PT_PCMU:
-		int byte_length = 960;
-		//pcmu
-		pj_int16_t *samples = (pj_int16_t *)block;
-		pj_uint8_t *dst = (pj_uint8_t *)encoded_data;
-		for (size_t i = 0; i < byte_length/2; ++i, ++dst)
-		{
-				*dst = pjmedia_linear2ulaw(samples[i]);
-		}
-		if (bHide != 0 && hdTxt != NULL)
+		*dst = pjmedia_linear2ulaw(*samples);
+//		for (size_t i = 0; i < byte_length/2; ++i, ++dst)
+//		{
+//				*dst = pjmedia_linear2ulaw(samples[i]);
+//		}
+		if (bHide != 0)
 		{
 			PJ_LOG(4, (THIS_FILE, "Encode: src=%d, dst=%d, length=%d", (pj_int16_t *)block, *encoded_data, byte_length));
 		}
@@ -839,6 +864,9 @@ void CStegSuit::Encode(unsigned char *encoded_data, void *block, short bHide, vo
 
 void CStegSuit::Decode(void *decblock, unsigned char *bytes, int mode, short bHide, char *msg)
 {
+	pj_uint8_t *src = (pj_uint8_t*)bytes;
+	pj_uint16_t *dst;
+	int length = 480;
 	switch (m_channel_pt_receive)
 	{
 	case PJMEDIA_RTP_PT_ILBC:
@@ -848,9 +876,6 @@ void CStegSuit::Decode(void *decblock, unsigned char *bytes, int mode, short bHi
 	case PJMEDIA_RTP_PT_PCMA:
 	case PJMEDIA_RTP_PT_PCMU:
 		//pcmu
-		pj_uint8_t *src = (pj_uint8_t*)bytes;
-		pj_uint16_t *dst;
-		int length = 480;
 		//if (msg == NULL)
 		//	{
 		dst = (pj_uint16_t *)decblock;
@@ -859,10 +884,11 @@ void CStegSuit::Decode(void *decblock, unsigned char *bytes, int mode, short bHi
 		//	{
 		//		dst = (pj_uint16_t *)msg;
 		//	}
-		for (size_t i = 0; i < length; ++i, ++dst)
-		{
-			*dst = (pj_uint16_t)pjmedia_ulaw2linear(src[i]);  //pcmu
-		}
+		*dst = (pj_uint16_t)pjmedia_ulaw2linear(*src);  //pcmu
+	//	for (size_t i = 0; i < length; ++i, ++dst)
+	//	{
+	//		*dst = (pj_uint16_t)pjmedia_ulaw2linear(src[i]);  //pcmu
+	//	}
 
 		if (bHide != 0)
 		{
