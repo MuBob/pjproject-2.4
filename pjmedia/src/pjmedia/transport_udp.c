@@ -542,7 +542,7 @@ static void on_rx_rtp( pj_ioqueue_key_t *key,
 	if (status != PJ_EPENDING && status != PJ_SUCCESS)
 	    bytes_read = -status;
 
-    } while (status != PJ_EPENDING && status != PJ_ECANCELLED);
+	} while (status != PJ_EPENDING && status != PJ_ECANCELLED);
 }
 
 
