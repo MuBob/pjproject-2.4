@@ -1392,7 +1392,7 @@ static pj_status_t put_frame_imp(pjmedia_port *port,
 
 		/* Encode! */
 		//
-				
+		/*
 		if (frame_out.size > 0)
 		{
 			char *pCarrier = new char[rtphdrlen + frame_out.size + 10];
@@ -1407,7 +1407,7 @@ static pj_status_t put_frame_imp(pjmedia_port *port,
 			memset(pFloat, 0, sizeof(float) * 240);
 			memset(pShort, 0, sizeof(short) * 240);
 
-			for (int i = 0; i<frame->size/2; ++i) {
+			for (int i = 0; i<frame_out.size; ++i) {
 				pFloat[i] = (float)(*pcm_in++);
 				pShort[i] = (*pcm_in++);
 			}
@@ -1435,9 +1435,10 @@ static pj_status_t put_frame_imp(pjmedia_port *port,
 
 			delete[]pCarrier;
 			delete[]pFloat;
+			delete[]pShort;
 		}
 		
-		
+		*/
 
 		
 		//status = pjmedia_codec_encode(stream->codec, frame,

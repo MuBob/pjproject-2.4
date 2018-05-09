@@ -730,11 +730,12 @@ PJ_DEF(pj_status_t) pj_sock_recvfrom(pj_sock_t sock,
     *len = recvfrom(sock, (char*)buf, (int)(*len), flags, 
 		    (struct sockaddr*)from, (socklen_t*)fromlen);
 
-    if (*len < 0) 
-	return PJ_RETURN_OS_ERROR(pj_get_native_netos_error());
+	if (*len < 0) {
+		return PJ_RETURN_OS_ERROR(pj_get_native_netos_error());
+	}
     else {
         if (from) {
-            PJ_SOCKADDR_RESET_LEN(from);
+			PJ_SOCKADDR_RESET_LEN(from);
         }
 	return PJ_SUCCESS;
     }

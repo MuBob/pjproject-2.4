@@ -489,9 +489,10 @@ static pj_status_t  g711_encode(pjmedia_codec *codec,
 {
     pj_int16_t *samples = (pj_int16_t*) input->buf;
     struct g711_private *priv = (struct g711_private*) codec->codec_data;
+	pj_size_t output_size = input->size >> 4;
 
     /* Check output buffer length */
-    if (output_buf_len < (input->size >> 1))
+    if (output_buf_len < output_size)
 	return PJMEDIA_CODEC_EFRMTOOSHORT;
 
     /* Detect silence if VAD is enabled */
@@ -504,7 +505,7 @@ static pj_status_t  g711_encode(pjmedia_codec *codec,
 
 	is_silence = pjmedia_silence_det_detect(priv->vad, 
 						(const pj_int16_t*) input->buf, 
-						(input->size >> 1), NULL);
+						(output_size), NULL);
 	if (is_silence && 
 	    (PJMEDIA_CODEC_MAX_SILENCE_PERIOD == -1 ||
 	     silence_period < PJMEDIA_CODEC_MAX_SILENCE_PERIOD*8000/1000))
@@ -524,7 +525,7 @@ static pj_status_t  g711_encode(pjmedia_codec *codec,
 	unsigned i, n;
 	pj_uint8_t *dst = (pj_uint8_t*) output->buf;
 
-	n = ((unsigned)input->size >> 1);
+	n = ((unsigned)output_size);
 	for (i=0; i!=n; ++i, ++dst) {
 	    *dst = pjmedia_linear2alaw(samples[i]);
 	}
@@ -532,7 +533,7 @@ static pj_status_t  g711_encode(pjmedia_codec *codec,
 	unsigned i, n;
 	pj_uint8_t *dst = (pj_uint8_t*) output->buf;
 
-	n = ((unsigned)input->size >> 1);
+	n = ((unsigned)output_size);
 	for (i=0; i!=n; ++i, ++dst) {
 	    *dst = pjmedia_linear2ulaw(samples[i]);
 	}
@@ -542,7 +543,7 @@ static pj_status_t  g711_encode(pjmedia_codec *codec,
     }
 
     output->type = PJMEDIA_FRAME_TYPE_AUDIO;
-    output->size = (input->size >> 1);
+    output->size = output_size;
     output->timestamp = input->timestamp;
 
     return PJ_SUCCESS;
