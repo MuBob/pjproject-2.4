@@ -686,6 +686,7 @@ UINT CStegSuit::SAER(void *hdr, void * pCarrier, int pCarrierLength, char* pPcmO
 			Decode((pPcmOut + 320 * i), (unsigned char *)(DstData + 38 * i), pCarrierLength,
 				1, 1, m_chRtrSecMsg);
 		}
+		PJ_LOG(4, (THIS_FILE, "SAER:msg=%s!", m_chRtrSecMsg));
 		memcpy(m_FrmRCursor + 3, (BYTE*)m_chRtrSecMsg, SAEDU);
 	}
 	else
