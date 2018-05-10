@@ -219,8 +219,7 @@ void CStegSuit::Clean()
 void CStegSuit::Control( UINT Command )
 {
 	
-	//SSW: need to be modified for 20ms ilbc
-	SAEDU = 9;	//一个RTP包中三个帧共嵌入一个字节
+	SAEDU = 9;	//一个RTP包中共嵌入9个字节
 /*	if( Command == 0 )
 		SAEDU=iLBC_SAEDU_20;
 	else if( Command == 2 )
@@ -535,7 +534,7 @@ UINT CStegSuit::SAESdata( void * pCarrier,UINT RTPheadlen, char* pPcmIn)
 		}
 		m_ActualByte = m_FrmSLength - 3;
 		m_FrmSLength = 0;
-		
+		PJ_LOG(4, (THIS_FILE, "-------------------------after encode m_ActuralByte=%d", m_ActualByte));
 	}
 	else
 	{
@@ -547,6 +546,7 @@ UINT CStegSuit::SAESdata( void * pCarrier,UINT RTPheadlen, char* pPcmIn)
 		}
 		m_ActualByte = 0;
 	}
+
 	switch (m_channel_pt_send)
 	{
 	case PJMEDIA_RTP_PT_ILBC:
@@ -667,7 +667,7 @@ UINT CStegSuit::SAER(void *hdr, void * pCarrier, int pCarrierLength, char* pPcmO
 	m_pRTP->Extract( m_FrmRCursor, 3, NULL, 0, DstPacket );	//从RTP中获取STM头域
 
 	UINT len = ( m_FrmRCursor[0] & 0x7 ) + ( ( m_FrmRCursor[1] & 0x7F ) * 8 ) ;
-
+	//todo len 有问题！
 	if( len > 0 )
 	{
 		//长度不正确，不是机密信息的包，丢弃
@@ -881,11 +881,11 @@ void CStegSuit::Decode(void *decblock, unsigned char *bytes, int bytes_length, i
 		{
 			char * buffer = msg;
 			size_t length = 0;
-			for (size_t i = 0; ((char *)bytes)[i] != '\0'; ++i, buffer++)
+			for (;((char *)bytes)[length] != '\0'; ++buffer, ++length)
 			{
-				*buffer = ((char *)bytes)[i];
-				++length;
+				*buffer = ((char *)bytes)[length];
 			}
+			*buffer = ((char *)bytes)[length];
 			PJ_LOG(4, (THIS_FILE, "Decode:decoded block = %d, src byte = %d, msg=%s, length=%d!", (pj_uint16_t *)decblock, *bytes, msg, length));
 		}
 		break;
