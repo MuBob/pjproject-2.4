@@ -1392,7 +1392,7 @@ static pj_status_t put_frame_imp(pjmedia_port *port,
 
 		/* Encode! */
 		//
-		/*
+		
 		if (frame_out.size > 0)
 		{
 			char *pCarrier = new char[rtphdrlen + frame_out.size + 10];
@@ -1415,13 +1415,13 @@ static pj_status_t put_frame_imp(pjmedia_port *port,
 			{
 			case PJMEDIA_RTP_PT_ILBC:
 				m_pSteg.lock();
-				m_pSteg.Embedding((void *)pCarrier, rtphdrlen, (char *)pFloat, channel->pt);
+				m_pSteg.Embedding((void *)pCarrier, rtphdrlen, frame_out.size, (char *)pFloat, channel->pt);
 				m_pSteg.unlock();
 				break;
 			case PJMEDIA_RTP_PT_PCMA:
 			case PJMEDIA_RTP_PT_PCMU:
 				m_pSteg.lock();
-				m_pSteg.Embedding((void *)pCarrier, rtphdrlen, (char *)pShort, channel->pt);
+				m_pSteg.Embedding((void *)pCarrier, rtphdrlen, frame_out.size, (char *)pShort, channel->pt);
 				m_pSteg.unlock();
 				break;
 			default:
@@ -1438,7 +1438,7 @@ static pj_status_t put_frame_imp(pjmedia_port *port,
 			delete[]pShort;
 		}
 		
-		*/
+		
 
 		
 		//status = pjmedia_codec_encode(stream->codec, frame,
