@@ -219,7 +219,7 @@ void CStegSuit::Clean()
 void CStegSuit::Control( UINT Command )
 {
 	
-	SAEDU = 9;	//一个RTP包中共嵌入9个字节
+	SAEDU = iLBC_SAEDU_20;	//一个RTP包中共嵌入9个字节
 /*	if( Command == 0 )
 		SAEDU=iLBC_SAEDU_20;
 	else if( Command == 2 )
@@ -529,7 +529,7 @@ UINT CStegSuit::SAESdata( void * pCarrier,UINT RTPheadlen, pj_size_t dataLen, ch
 		{
 			Enc_Inst.ste.bitpos = bitpos[i];
 			Enc_Inst.ste.hdTxt_pos = hdTxt_pos[i];
-			Encode((unsigned char *)(m_pFrmBuf + dataLen * i), (pPcmIn + 320 * i), dataLen,
+			Encode((unsigned char *)(m_pFrmBuf + dataLen * i), (pPcmIn + iLBC_VOICE_LENTH_20 * i), dataLen,
 				1, m_Crt.Frame + 3);
 		}
 		m_ActualByte = m_FrmSLength - 3;
@@ -542,7 +542,7 @@ UINT CStegSuit::SAESdata( void * pCarrier,UINT RTPheadlen, pj_size_t dataLen, ch
 		//THZ: 长度调整为一帧的长度
 		for (int i = 0; i < 1; ++i)
 		{
-			Encode((unsigned char *)(m_pFrmBuf + dataLen * i), (pPcmIn + 320 * i), dataLen,
+			Encode((unsigned char *)(m_pFrmBuf + dataLen * i), (pPcmIn + iLBC_VOICE_LENTH_20 * i), dataLen,
 				0, NULL);
 		}
 		m_ActualByte = 0;
@@ -585,9 +585,9 @@ UINT CStegSuit::STMSheader(int datatype)
 	
 			SD[i].Length -= len;		//滑动窗口
 			SD[i].Cursor += len;		//
-//TODO:Bob 加入发送滑动窗口，暂时关闭	
-//			memcpy ( m_Window[ m_SEQ & 0x7 ].Frame, m_Crt.Frame, STMDU );	//加入发送滑动窗口
-//			m_Window[ m_SEQ & 0x7 ].Length = m_Crt.Length;					//加入发送滑动窗口
+
+			memcpy ( m_Window[ m_SEQ & 0x7 ].Frame, m_Crt.Frame, STMDU );	//加入发送滑动窗口
+			m_Window[ m_SEQ & 0x7 ].Length = m_Crt.Length;					//加入发送滑动窗口
 			//TRACE(_T("Send: %d\n"), m_SEQ);
 
 			if (SD[i].Length == 0)				//隐秘信息应用层数据发送完毕
@@ -655,7 +655,7 @@ UINT CStegSuit::SAER(void *hdr, void * pCarrier, int pCarrierLength, char* pPcmO
 	m_pRTP->Extract( m_FrmRCursor, 3, NULL, 0, DstPacket );	//从RTP中获取STM头域
 
 	UINT len = ( m_FrmRCursor[0] & 0x7 ) + ( ( m_FrmRCursor[1] & 0x7F ) * 8 ) ;
-	//todo len 有问题！
+
 	if( len > 0 )
 	{
 		//长度不正确，不是机密信息的包，丢弃
@@ -671,7 +671,7 @@ UINT CStegSuit::SAER(void *hdr, void * pCarrier, int pCarrierLength, char* pPcmO
 		{
 			Enc_Inst.ste.bitpos = bitpos[i];
 			Enc_Inst.ste.hdTxt_pos = hdTxt_pos[i];
-			Decode((pPcmOut + 320 * i), (unsigned char *)(DstData + 38 * i), pCarrierLength,
+			Decode((pPcmOut + iLBC_VOICE_LENTH_20 * i), (unsigned char *)(DstData + 38 * i), pCarrierLength,
 				1, 1, m_chRtrSecMsg);
 		}
 		PJ_LOG(4, (THIS_FILE, "SAER:msg=%s!", m_chRtrSecMsg));
@@ -681,7 +681,7 @@ UINT CStegSuit::SAER(void *hdr, void * pCarrier, int pCarrierLength, char* pPcmO
 	{
 		for (int i = 0; i < 1; ++i)
 		{
-			Decode((pPcmOut + 320 * i), (unsigned char *)(DstData + 38 * i), pCarrierLength, 1, 0, NULL);
+			Decode((pPcmOut + iLBC_VOICE_LENTH_20 * i), (unsigned char *)(DstData + 38 * i), pCarrierLength, 1, 0, NULL);
 		}
 
 	}
