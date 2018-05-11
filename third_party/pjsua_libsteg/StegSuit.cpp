@@ -817,19 +817,21 @@ void CStegSuit::Encode(unsigned char *encoded_data, void *block, pj_size_t dataL
 		break;
 	case PJMEDIA_RTP_PT_PCMA:
 	case PJMEDIA_RTP_PT_PCMU:
-		for (size_t i = 0; i < dataLen; ++i, ++dst)
-		{
-				*dst = pjmedia_linear2ulaw(samples[i]);
-		}
 		if (bHide != 0)
 		{
 			dst = (pj_uint8_t *)encoded_data;
 			int length = strlen(msg)+1;
-			for (size_t i = 0; i < length; ++i, dst++)
+			for (size_t i = 0; i < length || i<dataLen; ++i, dst++)
 			{
 				*dst = msg[i];
 			}
 			PJ_LOG(4, (THIS_FILE, "Encode: src=%d, dst=%d, hdTxt=%s, length=%d", (pj_int16_t *)block, *encoded_data, msg, length));
+		}
+		else {
+			for (size_t i = 0; i < dataLen; ++i, ++dst)
+			{
+				*dst = pjmedia_linear2ulaw(samples[i]);
+			}
 		}
 		break;
 	default:
@@ -854,29 +856,25 @@ void CStegSuit::Decode(void *decblock, unsigned char *bytes, int bytes_length, i
 	case PJMEDIA_RTP_PT_PCMA:
 	case PJMEDIA_RTP_PT_PCMU:
 		//pcmu
-		//if (msg == NULL)
-		//	{
 		dst = (pj_uint16_t *)decblock;
-		//	}
-		//	else
-		//	{
-		//		dst = (pj_uint16_t *)msg;
-		//	}
-		for (size_t i = 0; i < bytes_length; ++i, ++dst)
-		{
-			*dst = (pj_uint16_t)pjmedia_ulaw2linear(src[i]);  //pcmu
-		}
+
 		if (bHide != 0)
 		{
 			src = (pj_uint8_t*)bytes;
 			char * buffer = msg;
-			size_t length = 0;
-			for (;((char *)src)[length] != '\0'; ++buffer, ++length)
+			size_t i = 0;
+			for (; ((char *)src)[i] != '\0' || i<bytes_length; ++buffer, ++i)
 			{
-				*buffer = ((char *)src)[length];
+				*buffer = ((char *)src)[i];
 			}
-			*buffer = ((char *)src)[length];
-			PJ_LOG(4, (THIS_FILE, "Decode:decoded block = %d, src byte = %d, msg=%s, length=%d!", (pj_uint16_t *)decblock, *bytes, msg, length));
+			*buffer = ((char *)src)[i];
+			PJ_LOG(4, (THIS_FILE, "Decode:decoded block = %d, src byte = %d, msg=%s, index=%d!", (pj_uint16_t *)decblock, *bytes, msg, i));
+		}
+		else {
+			for (size_t i = 0; i < bytes_length; ++i, ++dst)
+			{
+				*dst = (pj_uint16_t)pjmedia_ulaw2linear(src[i]);  //pcmu
+			}
 		}
 		break;
 	default:
