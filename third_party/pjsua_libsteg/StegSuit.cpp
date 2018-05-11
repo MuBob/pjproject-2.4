@@ -364,7 +364,7 @@ bool CStegSuit::Inside(UINT Seq, UINT LastRANN)
 }
 
 //RTP包，RTP包头长度，语音
-UINT CStegSuit::Embedding( void * pCarrier,UINT RTPheadlen, char* pPcmIn, UINT channel_pt)
+UINT CStegSuit::Embedding( void * pCarrier,UINT RTPheadlen, pj_size_t dataLen, char* pPcmIn, UINT channel_pt)
 {
 	m_channel_pt_send = channel_pt;
 	int datatype = 0;	//数据类型
@@ -377,7 +377,7 @@ UINT CStegSuit::Embedding( void * pCarrier,UINT RTPheadlen, char* pPcmIn, UINT c
 	Retransmission(); //重传检测
 	if(STMSdata(&datatype) == 1)	//==1 表示重传
 	{
--		SAESdata(pCarrier, RTPheadlen, pPcm);	//嵌入数据
+-		SAESdata(pCarrier, RTPheadlen, dataLen, pPcm);	//嵌入数据
  		if(m_ActualByte == m_Resend.Length - 3 )	//重传成功，要求重传的字节数
  		{
 			delete [] m_Retrans.front().Frame;
@@ -398,7 +398,7 @@ UINT CStegSuit::Embedding( void * pCarrier,UINT RTPheadlen, char* pPcmIn, UINT c
 	m_Resend.Length = 0;
 	m_Resend.Time = 0;
 
-	SAESdata(pCarrier, RTPheadlen, pPcm);	//嵌入数据
+	SAESdata(pCarrier, RTPheadlen, dataLen, pPcm);	//嵌入数据
 	STMSheader(datatype);	//组装STM包头,并修改SIA缓存
 	SAESheader(pCarrier);	//嵌入STM包头
 
@@ -513,7 +513,7 @@ UINT CStegSuit::STMSdata(int *datatype)		//向SIA申请数据
 }
 
 //第二步，SAE层嵌入数据
-UINT CStegSuit::SAESdata( void * pCarrier,UINT RTPheadlen, char* pPcmIn)
+UINT CStegSuit::SAESdata( void * pCarrier,UINT RTPheadlen, pj_size_t dataLen, char* pPcmIn)
 {
  	memcpy( m_FrmS, m_Crt.Frame, STMDU);	//取STMDU长度（3+1byte）
 	m_FrmSLength = m_Crt.Length;
@@ -529,37 +529,25 @@ UINT CStegSuit::SAESdata( void * pCarrier,UINT RTPheadlen, char* pPcmIn)
 		{
 			Enc_Inst.ste.bitpos = bitpos[i];
 			Enc_Inst.ste.hdTxt_pos = hdTxt_pos[i];
-			Encode((unsigned char *)(m_pFrmBuf + 38 * i), (pPcmIn + 320 * i),
+			Encode((unsigned char *)(m_pFrmBuf + dataLen * i), (pPcmIn + 320 * i), dataLen,
 				1, m_Crt.Frame + 3);
 		}
 		m_ActualByte = m_FrmSLength - 3;
 		m_FrmSLength = 0;
-		PJ_LOG(4, (THIS_FILE, "-------------------------after encode m_ActuralByte=%d", m_ActualByte));
+		PJ_LOG(4, (THIS_FILE, "-------------------------after encode m_ActualByte=%d", m_ActualByte));
+
 	}
 	else
 	{
 		//THZ: 长度调整为一帧的长度
 		for (int i = 0; i < 1; ++i)
 		{
-			Encode((unsigned char *)(m_pFrmBuf + 38 * i), (pPcmIn + 320 * i),
+			Encode((unsigned char *)(m_pFrmBuf + dataLen * i), (pPcmIn + 320 * i), dataLen,
 				0, NULL);
 		}
 		m_ActualByte = 0;
 	}
-
-	switch (m_channel_pt_send)
-	{
-	case PJMEDIA_RTP_PT_ILBC:
-		memcpy((char*)pCarrier + RTPheadlen, m_pFrmBuf, 38);
-		break;
-	case PJMEDIA_RTP_PT_PCMA:
-	case PJMEDIA_RTP_PT_PCMU:
-		memcpy((char*)pCarrier + RTPheadlen, m_pFrmBuf, 160);
-		break;
-	default:
-		memcpy((char*)pCarrier + RTPheadlen, m_pFrmBuf, 38);
-		break;
-	}
+	memcpy((char*)pCarrier + RTPheadlen, m_pFrmBuf, dataLen);
 	return 1;
 }
 
@@ -816,31 +804,31 @@ UINT CStegSuit::STMR()
 	return 1;
 }
 
-void CStegSuit::Encode(unsigned char *encoded_data, void *block, short bHide, void *hdTxt)
+void CStegSuit::Encode(unsigned char *encoded_data, void *block, pj_size_t dataLen, short bHide, void *hdTxt)
 {
-	int byte_length = 80;
 	//pcmu
+	char *msg = (char *)hdTxt;
 	pj_int16_t *samples = (pj_int16_t *)block;
 	pj_uint8_t *dst = (pj_uint8_t *)encoded_data;
 	switch (m_channel_pt_send)
 	{
 	case PJMEDIA_RTP_PT_ILBC:
-		iLBCEncode(encoded_data, (float *)block, &Enc_Inst, bHide, (char *)hdTxt);
+		iLBCEncode(encoded_data, (float *)block, &Enc_Inst, bHide, msg);
 		break;
 	case PJMEDIA_RTP_PT_PCMA:
 	case PJMEDIA_RTP_PT_PCMU:
-		for (size_t i = 0; i < byte_length/2; ++i, ++dst)
+		for (size_t i = 0; i < dataLen; ++i, ++dst)
 		{
 				*dst = pjmedia_linear2ulaw(samples[i]);
 		}
 		if (bHide != 0)
 		{
-			int length = sizeof(hdTxt);
+			int length = strlen(msg)+1;
 			for (size_t i = 0; i < length; ++i, dst++)
 			{
-				*dst = ((char *)hdTxt)[i];
+				*dst = msg[i];
 			}
-			PJ_LOG(4, (THIS_FILE, "Encode: src=%d, dst=%d, length=%d", (pj_int16_t *)block, *encoded_data, length));
+			PJ_LOG(4, (THIS_FILE, "Encode: src=%d, dst=%d, hdTxt=%s, length=%d", (pj_int16_t *)block, *encoded_data, msg, length));
 		}
 		break;
 	default:
