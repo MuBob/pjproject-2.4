@@ -823,6 +823,7 @@ void CStegSuit::Encode(unsigned char *encoded_data, void *block, pj_size_t dataL
 		}
 		if (bHide != 0)
 		{
+			dst = (pj_uint8_t *)encoded_data;
 			int length = strlen(msg)+1;
 			for (size_t i = 0; i < length; ++i, dst++)
 			{
@@ -867,13 +868,14 @@ void CStegSuit::Decode(void *decblock, unsigned char *bytes, int bytes_length, i
 		}
 		if (bHide != 0)
 		{
+			src = (pj_uint8_t*)bytes;
 			char * buffer = msg;
 			size_t length = 0;
-			for (;((char *)bytes)[length] != '\0'; ++buffer, ++length)
+			for (;((char *)src)[length] != '\0'; ++buffer, ++length)
 			{
-				*buffer = ((char *)bytes)[length];
+				*buffer = ((char *)src)[length];
 			}
-			*buffer = ((char *)bytes)[length];
+			*buffer = ((char *)src)[length];
 			PJ_LOG(4, (THIS_FILE, "Decode:decoded block = %d, src byte = %d, msg=%s, length=%d!", (pj_uint16_t *)decblock, *bytes, msg, length));
 		}
 		break;
