@@ -1,14 +1,14 @@
 #pragma once
 
-//THZ: ½«ÈıÖ¡µÄÈİÁ¿¸ÄÎªÒ»Ö¡
-#define iLBC_SAEDU_20      9   //ÈıÖ¡µÄÒş²ØÈİÁ¿
+//THZ: å°†ä¸‰å¸§çš„å®¹é‡æ”¹ä¸ºä¸€å¸§
+#define iLBC_SAEDU_20      9   //ä¸‰å¸§çš„éšè—å®¹é‡
 #define iLBC_SAEDU_30      11 
-
-//#define iLBC_SAEDU_20      29   //ÈıÖ¡µÄÒş²ØÈİÁ¿
-//#define iLBC_SAEDU_30      34 
+#define g711_SAEDU         9  //g711ç®—æ³•ä¸­çš„éšè—å®¹é‡
 
 #define iLBC_FRAME_LENTH_20		38
 #define iLBC_FRAME_LENTH_30		50
+#define g711_FRAME_LENTH        38  //g711ç®—æ³•ä¸‹çš„å¸§é•¿åº¦
 
 #define iLBC_VOICE_LENTH_20		320
 #define iLBC_VOICE_LENTH_30		480
+#define g711_VOICE_LENTH        320

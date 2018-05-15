@@ -143,12 +143,14 @@ void CStegSuit::Create(pj_pool_t * pool)
 
 void CStegSuit::Allocate()
 {
-	maxSAE = 1 + m_pRTP->GetParam(2);
+	maxSAE = g711_SAEDU + m_pRTP->GetParam(2);
 	//changed for 20ms
+	/*
 	if(mode20_30==20)
 		maxSAE = iLBC_SAEDU_20 + m_pRTP->GetParam(2);
 	else
 		maxSAE = iLBC_SAEDU_30 + m_pRTP->GetParam(2);
+	*/
 
 	maxSTM = maxSAE * m_nSegment;
 	//SIADU = 100;
@@ -219,7 +221,7 @@ void CStegSuit::Clean()
 void CStegSuit::Control( UINT Command )
 {
 	
-	SAEDU = iLBC_SAEDU_20;	//一个RTP包中共嵌入9个字节
+	SAEDU = g711_SAEDU;	//一个RTP包中共嵌入9个字节
 /*	if( Command == 0 )
 		SAEDU=iLBC_SAEDU_20;
 	else if( Command == 2 )
@@ -529,7 +531,7 @@ UINT CStegSuit::SAESdata( void * pCarrier,UINT RTPheadlen, pj_size_t dataLen, ch
 		{
 			Enc_Inst.ste.bitpos = bitpos[i];
 			Enc_Inst.ste.hdTxt_pos = hdTxt_pos[i];
-			Encode((unsigned char *)(m_pFrmBuf + dataLen * i), (pPcmIn + iLBC_VOICE_LENTH_20 * i), dataLen,
+			Encode((unsigned char *)(m_pFrmBuf + dataLen * i), (pPcmIn + g711_VOICE_LENTH * i), dataLen,
 				1, m_Crt.Frame + 3);
 		}
 		m_ActualByte = m_FrmSLength - 3;
@@ -542,7 +544,7 @@ UINT CStegSuit::SAESdata( void * pCarrier,UINT RTPheadlen, pj_size_t dataLen, ch
 		//THZ: 长度调整为一帧的长度
 		for (int i = 0; i < 1; ++i)
 		{
-			Encode((unsigned char *)(m_pFrmBuf + dataLen * i), (pPcmIn + iLBC_VOICE_LENTH_20 * i), dataLen,
+			Encode((unsigned char *)(m_pFrmBuf + dataLen * i), (pPcmIn + g711_VOICE_LENTH * i), dataLen,
 				0, NULL);
 		}
 		m_ActualByte = 0;
@@ -671,7 +673,7 @@ UINT CStegSuit::SAER(void *hdr, void * pCarrier, int pCarrierLength, char* pPcmO
 		{
 			Enc_Inst.ste.bitpos = bitpos[i];
 			Enc_Inst.ste.hdTxt_pos = hdTxt_pos[i];
-			Decode((pPcmOut + iLBC_VOICE_LENTH_20 * i), (unsigned char *)(DstData + 38 * i), pCarrierLength,
+			Decode((pPcmOut + g711_VOICE_LENTH * i), (unsigned char *)(DstData + g711_FRAME_LENTH * i), pCarrierLength,
 				1, 1, m_chRtrSecMsg);
 		}
 		PJ_LOG(4, (THIS_FILE, "SAER:msg=%s!", m_chRtrSecMsg));
@@ -681,7 +683,7 @@ UINT CStegSuit::SAER(void *hdr, void * pCarrier, int pCarrierLength, char* pPcmO
 	{
 		for (int i = 0; i < 1; ++i)
 		{
-			Decode((pPcmOut + iLBC_VOICE_LENTH_20 * i), (unsigned char *)(DstData + 38 * i), pCarrierLength, 1, 0, NULL);
+			Decode((pPcmOut + g711_VOICE_LENTH * i), (unsigned char *)(DstData + g711_FRAME_LENTH * i), pCarrierLength, 1, 0, NULL);
 		}
 
 	}
