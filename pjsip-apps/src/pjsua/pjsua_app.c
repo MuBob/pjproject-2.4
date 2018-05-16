@@ -1055,13 +1055,14 @@ pj_status_t on_playfile_done(pjmedia_port *port, void *usr_data)
 	if (app_config.auto_hangup_timer.id == 1)
 		return PJ_SUCCESS;
 
-	app_config.auto_hangup_timer.id = 1;
-	delay.sec = 0;
-	delay.msec = 200; /* Give 200 ms before hangup */
-	pjsip_endpt_schedule_timer(pjsua_get_pjsip_endpt(),
-		&app_config.auto_hangup_timer,
-		&delay);
-
+	//TODO:2018/5/16 by BobMu delete max limit duration in call
+//	app_config.auto_hangup_timer.id = 1;
+//	delay.sec = 0;
+//	delay.msec = 200; /* Give 200 ms before hangup */
+//	pjsip_endpt_schedule_timer(pjsua_get_pjsip_endpt(),
+//		&app_config.auto_hangup_timer,
+//		&delay);
+	
 	return PJ_SUCCESS;
 }
 
