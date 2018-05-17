@@ -412,18 +412,20 @@ static void timer_cb(pj_timer_heap_t *timer_heap, struct pj_timer_entry *entry)
 		tdata->msg->body = body;
 	    }
 	}
-
+	/*
 	pj_time_val delay = { 1, 0 };
+	stop_timer(inv);
 	//2-1发送方定时刷新超时限制清零
 	if (inv->timer->expire_timer.id != 0) {
 		pjsip_endpt_cancel_timer(inv->dlg->endpt, &inv->timer->expire_timer);
-		/*
+		
 		delay.sec = inv->timer->setting.sess_expires;
 		inv->timer->expire_timer.id = REFRESHER_EXPIRE_TIMER_ID;
 		pjsip_endpt_schedule_timer(inv->dlg->endpt, &inv->timer->expire_timer, &delay);
-		*/
+		
 
 	}
+	*/
 	//2-2发送方定时刷新功能再次启动
 	/*
 	delay.sec = inv->timer->setting.sess_expires / 2;
@@ -1191,7 +1193,7 @@ PJ_DEF(pj_status_t) pjsip_timer_update_resp(pjsip_inv_session *inv,
 	    }
 	    
 	    /* Finally, start timer. */
-	    start_timer(inv);
+//	    start_timer(inv);
 	}
     } 
     else if (msg->line.status.code == PJSIP_SC_SESSION_TIMER_TOO_SMALL)
