@@ -417,15 +417,20 @@ static void timer_cb(pj_timer_heap_t *timer_heap, struct pj_timer_entry *entry)
 	//2-1发送方定时刷新超时限制清零
 	if (inv->timer->expire_timer.id != 0) {
 		pjsip_endpt_cancel_timer(inv->dlg->endpt, &inv->timer->expire_timer);
+		/*
 		delay.sec = inv->timer->setting.sess_expires;
 		inv->timer->expire_timer.id = REFRESHER_EXPIRE_TIMER_ID;
 		pjsip_endpt_schedule_timer(inv->dlg->endpt, &inv->timer->expire_timer, &delay);
+		*/
+
 	}
 	//2-2发送方定时刷新功能再次启动
+	/*
 	delay.sec = inv->timer->setting.sess_expires / 2;
 	inv->timer->timer.id = 1;
 	pjsip_endpt_schedule_timer(inv->dlg->endpt, &inv->timer->timer, &delay);
 
+	*/
 
 	pj_gettimeofday(&now);
 	PJ_LOG(4, (inv->pool->obj_name,
@@ -502,9 +507,6 @@ static void start_timer(pjsip_inv_session *inv)
     if ((timer->refresher == TR_UAC && inv->timer->role == PJSIP_ROLE_UAC) ||
 	(timer->refresher == TR_UAS && inv->timer->role == PJSIP_ROLE_UAS))
     {
-		if (timer->expire_timer.id != 0) {
-			pjsip_endpt_cancel_timer(inv->dlg->endpt, &timer->expire_timer);
-		}
 	/* Add refresher expire timer */
 	pj_timer_entry_init(&timer->expire_timer,
 			    REFRESHER_EXPIRE_TIMER_ID,	    /* id */
