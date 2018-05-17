@@ -422,8 +422,7 @@ static void timer_cb(pj_timer_heap_t *timer_heap, struct pj_timer_entry *entry)
 		pjsip_endpt_schedule_timer(inv->dlg->endpt, &inv->timer->expire_timer, &delay);
 	}
 	//2-2发送方定时刷新功能再次启动
-	delay.sec = inv->timer->setting.sess_expires - inv->timer->setting.sess_expires / 3;
-	delay.sec = PJ_MAX((long)inv->timer->setting.sess_expires - 32, delay.sec);
+	delay.sec = inv->timer->setting.sess_expires / 2;
 	inv->timer->timer.id = 1;
 	pjsip_endpt_schedule_timer(inv->dlg->endpt, &inv->timer->timer, &delay);
 
