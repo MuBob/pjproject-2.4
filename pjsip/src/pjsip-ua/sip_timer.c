@@ -412,9 +412,9 @@ static void timer_cb(pj_timer_heap_t *timer_heap, struct pj_timer_entry *entry)
 		tdata->msg->body = body;
 	    }
 	}
-	/*
+	
+	//TODO: 2018/5/17 by BobMu 超时挂断取消
 	pj_time_val delay = { 1, 0 };
-	stop_timer(inv);
 	//2-1发送方定时刷新超时限制清零
 	if (inv->timer->expire_timer.id != 0) {
 		pjsip_endpt_cancel_timer(inv->dlg->endpt, &inv->timer->expire_timer);
@@ -425,14 +425,10 @@ static void timer_cb(pj_timer_heap_t *timer_heap, struct pj_timer_entry *entry)
 		
 
 	}
-	*/
 	//2-2发送方定时刷新功能再次启动
-	/*
 	delay.sec = inv->timer->setting.sess_expires / 2;
 	inv->timer->timer.id = 1;
 	pjsip_endpt_schedule_timer(inv->dlg->endpt, &inv->timer->timer, &delay);
-
-	*/
 
 	pj_gettimeofday(&now);
 	PJ_LOG(4, (inv->pool->obj_name,
@@ -1192,6 +1188,7 @@ PJ_DEF(pj_status_t) pjsip_timer_update_resp(pjsip_inv_session *inv,
 		    req_hdr->values[req_hdr->count++] = STR_TIMER;
 	    }
 	    
+		//TODO: 2018/5/17 by BobMu 超时挂断取消
 	    /* Finally, start timer. */
 //	    start_timer(inv);
 	}
