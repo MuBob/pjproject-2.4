@@ -502,6 +502,9 @@ static void start_timer(pjsip_inv_session *inv)
     if ((timer->refresher == TR_UAC && inv->timer->role == PJSIP_ROLE_UAC) ||
 	(timer->refresher == TR_UAS && inv->timer->role == PJSIP_ROLE_UAS))
     {
+		if (timer->expire_timer.id != 0) {
+			pjsip_endpt_cancel_timer(inv->dlg->endpt, &timer->expire_timer);
+		}
 	/* Add refresher expire timer */
 	pj_timer_entry_init(&timer->expire_timer,
 			    REFRESHER_EXPIRE_TIMER_ID,	    /* id */
