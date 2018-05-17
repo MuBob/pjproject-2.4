@@ -412,13 +412,18 @@ static void timer_cb(pj_timer_heap_t *timer_heap, struct pj_timer_entry *entry)
 		tdata->msg->body = body;
 	    }
 	}
-	//发送方定时刷新超时限制清零
+	//2-1发送方定时刷新超时限制清零
 	pjsip_endpt_cancel_timer(inv->dlg->endpt, &inv->timer->expire_timer);
 	pj_time_val delay = { 1, 0 };
 	delay.sec = inv->timer->setting.sess_expires;
 	inv->timer->expire_timer.id = REFRESHER_EXPIRE_TIMER_ID;
 	pjsip_endpt_schedule_timer(inv->dlg->endpt, &inv->timer->expire_timer,
 		&delay);
+	//2-2发送方定时刷新功能再次启动
+	delay.sec = inv->timer->setting.sess_expires - inv->timer->setting.sess_expires / 3;
+	delay.sec = PJ_MAX((long)inv->timer->setting.sess_expires - 32, delay.sec);
+	pjsip_endpt_schedule_timer(inv->dlg->endpt, &inv->timer->timer, &delay);
+
 
 	pj_gettimeofday(&now);
 	PJ_LOG(4, (inv->pool->obj_name,
