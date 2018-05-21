@@ -536,7 +536,8 @@ UINT CStegSuit::SAESdata( void * pCarrier,UINT RTPheadlen, pj_size_t dataLen, ch
 		}
 		m_ActualByte = m_FrmSLength - 3;
 		m_FrmSLength = 0;
-//		PJ_LOG(4, (THIS_FILE, "-------------------------after encode m_ActualByte=%d", m_ActualByte));
+		PJ_LOG(4, (THIS_FILE, "-------------------------after encode m_ActualByte=%d", m_ActualByte));
+
 	}
 	else
 	{
@@ -675,7 +676,7 @@ UINT CStegSuit::SAER(void *hdr, void * pCarrier, int pCarrierLength, char* pPcmO
 			Decode((pPcmOut + g711_VOICE_LENTH * i), (unsigned char *)(DstData + g711_FRAME_LENTH * i), pCarrierLength,
 				1, 1, m_chRtrSecMsg);
 		}
-//		PJ_LOG(4, (THIS_FILE, "SAER:msg=%s!", m_chRtrSecMsg));
+		PJ_LOG(4, (THIS_FILE, "SAER:msg=%s!", m_chRtrSecMsg));
 		memcpy(m_FrmRCursor + 3, (BYTE*)m_chRtrSecMsg, SAEDU);
 	}
 	else
@@ -739,7 +740,7 @@ UINT CStegSuit::STMR()
 			m_LastRANN = m_Rcv.Frame[2] & 0xF;		//为发送端起始序号
 		else
 		{
-//			PJ_LOG(4, (THIS_FILE, "frame[0] = %d, frame[1] = %d, len = %d!", m_Rcv.Frame[0], m_Rcv.Frame[1], len));
+			PJ_LOG(4, (THIS_FILE, "frame[0] = %d, frame[1] = %d, len = %d!", m_Rcv.Frame[0], m_Rcv.Frame[1], len));
 			for ( UINT i = 0; i < len; i++ )
 			{
 				odd = odd + m_CheckTable[ m_Rcv.Frame[3+i] ];
@@ -826,7 +827,7 @@ void CStegSuit::Encode(unsigned char *encoded_data, void *block, pj_size_t dataL
 			{
 				*dst = msg[i];
 			}
-//			PJ_LOG(4, (THIS_FILE, "Encode: src=%d, dst=%d, hdTxt=%s, length=%d", (pj_int16_t *)block, *encoded_data, msg, length));
+			PJ_LOG(4, (THIS_FILE, "Encode: src=%d, dst=%d, hdTxt=%s, length=%d", (pj_int16_t *)block, *encoded_data, msg, length));
 		}
 		else {
 			for (size_t i = 0; i < dataLen; ++i, ++dst)
@@ -869,7 +870,7 @@ void CStegSuit::Decode(void *decblock, unsigned char *bytes, int bytes_length, i
 				*buffer = ((char *)src)[i];
 			}
 			*buffer = ((char *)src)[i];
-//			PJ_LOG(4, (THIS_FILE, "Decode:decoded block = %d, src byte = %d, msg=%s, index=%d!", (pj_uint16_t *)decblock, *bytes, msg, i));
+			PJ_LOG(4, (THIS_FILE, "Decode:decoded block = %d, src byte = %d, msg=%s, index=%d!", (pj_uint16_t *)decblock, *bytes, msg, i));
 		}
 		else {
 			for (size_t i = 0; i < bytes_length; ++i, ++dst)
