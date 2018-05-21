@@ -5490,7 +5490,7 @@ PJ_DECL(pj_status_t) pjsua_im_typing(pjsua_acc_id acc_id,
  */
 #ifndef PJSUA_DEFAULT_CLOCK_RATE
 //#   define PJSUA_DEFAULT_CLOCK_RATE	16000
-#   define PJSUA_DEFAULT_CLOCK_RATE	16000*3
+#   define PJSUA_DEFAULT_CLOCK_RATE	16000*2
 #endif
 
 /**
@@ -5499,7 +5499,7 @@ PJ_DECL(pj_status_t) pjsua_im_typing(pjsua_acc_id acc_id,
  */
 #ifndef PJSUA_DEFAULT_AUDIO_FRAME_PTIME
 //#   define PJSUA_DEFAULT_AUDIO_FRAME_PTIME  20
-#   define PJSUA_DEFAULT_AUDIO_FRAME_PTIME  20*3
+#   define PJSUA_DEFAULT_AUDIO_FRAME_PTIME  20*1
 #endif
 
 
