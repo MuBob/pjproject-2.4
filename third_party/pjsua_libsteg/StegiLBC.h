@@ -3,7 +3,7 @@
 //THZ: 将三帧的容量改为一帧
 #define iLBC_SAEDU_20      9   //三帧的隐藏容量
 #define iLBC_SAEDU_30      11 
-#define g711_SAEDU         30  //g711算法中的隐藏容量
+#define g711_SAEDU         37  //g711算法中的隐藏容量
 
 #define iLBC_FRAME_LENTH_20		38
 #define iLBC_FRAME_LENTH_30		50
