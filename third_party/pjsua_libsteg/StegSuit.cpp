@@ -106,7 +106,7 @@ void CStegSuit::Create(pj_pool_t * pool)
 	m_pRTP = (CStegLSB *) (new CStegRTP());
 
 	CarrierType = 97;
-	m_nSegment = 10;
+	m_nSegment = 1;
 	LThreshold = 40;
 	HThreshold = 1000;
 
