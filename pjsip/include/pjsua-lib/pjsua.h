@@ -5499,7 +5499,7 @@ PJ_DECL(pj_status_t) pjsua_im_typing(pjsua_acc_id acc_id,
  */
 #ifndef PJSUA_DEFAULT_AUDIO_FRAME_PTIME
 //#   define PJSUA_DEFAULT_AUDIO_FRAME_PTIME  20
-#   define PJSUA_DEFAULT_AUDIO_FRAME_PTIME  20*1
+#   define PJSUA_DEFAULT_AUDIO_FRAME_PTIME  20*0.5
 #endif
 
 
