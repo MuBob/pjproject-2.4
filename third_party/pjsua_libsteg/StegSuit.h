@@ -64,7 +64,7 @@ public:
 	void Allocate();    // 分配内存空间
 	void Configure();
 	void Clean();      // 释放内存
-	void Control( UINT Command );
+	void Control(UINT Command);
 // 
 // 	UINT Send (void * pSrc, int length, int type);
 // 	UINT Receive (void * pDst, int maxlength, int type);
