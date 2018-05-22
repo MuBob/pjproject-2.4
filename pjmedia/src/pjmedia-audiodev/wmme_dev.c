@@ -657,15 +657,15 @@ static pj_status_t init_waveformatex(LPWAVEFORMATEX wfx,
 
 	pj_bzero(wfx, sizeof(WAVEFORMATEX));
 	if (prm->ext_fmt.id == PJMEDIA_FORMAT_L16) {
-		enum { BYTES_PER_SAMPLE = 2 };
-		wfx->wFormatTag = WAVE_FORMAT_PCM;
-		wfx->nChannels = (pj_uint16_t)prm->channel_count;
-		wfx->nSamplesPerSec = prm->clock_rate;
+		enum { BYTES_PER_SAMPLE = 20 };
+		wfx->wFormatTag = WAVE_FORMAT_PCM;  //声音格式为PCM
+		wfx->nChannels = (pj_uint16_t)prm->channel_count;  //采样声道数，2声道
+		wfx->nSamplesPerSec = prm->clock_rate;  //采样率，最大为44100Hz即16000次/秒
 		wfx->nBlockAlign = (pj_uint16_t)(prm->channel_count *
-			BYTES_PER_SAMPLE);
+			BYTES_PER_SAMPLE);  //一个块的大小，声道数乘以采样比特的字节数
 		wfx->nAvgBytesPerSec = prm->clock_rate * prm->channel_count *
-			BYTES_PER_SAMPLE;
-		wfx->wBitsPerSample = 16;
+			BYTES_PER_SAMPLE;  //每秒的数据率，就是每秒能采集多少字节数据
+		wfx->wBitsPerSample = BYTES_PER_SAMPLE * 8;  //采样比特，16bit/次
 
 		return PJ_SUCCESS;
 
@@ -1298,7 +1298,7 @@ static pj_status_t factory_create_stream(pjmedia_aud_dev_factory *f,
 		return status;
 	}
 
-	/* Create and start the thread �ؼ��������߳�*/
+	/* Create and start the thread 关键，开启线程*/
 	status = pj_thread_create(pool, "wmme", &wmme_dev_thread, strm, 0, 0,
 		&strm->thread);
 	if (status != PJ_SUCCESS) {
