@@ -143,18 +143,7 @@ void CStegSuit::Create(pj_pool_t * pool)
 
 void CStegSuit::Allocate()
 {
-	if (mode20_30 == 20)
-	{
-		maxSAE = iLBC_SAEDU_20 + m_pRTP->GetParam(2);
-	}
-	else if (mode20_30 == 30)
-	{
-		maxSAE = iLBC_SAEDU_30 + m_pRTP->GetParam(2);
-	}
-	else {
-		maxSAE = g711_SAEDU + m_pRTP->GetParam(2);
-	}
-
+	maxSAE = g711_SAEDU + m_pRTP->GetParam(2);
 	maxSTM = maxSAE * m_nSegment;
 	SIADU = (maxSTM-3)*16*((maxSTM-3)*16>=MAX_PATH*2) + MAX_PATH*2*((maxSTM-3)*16<MAX_PATH*2);
 
@@ -222,19 +211,7 @@ void CStegSuit::Clean()
 
 void CStegSuit::Control(UINT Command)
 {
-	if (mode20_30>0)
-	{
-		if( Command == 0 )
-			SAEDU=iLBC_SAEDU_20;
-		else if( Command == 2 )
-			SAEDU = iLBC_SAEDU_30;
-		else
-			SAEDU=iLBC_SAEDU_20;
-	}
-	else
-	{
-		SAEDU = g711_SAEDU;	//一个RTP包中共嵌入9个字节
-	}
+	SAEDU = g711_SAEDU;	//一个RTP包中共嵌入9个字节
 
 	STMDU = SAEDU * m_nSegment + 3;			//.ini中设置m_nSegment = 1, STM包头3字节 (24bit)
 }
