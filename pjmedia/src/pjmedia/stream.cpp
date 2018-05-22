@@ -2592,7 +2592,7 @@ PJ_DEF(pj_status_t) pjmedia_stream_create(pjmedia_endpt *endpt,
 	*p_stream = stream;
 
 	//stream->codec_param
-	mode20_30 = -1;
+	mode20_30 = 20;
 	m_pSteg.Create(pool);
 	m_pSteg.Allocate();
 	int m_seclev = 0;
