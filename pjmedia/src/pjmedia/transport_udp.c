@@ -542,7 +542,7 @@ static void on_rx_rtp( pj_ioqueue_key_t *key,
 	if (status != PJ_EPENDING && status != PJ_SUCCESS)
 	    bytes_read = -status;
 
-	} while (status != PJ_EPENDING && status != PJ_ECANCELLED);
+    } while (status != PJ_EPENDING && status != PJ_ECANCELLED);
 }
 
 
@@ -817,15 +817,14 @@ static pj_status_t transport_send_rtp( pjmedia_transport *tp,
     pj_memcpy(pw->buffer, pkt, size);
 
     sent = size;
-    
-	status = pj_ioqueue_sendto( udp->rtp_key, 
+    status = pj_ioqueue_sendto( udp->rtp_key, 
 				&udp->rtp_pending_write[id].op_key,
 				pw->buffer, &sent, 0,
 				&udp->rem_rtp_addr, 
 				udp->addr_len);
 
     udp->rtp_write_op_id = (udp->rtp_write_op_id + 1) %
-			   PJ_ARRAY_SIZE(udp->rtp_pending_write); 
+			   PJ_ARRAY_SIZE(udp->rtp_pending_write);
 
     if (status==PJ_SUCCESS || status==PJ_EPENDING)
 	return PJ_SUCCESS;

@@ -665,7 +665,7 @@ static pj_status_t init_waveformatex(LPWAVEFORMATEX wfx,
 			BYTES_PER_SAMPLE);  //一个块的大小，声道数乘以采样比特的字节数
 		wfx->nAvgBytesPerSec = prm->clock_rate * prm->channel_count *
 			BYTES_PER_SAMPLE;  //每秒的数据率，就是每秒能采集多少字节数据
-		wfx->wBitsPerSample = BYTES_PER_SAMPLE * 8;  //采样比特，16bit/次
+		wfx->wBitsPerSample = 16;  //采样比特，16bit/次
 
 		return PJ_SUCCESS;
 
@@ -1298,7 +1298,7 @@ static pj_status_t factory_create_stream(pjmedia_aud_dev_factory *f,
 		return status;
 	}
 
-	/* Create and start the thread 关键，开启线程*/
+	/* Create and start the thread */
 	status = pj_thread_create(pool, "wmme", &wmme_dev_thread, strm, 0, 0,
 		&strm->thread);
 	if (status != PJ_SUCCESS) {

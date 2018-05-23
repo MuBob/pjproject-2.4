@@ -113,31 +113,6 @@ void CStegSuit::Create(pj_pool_t * pool)
 	m_Threshold = LThreshold;
 
 	MakeCheckTable();
-	/*
-	int  *msg = new int(3210);
-	int *encoded_msg = new int(0);
-	int msg_length = sizeof(msg);
-	int *decoded_msg = new int(0);
-	pj_int16_t *src = (pj_int16_t *)msg;
-	pj_uint8_t *dst_encode = (pj_uint8_t *)encoded_msg;
-	pj_uint16_t *dst_decode = (pj_uint16_t *)decoded_msg;
-
-	for (size_t i = 0; i < msg_length; ++i, ++dst_encode)
-	{
-		*dst_encode = pjmedia_linear2alaw(src[i]);  //pcmu
-		PJ_LOG(4, (THIS_FILE, "Create: encode src[%d]=%d, dst[%d]=%d", i, src[i], i, *dst_encode));
-	}
-	PJ_LOG(4, (THIS_FILE, "Create:src=%s, after encoded = %s!\r", msg, encoded_msg));
-	dst_encode = (pj_uint8_t *)encoded_msg;
-	for (size_t i = 0; i < msg_length; ++i)
-	{
-		*dst_decode++ = (pj_uint16_t)pjmedia_alaw2linear(*dst_encode++);  //pcmu
-		PJ_LOG(4, (THIS_FILE, "Create:test decode src[%d]=%d, dst[%d]=%d", i, *(dst_encode-1), i, *(dst_decode-1)));
-	}
-	PJ_LOG(4, (THIS_FILE, "Create:src=%s, after decoded = %s!\r", encoded_msg, decoded_msg));
-	//delete[] encoded_msg;
-	//delete[] decoded_msg;
-	*/
 	return;
 }
 
@@ -360,7 +335,7 @@ UINT CStegSuit::Embedding( void * pCarrier,UINT RTPheadlen, pj_size_t dataLen, c
 	Retransmission(); //重传检测
 	if(STMSdata(&datatype) == 1)	//==1 表示重传
 	{
--		SAESdata(pCarrier, RTPheadlen, dataLen, pPcm);	//嵌入数据
+		SAESdata(pCarrier, RTPheadlen, dataLen, pPcm);	//嵌入数据
  		if(m_ActualByte == m_Resend.Length - 3 )	//重传成功，要求重传的字节数
  		{
 			delete [] m_Retrans.front().Frame;

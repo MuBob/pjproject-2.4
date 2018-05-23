@@ -83,7 +83,7 @@ typedef struct pjmedia_aud_dev_factory_op
 
     /**
      * Open the audio device and create audio stream. See
-     * pjmedia_aud_stream_create()
+     * #pjmedia_aud_stream_create()
      */
     pj_status_t (*create_stream)(pjmedia_aud_dev_factory *f,
 				 const pjmedia_aud_param *param,
