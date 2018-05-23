@@ -1808,6 +1808,7 @@ static pj_status_t get_frame(pjmedia_port *this_port,
 	/* Check that correct size is specified. */
 	pj_assert(frame->size == conf->samples_per_frame *
 		conf->bits_per_sample / 8);
+	/*
 	if (conf->port_cnt>1)
 	{
 		struct conf_port *conf_port = conf->ports[1];
@@ -1816,6 +1817,7 @@ static pj_status_t get_frame(pjmedia_port *this_port,
 			unsigned int frames = conf_port->samples_per_frame;
 		}
 	}
+	*/
 	/* Must lock mutex */
 	pj_mutex_lock(conf->mutex);
 

@@ -657,7 +657,7 @@ static pj_status_t init_waveformatex(LPWAVEFORMATEX wfx,
 
 	pj_bzero(wfx, sizeof(WAVEFORMATEX));
 	if (prm->ext_fmt.id == PJMEDIA_FORMAT_L16) {
-		enum { BYTES_PER_SAMPLE = 8 };
+		enum { BYTES_PER_SAMPLE = 2 };
 		wfx->wFormatTag = WAVE_FORMAT_PCM;  //声音格式为PCM
 		wfx->nChannels = (pj_uint16_t)prm->channel_count;  //采样声道数，2声道
 		wfx->nSamplesPerSec = prm->clock_rate;  //采样率，最大为44100Hz即16000次/秒

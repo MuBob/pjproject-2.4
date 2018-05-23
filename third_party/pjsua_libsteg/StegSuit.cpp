@@ -355,9 +355,6 @@ UINT CStegSuit::Embedding( void * pCarrier,UINT RTPheadlen, pj_size_t dataLen, c
 	m_channel_pt_send = channel_pt;
 	int datatype = 0;	//数据类型
 	char* pPcm = pPcmIn;
-	//ssw ilbc
-	//Control( 1 );	//设定SAE和STM大小
-	//SSW: need to be modified for 20ms ilbc
 	Control( this->m_Seclev );
 
 	Retransmission(); //重传检测
@@ -810,7 +807,7 @@ void CStegSuit::Encode(unsigned char *encoded_data, void *block, pj_size_t dataL
 			{
 				*dst = msg[i];
 			}
-//			PJ_LOG(4, (THIS_FILE, "Encode: src=%d, dst=%d, hdTxt=%s, length=%d", (pj_int16_t *)block, *encoded_data, msg, length));
+			PJ_LOG(4, (THIS_FILE, "Encode: src=%d, dst=%d, hdTxt=%s, length=%d", (pj_int16_t *)block, *encoded_data, msg, length));
 		}
 		else {
 			for (size_t i = 0; i < dataLen; ++i, ++dst)
@@ -822,10 +819,6 @@ void CStegSuit::Encode(unsigned char *encoded_data, void *block, pj_size_t dataL
 	default:
 		break;
 	}
-
-	
-	
-
 }
 
 void CStegSuit::Decode(void *decblock, unsigned char *bytes, int bytes_length, int mode, short bHide, char *msg)
@@ -853,7 +846,7 @@ void CStegSuit::Decode(void *decblock, unsigned char *bytes, int bytes_length, i
 				*buffer = ((char *)src)[i];
 			}
 			*buffer = ((char *)src)[i];
-//			PJ_LOG(4, (THIS_FILE, "Decode:decoded block = %d, src byte = %d, msg=%s, index=%d!", (pj_uint16_t *)decblock, *bytes, msg, i));
+			PJ_LOG(4, (THIS_FILE, "Decode:decoded block = %d, src byte = %d, msg=%s, index=%d!", (pj_uint16_t *)decblock, *bytes, msg, i));
 		}
 		else {
 			for (size_t i = 0; i < bytes_length; ++i, ++dst)
