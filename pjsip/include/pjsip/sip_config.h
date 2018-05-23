@@ -1159,7 +1159,7 @@ PJ_INLINE(pjsip_cfg_t*) pjsip_cfg(void)
  * Default: 1800 seconds
  */
 #ifndef PJSIP_SESS_TIMER_DEF_SE
-#   define PJSIP_SESS_TIMER_DEF_SE		1800
+#   define PJSIP_SESS_TIMER_DEF_SE		120
 #endif
 
 
