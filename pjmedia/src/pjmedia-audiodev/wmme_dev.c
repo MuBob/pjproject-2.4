@@ -1298,7 +1298,7 @@ static pj_status_t factory_create_stream(pjmedia_aud_dev_factory *f,
 		return status;
 	}
 
-	/* Create and start the thread */
+	/* Create and start the thread 关键，开启线程 */
 	status = pj_thread_create(pool, "wmme", &wmme_dev_thread, strm, 0, 0,
 		&strm->thread);
 	if (status != PJ_SUCCESS) {
