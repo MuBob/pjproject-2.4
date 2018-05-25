@@ -287,7 +287,7 @@ static pj_status_t g711_enum_codecs(pjmedia_codec_factory *factory,
 	codecs[count].pt = PJMEDIA_RTP_PT_PCMU;
 	codecs[count].encoding_name = pj_str("PCMU");
 	codecs[count].clock_rate = 8000;
-	codecs[count].channel_cnt = 2;
+	codecs[count].channel_cnt = 1;
 	++count;
     }
     if (count < *max_count) {
@@ -295,7 +295,7 @@ static pj_status_t g711_enum_codecs(pjmedia_codec_factory *factory,
 	codecs[count].pt = PJMEDIA_RTP_PT_PCMA;
 	codecs[count].encoding_name = pj_str("PCMA");
 	codecs[count].clock_rate = 8000;
-	codecs[count].channel_cnt = 2;
+	codecs[count].channel_cnt = 1;
 	++count;
     }
 
