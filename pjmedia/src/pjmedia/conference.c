@@ -2036,30 +2036,25 @@ static pj_status_t get_frame(pjmedia_port *this_port,
 		/* Set the type of frame to be returned to sound playback
 		 * device.
 		 */
-//		if (i == 0)
-//			speaker_frame_type = frm_type;
-
-		//TODO: 2018/5/25 by BobMu
-		/*
-		将判断内容放入循环内部
-		*/
-		/* Return sound playback frame. */
-		if (conf->ports[i]->tx_level) {
-			TRACE_((THIS_FILE, "write to audio, count=%d",
-				conf->samples_per_frame));
-			pjmedia_copy_samples((pj_int16_t*)frame->buf,
-				(const pj_int16_t*)conf->ports[i]->mix_buf,
-				conf->samples_per_frame);
-		}
-		else {
-			/* Force frame type NONE */
-			speaker_frame_type = PJMEDIA_FRAME_TYPE_NONE;
-		}
-
-		/* MUST set frame type */
-		frame->type = speaker_frame_type;
+		if (i == 0)
+			speaker_frame_type = frm_type;
 	}
 
+	/* Return sound playback frame. */
+	if (conf->ports[0]->tx_level) {
+		TRACE_((THIS_FILE, "write to audio, count=%d",
+			conf->samples_per_frame));
+		pjmedia_copy_samples((pj_int16_t*)frame->buf,
+			(const pj_int16_t*)conf->ports[0]->mix_buf,
+			conf->samples_per_frame);
+	}
+	else {
+		/* Force frame type NONE */
+		speaker_frame_type = PJMEDIA_FRAME_TYPE_NONE;
+	}
+
+	/* MUST set frame type */
+	frame->type = speaker_frame_type;
 
 	pj_mutex_unlock(conf->mutex);
 
