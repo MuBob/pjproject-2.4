@@ -69,7 +69,7 @@ struct pjmedia_snd_port
 };
 
 /*
- * The callback called by sound player when it needs more samples to be  ²¥·ÅÉùÒôµÄ»Øµôº¯Êı
+ * The callback called by sound player when it needs more samples to be  æ’­æ”¾å£°éŸ³çš„å›æ‰å‡½æ•°
  * played.
  */
 static pj_status_t play_cb(void *user_data, pjmedia_frame *frame)
@@ -84,7 +84,9 @@ static pj_status_t play_cb(void *user_data, pjmedia_frame *frame)
 	port = snd_port->port;
 	if (port == NULL)
 		goto no_frame;
-	/*ÖØÒª£¬»ñÈ¡Ö¡Êı¾İ²¢²¥·Å*/
+	/*
+	é‡è¦ï¼Œè·å–å¸§æ•°æ®å¹¶æ’­æ”¾
+	*/
 	status = pjmedia_port_get_frame(port, frame);
 	if (status != PJ_SUCCESS)
 		goto no_frame;
