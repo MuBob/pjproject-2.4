@@ -15,6 +15,12 @@
     {
         "Entry"
         {
+        "MsmKey" = "8:_19F1F9A23205412483397BB8809C94F9"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_39A746B0C1D941CE8286FBC331B8BD42"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -85,6 +91,22 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.6.1"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4.6.1 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.6.1"
+                    }
+                }
+            }
         }
         "Release"
         {
@@ -101,6 +123,14 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+            }
         }
     }
     "Deployable"
@@ -122,6 +152,26 @@
         }
         "File"
         {
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_19F1F9A23205412483397BB8809C94F9"
+            {
+            "SourcePath" = "8:..\\MicroSIP-3.12.1-src\\res\\microsip-tray.ico"
+            "TargetName" = "8:microsip-tray.ico"
+            "Tag" = "8:"
+            "Folder" = "8:_FEB251134D4B40CFA0362CF5D6098349"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_39A746B0C1D941CE8286FBC331B8BD42"
             {
             "SourcePath" = "8:..\\Debug\\ssleay32.dll"
@@ -339,20 +389,20 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:MicroSIPFileSetup"
         "ProductCode" = "8:{92CBBE86-B713-4C4B-9EE2-85EC57583DEC}"
-        "PackageCode" = "8:{6F7B1B47-32A5-49F3-A9D1-E46E9F2D6258}"
+        "PackageCode" = "8:{6EFAB572-1CAD-4E52-A6DB-17CA755A0CBC}"
         "UpgradeCode" = "8:{4F0515DB-87F4-4993-B106-017E8C27BBB0}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
-        "RemovePreviousVersions" = "11:FALSE"
+        "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
         "ProductVersion" = "8:1.0.0"
-        "Manufacturer" = "8:Default Company Name"
+        "Manufacturer" = "8:ciii"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
         "Title" = "8:MicroSIPFileSetup"
         "Subject" = "8:"
-        "ARPCONTACT" = "8:Default Company Name"
+        "ARPCONTACT" = "8:ciii"
         "Keywords" = "8:"
         "ARPCOMMENTS" = "8:"
         "ARPURLINFOABOUT" = "8:"
@@ -459,6 +509,34 @@
         }
         "Shortcut"
         {
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_621420A7C700461EB2F63168C3FA9AAE"
+            {
+            "Name" = "8:MicroSipFile"
+            "Arguments" = "8:"
+            "Description" = "8:"
+            "ShowCmd" = "3:1"
+            "IconIndex" = "3:0"
+            "Transitive" = "11:FALSE"
+            "Target" = "8:_CF5D6AD88A17471DB25BFC9FADD163CC"
+            "Folder" = "8:_0CB8F796088B480EBB80C7CE10FE7755"
+            "WorkingFolder" = "8:_FEB251134D4B40CFA0362CF5D6098349"
+            "Icon" = "8:_19F1F9A23205412483397BB8809C94F9"
+            "Feature" = "8:"
+            }
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_BD44195228084F74959FA17BC66C1233"
+            {
+            "Name" = "8:MicroSipFile"
+            "Arguments" = "8:"
+            "Description" = "8:"
+            "ShowCmd" = "3:1"
+            "IconIndex" = "3:0"
+            "Transitive" = "11:FALSE"
+            "Target" = "8:_CF5D6AD88A17471DB25BFC9FADD163CC"
+            "Folder" = "8:_7160B72E42FB450CA447D52BD538767A"
+            "WorkingFolder" = "8:_FEB251134D4B40CFA0362CF5D6098349"
+            "Icon" = "8:_19F1F9A23205412483397BB8809C94F9"
+            "Feature" = "8:"
+            }
         }
         "UserInterface"
         {
