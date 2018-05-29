@@ -489,7 +489,7 @@ static pj_status_t  g711_encode(pjmedia_codec *codec,
 {
     pj_int16_t *samples = (pj_int16_t*) input->buf;
     struct g711_private *priv = (struct g711_private*) codec->codec_data;
-	pj_size_t output_size = input->size >> 3;
+	pj_size_t output_size = input->size >> 1;
 
     /* Check output buffer length */
     if (output_buf_len < output_size)
