@@ -94,7 +94,7 @@ void CStegSuit::Create(pj_pool_t * pool)
 	}
 	for (int i = 0; i<COUNT_CACHE; i++)
 	{
-		m_Cache[i].Length = 0;  m_Cache[i].Time = 0;  m_Window[i].Frame = NULL;
+		m_Cache[i].Length = 0;  m_Cache[i].Time = 0;  m_Cache[i].Frame = NULL;
 	}
 
 	m_Crt.Frame = NULL; m_Crt.Length = 0; m_Crt.Time = 0;
