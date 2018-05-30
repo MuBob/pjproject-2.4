@@ -134,8 +134,10 @@ protected:
 	UINT STMDU, SAEDU, maxSTM, maxSAE;
 
 	SIABuffer SD[2], RC[2]; //SIA层数据发送和接收缓存
-
-	STMFrame m_Window[8], m_Cache[8], m_Crt, m_Rcv;
+#define COUNT_WINDOW_CACHE 8  //统一发送方和接收方的缓存窗口数量
+#define COUNT_WINDOW  COUNT_WINDOW_CACHE
+#define COUNT_CACHE  COUNT_WINDOW_CACHE
+	STMFrame m_Window[COUNT_WINDOW], m_Cache[COUNT_CACHE], m_Crt, m_Rcv;
 	UINT m_SEQ, m_LastRANN, m_LastRSEQ;
 	UINT m_Threshold;
 	UINT m_retranstep;

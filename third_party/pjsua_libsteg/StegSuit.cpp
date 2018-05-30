@@ -88,11 +88,15 @@ void CStegSuit::Create(pj_pool_t * pool)
 	m_LastRANN = 1;
 	m_ActualByte = 0;
 
-	for (int i=0; i<8; i++)
+	for (int i = 0; i<COUNT_WINDOW; i++)
 	{
 		m_Window[i].Length = 0;  m_Window[i].Time = 0;  m_Window[i].Frame = NULL;
+	}
+	for (int i = 0; i<COUNT_CACHE; i++)
+	{
 		m_Cache[i].Length = 0;  m_Cache[i].Time = 0;  m_Window[i].Frame = NULL;
 	}
+
 	m_Crt.Frame = NULL; m_Crt.Length = 0; m_Crt.Time = 0;
 	m_Rcv.Frame = NULL; m_Rcv.Length = 0; m_Rcv.Time = 0;
 	m_Resend.Frame =NULL; m_Resend.Frame=0; m_Resend.Time=0; //重传
@@ -129,9 +133,12 @@ void CStegSuit::Allocate()
 	RC[0].Storage = new BYTE[SIADU];  RC[0].Cursor = RC[0].Storage;
 	RC[1].Storage = new BYTE[SIADU];  RC[1].Cursor = RC[1].Storage;
 
-	for (int i=0; i<8; i++)
+	for (int i = 0; i<COUNT_WINDOW; i++)
 	{
 		m_Window[i].Frame = new BYTE[maxSTM];
+	}
+	for (int i = 0; i<COUNT_CACHE; i++)
+	{
 		m_Cache[i].Frame = new BYTE[maxSTM];
 	}
 	m_Crt.Frame = new BYTE[maxSTM];
@@ -158,10 +165,13 @@ void CStegSuit::Clean()
 	if (SD[1].Storage!=NULL) delete [] SD[1].Storage;  SD[1].Storage = NULL;
 	if (RC[0].Storage!=NULL) delete [] RC[0].Storage;  RC[0].Storage = NULL;
 	if (RC[1].Storage!=NULL) delete [] RC[1].Storage;  RC[1].Storage = NULL;
-	for (int i=0; i<8; i++)
+	for (int i = 0; i<COUNT_WINDOW; i++)
 	{
-		if (m_Window[i].Frame!=NULL) delete [] m_Window[i].Frame;  m_Window[i].Frame = NULL;
-		if (m_Cache[i].Frame!=NULL) delete [] m_Cache[i].Frame;  m_Cache[i].Frame = NULL;
+		if (m_Window[i].Frame != NULL) delete[] m_Window[i].Frame;  m_Window[i].Frame = NULL;
+	}
+	for (int i = 0; i<COUNT_CACHE; i++)
+	{
+		if (m_Cache[i].Frame != NULL) delete[] m_Cache[i].Frame;  m_Cache[i].Frame = NULL;
 	}
 	if (m_Crt.Frame!=NULL) delete [] m_Crt.Frame;  m_Crt.Frame = NULL;
 	if (m_Rcv.Frame!=NULL) delete [] m_Rcv.Frame;  m_Rcv.Frame = NULL;
@@ -333,12 +343,15 @@ UINT CStegSuit::Embedding( void * pCarrier,UINT RTPheadlen, pj_size_t dataLen, c
 	Control( this->m_Seclev );
 
 	Retransmission(); //重传检测
-	if(STMSdata(&datatype) == 1)	//==1 表示重传
+	int status = STMSdata(&datatype);
+	switch (status)
 	{
+	case 1:  //表示重传
+		PJ_LOG(4, (THIS_FILE, "Embedding:-----------------------It will re-send after STMdata!------------------------"));
 		SAESdata(pCarrier, RTPheadlen, dataLen, pPcm);	//嵌入数据
- 		if(m_ActualByte == m_Resend.Length - 3 )	//重传成功，要求重传的字节数
- 		{
-			delete [] m_Retrans.front().Frame;
+		if (m_ActualByte == m_Resend.Length - 3)	//重传成功，要求重传的字节数
+		{
+			delete[] m_Retrans.front().Frame;
 			m_Retrans.front().Frame = NULL;
 			m_Retrans.pop();	//嵌入成功，丢弃
 			STMSheader(datatype);	//组装STM包头
@@ -346,9 +359,17 @@ UINT CStegSuit::Embedding( void * pCarrier,UINT RTPheadlen, pj_size_t dataLen, c
 
 			memset(m_Resend.Frame, 0, maxSTM);
 			m_Resend.Length = 0;
-			m_Resend.Time = 0;	
+			m_Resend.Time = 0;
 			return 2;
 		}
+		break;
+	case 2:
+		PJ_LOG(4, (THIS_FILE, "Embedding:-----------------------It has full windows after STMdata!------------------------"));
+		break;
+	case 3:
+		break;
+	default:
+		break;
 	}
 
 	//重嵌入失败或正常发送
@@ -374,13 +395,13 @@ UINT CStegSuit::Retransmission()
 	{
 		m_Threshold = HThreshold; 
 	}
-	for (UINT i=0; i<8; i++)
-		if (m_Window[i].Length != 0) m_Window[i].Time ++;  // Add time
+	for (UINT i = 0; i < COUNT_WINDOW; i++)
+		if (m_Window[i].Length != 0) m_Window[i].Time++;   // Add time
 
-	if ( m_Window[ (m_LastRANN -1 ) & 0x7 ].Length != 0 )
+	if (m_Window[m_LastRANN & COUNT_WINDOW].Length != 0)
 		m_Threshold = LThreshold;	//网络通畅
 
-	for ( UINT i=0; i<8; i++)
+	for ( UINT i=0; i<COUNT_WINDOW; i++)
 	{
 		if ( m_Window[i].Length !=0 && Inside( m_Window[i].Frame[2]>>4, m_LastRANN ) )	//对方已处理，滑动窗口
 		{
@@ -390,7 +411,7 @@ UINT CStegSuit::Retransmission()
 		}
 	}
 	UINT delay = 0, pos = 0;
-	for (int i = 0; i < 8; i++) // retransmit
+	for (int i = 0; i < COUNT_WINDOW; i++) // retransmit
 	{
 		if (m_Window[i].Time > delay)
 		{
@@ -438,11 +459,12 @@ UINT CStegSuit::STMSdata(int *datatype)		//向SIA申请数据
 		m_Crt.Length = m_Resend.Length;
 		return 1;
 	}
-	else if( m_Window[ (m_SEQ+1)%8 ].Length != 0 )	//发送窗口满禁止发送
+	else if( m_Window[ (m_SEQ+1)% COUNT_WINDOW].Length != 0 )	//发送窗口满禁止发送
 	{
+		//TODO: 2018\05\30 by BobMu: if windows full will ignore this frame or stop-wait?!
 		return 2;  // Window full
 	}
-	else
+	else  //正常情况
 	{
 		//从SD拉一个最长为STMDU长的数据
 		for (int i = 0; i < 2; ++i)
@@ -543,8 +565,8 @@ UINT CStegSuit::STMSheader(int datatype)
 			SD[i].Length -= len;		//滑动窗口
 			SD[i].Cursor += len;		//
 
-			memcpy ( m_Window[ m_SEQ & 0x7 ].Frame, m_Crt.Frame, STMDU );	//加入发送滑动窗口
-			m_Window[ m_SEQ & 0x7 ].Length = m_Crt.Length;					//加入发送滑动窗口
+			memcpy(m_Window[(m_SEQ + 1) & COUNT_WINDOW].Frame, m_Crt.Frame, STMDU);	//加入发送滑动窗口
+			m_Window[(m_SEQ + 1) & COUNT_WINDOW].Length = m_Crt.Length;				//加入发送滑动窗口
 			//TRACE(_T("Send: %d\n"), m_SEQ);
 
 			if (SD[i].Length == 0)				//隐秘信息应用层数据发送完毕
@@ -707,8 +729,8 @@ UINT CStegSuit::STMR()
 			if ( Between( Seq, m_LastRSEQ) )
 			{
 				//获取机密信息至接收滑动窗口，这里并不考虑顺序
-				memcpy ( m_Cache[ Seq & 0x7 ].Frame, m_Rcv.Frame, STMDU );
-				m_Cache[ Seq & 0x7 ].Length = 1; // denote there is a valid frame
+				memcpy(m_Cache[(Seq + 1) & COUNT_CACHE].Frame, m_Rcv.Frame, STMDU);
+				m_Cache[(Seq + 1) & COUNT_CACHE].Length = 1; // denote there is a valid frame
 				m_LastRANN = m_Rcv.Frame[2] & 0xF;		//为发送端起始序号
 			}	//其他为重发的包,确认号没有时效性
 			
@@ -717,14 +739,14 @@ UINT CStegSuit::STMR()
 
 	//按序提交数据
 	bool NewRequst1 = false, NewRequst2 = false; 
-	while ( m_Cache[ (m_LastRSEQ+1) & 0x7 ].Length != 0 )		//保证顺序
+	while ( m_Cache[ (m_LastRSEQ+1+1) & COUNT_CACHE].Length != 0 )		//保证顺序
 	{
-		memcpy ( m_Rcv.Frame, m_Cache[ (m_LastRSEQ+1) & 0x7 ].Frame, STMDU );	//按序处理一个数据
+		memcpy ( m_Rcv.Frame, m_Cache[ (m_LastRSEQ+1+1) & COUNT_CACHE].Frame, STMDU );	//按序处理一个数据
 		UINT Seq = ( m_Rcv.Frame[2] >> 4 ) & 0xF;
 		UINT len = ( m_Rcv.Frame[0] & 0x7 ) + ( ( m_Rcv.Frame[1] & 0x7F ) * 8 );
 		UINT type = ( m_Rcv.Frame[0] >> 3 ) & 0x3;
 
-		m_Cache[ (m_LastRSEQ+1) & 0x7 ].Length = 0;		//滑动窗口向前移动
+		m_Cache[ (m_LastRSEQ+1+1) & COUNT_CACHE].Length = 0;		//滑动窗口向前移动
 
 		m_LastRSEQ = Seq;		//LastRSEQ表示己方已经处理的序号
 
