@@ -398,8 +398,9 @@ UINT CStegSuit::Retransmission()
 	for (UINT i = 0; i < COUNT_WINDOW; i++)
 		if (m_Window[i].Length != 0) m_Window[i].Time++;   // Add time
 
-	if (m_Window[m_LastRANN & COUNT_WINDOW].Length != 0)
-		m_Threshold = LThreshold;	//没有占用窗口，网络通畅
+//	if (m_Window[m_LastRANN & COUNT_WINDOW].Length != 0)
+	if ( m_Window[ (m_LastRANN -1 ) & 0x7 ].Length != 0 )
+		m_Threshold = LThreshold;	//网络通畅
 
 	for ( UINT i=0; i<COUNT_WINDOW; i++)
 	{
@@ -564,9 +565,11 @@ UINT CStegSuit::STMSheader(int datatype)
 	
 			SD[i].Length -= len;		//滑动窗口
 			SD[i].Cursor += len;		//
-
-			memcpy(m_Window[(m_SEQ + 1) & COUNT_WINDOW].Frame, m_Crt.Frame, STMDU);	//加入发送滑动窗口
-			m_Window[(m_SEQ + 1) & COUNT_WINDOW].Length = m_Crt.Length;				//加入发送滑动窗口
+	
+//			memcpy(m_Window[(m_SEQ + 1) & COUNT_WINDOW].Frame, m_Crt.Frame, STMDU);	//加入发送滑动窗口
+//			m_Window[(m_SEQ + 1) & COUNT_WINDOW].Length = m_Crt.Length;				//加入发送滑动窗口
+			memcpy ( m_Window[ m_SEQ & 0x7 ].Frame, m_Crt.Frame, STMDU );	//加入发送滑动窗口
+			m_Window[ m_SEQ & 0x7 ].Length = m_Crt.Length;					//加入发送滑动窗口
 			//TRACE(_T("Send: %d\n"), m_SEQ);
 
 			if (SD[i].Length == 0)				//隐秘信息应用层数据发送完毕
@@ -729,8 +732,10 @@ UINT CStegSuit::STMR()
 			if ( Between( Seq, m_LastRSEQ) )
 			{
 				//获取机密信息至接收滑动窗口，这里并不考虑顺序
-				memcpy(m_Cache[(Seq + 1) & COUNT_CACHE].Frame, m_Rcv.Frame, STMDU);
-				m_Cache[(Seq + 1) & COUNT_CACHE].Length = 1; // denote there is a valid frame
+//				memcpy(m_Cache[(Seq + 1) & COUNT_CACHE].Frame, m_Rcv.Frame, STMDU);
+//				m_Cache[(Seq + 1) & COUNT_CACHE].Length = 1; // denote there is a valid frame
+				memcpy ( m_Cache[ Seq & 0x7 ].Frame, m_Rcv.Frame, STMDU );
+				m_Cache[ Seq & 0x7 ].Length = 1; // denote there is a valid frame
 				m_LastRANN = m_Rcv.Frame[2] & 0xF;		//为发送端起始序号
 			}	//其他为重发的包,确认号没有时效性
 			
@@ -739,14 +744,17 @@ UINT CStegSuit::STMR()
 
 	//按序提交数据
 	bool NewRequst1 = false, NewRequst2 = false; 
-	while ( m_Cache[ (m_LastRSEQ+1+1) & COUNT_CACHE].Length != 0 )		//保证顺序
+//	while ( m_Cache[ (m_LastRSEQ+1+1) & COUNT_CACHE].Length != 0 )		//保证顺序
+	while ( m_Cache[ (m_LastRSEQ+1) & 0x7 ].Length != 0 )		//保证顺序
 	{
-		memcpy ( m_Rcv.Frame, m_Cache[ (m_LastRSEQ+1+1) & COUNT_CACHE].Frame, STMDU );	//按序处理一个数据
+//		memcpy ( m_Rcv.Frame, m_Cache[ (m_LastRSEQ+1+1) & COUNT_CACHE].Frame, STMDU );	//按序处理一个数据
+		memcpy ( m_Rcv.Frame, m_Cache[ (m_LastRSEQ+1) & 0x7 ].Frame, STMDU );	//按序处理一个数据
 		UINT Seq = ( m_Rcv.Frame[2] >> 4 ) & 0xF;
 		UINT len = ( m_Rcv.Frame[0] & 0x7 ) + ( ( m_Rcv.Frame[1] & 0x7F ) * 8 );
 		UINT type = ( m_Rcv.Frame[0] >> 3 ) & 0x3;
 
-		m_Cache[ (m_LastRSEQ+1+1) & COUNT_CACHE].Length = 0;		//滑动窗口向前移动
+//		m_Cache[ (m_LastRSEQ+1+1) & COUNT_CACHE].Length = 0;		//滑动窗口向前移动
+		m_Cache[ (m_LastRSEQ+1) & 0x7 ].Length = 0;		//滑动窗口向前移动
 
 		m_LastRSEQ = Seq;		//LastRSEQ表示己方已经处理的序号
 
