@@ -36,6 +36,7 @@ protected:
 	UINT m_SLength, m_SndLength, m_RLength, m_RcvLength;
 	UINT m_SFStep, m_RFStep;//
 	CString m_exePath;      // 用于保存应用程序所在路径
+	CString m_RFFullPath;      // 用于保存接收文件所在路径
 	HANDLE m_FileTrd[2];    // 发送接收文件两个线程的句柄，用于等待线程结束
 
 public:
