@@ -364,7 +364,7 @@ UINT CStegSuit::Embedding( void * pCarrier,UINT RTPheadlen, pj_size_t dataLen, c
 		}
 		break;
 	case 2:
-		PJ_LOG(4, (THIS_FILE, "Embedding:-----------------------It has full windows after STMdata!------------------------"));
+//		PJ_LOG(4, (THIS_FILE, "Embedding:-----------------------It has full windows after STMdata!------------------------"));
 		break;
 	case 3:
 		break;
