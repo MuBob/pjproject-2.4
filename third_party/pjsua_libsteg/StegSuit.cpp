@@ -399,7 +399,7 @@ UINT CStegSuit::Retransmission()
 		if (m_Window[i].Length != 0) m_Window[i].Time++;   // Add time
 
 	if (m_Window[m_LastRANN & COUNT_WINDOW].Length != 0)
-		m_Threshold = LThreshold;	//网络通畅
+		m_Threshold = LThreshold;	//没有占用窗口，网络通畅
 
 	for ( UINT i=0; i<COUNT_WINDOW; i++)
 	{
