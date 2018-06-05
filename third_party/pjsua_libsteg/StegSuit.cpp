@@ -308,7 +308,7 @@ bool CStegSuit::Between (UINT Seq, UINT LastRSEQ)
 	UINT Cnt = 0;
 	while ( !Hit )
 	{
-		if ( Seq == (LastRSEQ+1)%16 ) Hit = true;
+		if ( Seq == (LastRSEQ+1)% (2 * COUNT_WINDOW_CACHE)) Hit = true;
 		LastRSEQ ++;
 		Cnt ++;
 		if ( Cnt == COUNT_CACHE ) break;
@@ -323,11 +323,11 @@ bool CStegSuit::Inside(UINT Seq, UINT LastRANN)
 	bool Hit = false;
 	while ( !Hit )
 	{
-		if ( Seq == (LastRANN+16-1)%16 )
+		if ( Seq == (LastRANN+ (2 * COUNT_WINDOW_CACHE) -1)% (2 * COUNT_WINDOW_CACHE))
 		{
 			Hit = true;
 		}
-		LastRANN = LastRANN + 16 -1;
+		LastRANN = LastRANN + (2 * COUNT_WINDOW_CACHE) -1;
 		Cnt ++;
 		if ( Cnt == COUNT_WINDOW ) break;
 	}
@@ -544,7 +544,7 @@ UINT CStegSuit::STMSheader(int datatype)
 		//重写一次
 		memcpy( m_Crt.Frame, m_Resend.Frame, m_Resend.Length);	//将重传包形成STM帧
 		m_Crt.Length = m_Resend.Length;
-		m_Crt.Frame[2] = (m_Crt.Frame[2] & 0xF0) +((m_LastRSEQ+1)%16 );	//重传仅修改一个地方		
+		m_Crt.Frame[2] = (m_Crt.Frame[2] & 0xF0) +((m_LastRSEQ+1)% (2 * COUNT_WINDOW_CACHE));	//重传仅修改一个地方		
 	}
 	else	//新包
 	{
@@ -559,10 +559,10 @@ UINT CStegSuit::STMSheader(int datatype)
 
 		if(len > 0)		//机密信息包
 		{
-			m_SEQ = (m_SEQ+1) % 16;		//分段标号，数据太长可能会分片发送
+			m_SEQ = (m_SEQ + 1) % (2 * COUNT_WINDOW_CACHE);		//分段标号，数据太长可能会分片发送
 			m_Crt.Frame[0] = 0x40 + 8*(i+1) + (len & 0x7) ;
 			m_Crt.Frame[1] = ( len >> 3 ) + ( odd << 7 );
-			m_Crt.Frame[2] = ( m_SEQ << 4 ) + ( (m_LastRSEQ+1)%16 );
+			m_Crt.Frame[2] = ( m_SEQ << 4 ) + ( (m_LastRSEQ+1)% (2 * COUNT_WINDOW_CACHE));
 			m_Crt.Length = len + 3;		//对SAE层来说的数据大小，包括STM头
 	
 			SD[i].Length -= len;		//滑动窗口
@@ -586,10 +586,10 @@ UINT CStegSuit::STMSheader(int datatype)
 		}
 		else	//空包，无机密信息
 		{
-			UINT seq = ( m_LastRANN + 16 - 1)%16;		//分段标号为对方接收窗口外
+			UINT seq = ( m_LastRANN + (2 * COUNT_WINDOW_CACHE) - 1)% (2 * COUNT_WINDOW_CACHE);		//分段标号为对方接收窗口外
 			m_Crt.Frame[0] = 0x40 + 8*(i+1) + (len & 0x7) ;
 			m_Crt.Frame[1] = ( len >> 3 ) + ( odd << 7 );
-			m_Crt.Frame[2] = ( seq << 4 ) + ( (m_LastRSEQ+1)%16 );
+			m_Crt.Frame[2] = ( seq << 4 ) + ( (m_LastRSEQ+1)% (2 * COUNT_WINDOW_CACHE));
 			m_Crt.Length = len + 3;		//对SAE层来说的数据大小
 		}
 
