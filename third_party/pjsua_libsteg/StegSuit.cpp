@@ -125,7 +125,7 @@ void CStegSuit::Allocate()
 {
 	maxSAE = g711_SAEDU + m_pRTP->GetParam(2);
 	maxSTM = maxSAE * m_nSegment;
-	SIADU = (maxSTM-3)*16*((maxSTM-3)*16>=MAX_PATH*2) + MAX_PATH*2*((maxSTM-3)*16<MAX_PATH*2);
+	SIADU = (maxSTM-3)*(2 * COUNT_WINDOW_CACHE)*((maxSTM-3)*(2 * COUNT_WINDOW_CACHE) >=MAX_PATH*2) + MAX_PATH*2*((maxSTM-3)*(2 * COUNT_WINDOW_CACHE)<MAX_PATH*2);
 
 	Harves = SIADU/2;
 	
