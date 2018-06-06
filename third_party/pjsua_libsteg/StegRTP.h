@@ -13,5 +13,5 @@ class CStegRTP : public CStegLSB
 public:
 	void InitPosBook();
 	void PreparePosBook();
-	unsigned int GetParam(unsigned int sel);
+	UINT GetParam(UINT sel);
 };

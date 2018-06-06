@@ -70,7 +70,7 @@ void CStegRTP::PreparePosBook()
 	m_prepared = true; 
 }
 
-unsigned int GetParam(unsigned int sel)
+UINT CStegRTP::GetParam(UINT sel)
 {
 	switch (sel)
 	{
