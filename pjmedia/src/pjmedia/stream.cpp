@@ -39,12 +39,12 @@
 
 #include <iostream>
 
-#include <third_party/pjsua_libsteg/StegSuit.h>
+#include <StegSuit.h>
 
- CStegSuit m_pSteg;
+CStegSuit m_pSteg;
 //extern struct pjsua_data pjsua_var;
 
-#define THIS_FILE			"stream.c"
+#define THIS_FILE			"stream.cpp"
 #define ERRLEVEL			1
 #define LOGERR_(expr)			stream_perror expr
 #define TRC_(expr)			PJ_LOG(5,expr)
