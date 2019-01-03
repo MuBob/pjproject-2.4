@@ -151,9 +151,20 @@ CString PjToStr(const pj_str_t* str, BOOL utf)
 	}
 }
 
+pj_str_t StrAToPjStr(CStringA stra)
+{
+	char* t=StrAToPj(stra);
+	return pj_str(t);
+}
+
 pj_str_t StrToPjStr(CString str)
 {
 	return pj_str(StrToPj(str));
+}
+
+char* StrAToPj(CStringA stra)
+{
+	return stra.GetBuffer();
 }
 
 char* StrToPj(CString str)

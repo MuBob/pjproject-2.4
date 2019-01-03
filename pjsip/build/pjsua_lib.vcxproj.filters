@@ -38,6 +38,9 @@
     <ClCompile Include="..\src\pjsua-lib\pjsua_call.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\pjsua-lib\pjsua_file.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\pjsua-lib\pjsua.h">

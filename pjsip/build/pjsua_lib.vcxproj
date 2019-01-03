@@ -343,6 +343,7 @@
     <ClCompile Include="..\src\pjsua-lib\pjsua_call.cpp" />
     <ClCompile Include="..\src\pjsua-lib\pjsua_core.c" />
     <ClCompile Include="..\src\pjsua-lib\pjsua_dump.c" />
+    <ClCompile Include="..\src\pjsua-lib\pjsua_file.cpp" />
     <ClCompile Include="..\src\pjsua-lib\pjsua_im.cpp" />
     <ClCompile Include="..\src\pjsua-lib\pjsua_media.c" />
     <ClCompile Include="..\src\pjsua-lib\pjsua_pres.c" />

@@ -20,6 +20,7 @@
 #define __PJSUA_APP_COMMON_H__
 
 #include <pjsua-lib/pjsua.h>
+#include <pjmedia/steg_file.h>
 
 PJ_BEGIN_DECL
 

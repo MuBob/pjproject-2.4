@@ -240,7 +240,7 @@ static pj_status_t g711_test_alloc(pjmedia_codec_factory *factory,
     PJ_UNUSED_ARG(factory);
 
     /* It's sufficient to check payload type only. */
-    return (id->pt==PJMEDIA_RTP_PT_PCMU || id->pt==PJMEDIA_RTP_PT_PCMA)? 0:-1;
+    return (id->pt==PJMEDIA_RTP_PT_PCMU || id->pt == PJMEDIA_RTP_PT_PCMA || id->pt == PJMEDIA_RTP_PT_PCMA_SMALL)? 0:-1;
 }
 
 static pj_status_t g711_default_attr (pjmedia_codec_factory *factory, 
@@ -249,55 +249,63 @@ static pj_status_t g711_default_attr (pjmedia_codec_factory *factory,
 {
     PJ_UNUSED_ARG(factory);
 
-    pj_bzero(attr, sizeof(pjmedia_codec_param));
-    attr->info.clock_rate = 8000;
-    attr->info.channel_cnt = 1;
-    attr->info.avg_bps = G711_BPS;
-    attr->info.max_bps = G711_BPS;
-    attr->info.pcm_bits_per_sample = 16;
-    attr->info.frm_ptime = PTIME;
-    attr->info.pt = (pj_uint8_t)id->pt;
+	pj_bzero(attr, sizeof(pjmedia_codec_param));
+	attr->info.clock_rate = 8000;
+	attr->info.channel_cnt = 1;
+	attr->info.avg_bps = G711_BPS;
+	attr->info.max_bps = G711_BPS;
+	attr->info.pcm_bits_per_sample = 16;
+	attr->info.frm_ptime = PTIME;
+	attr->info.pt = (pj_uint8_t)id->pt;
 
-    /* Set default frames per packet to 2 (or 20ms) */
-    attr->setting.frm_per_pkt = 2;
+	/* Set default frames per packet to 2 (or 20ms) */
+	attr->setting.frm_per_pkt = 2;
 
 #if !PLC_DISABLED
-    /* Enable plc by default. */
-    attr->setting.plc = 1;
+	/* Enable plc by default. */
+	attr->setting.plc = 1;
 #endif
 
-    /* Enable VAD by default. */
-    attr->setting.vad = 1;
+	/* Enable VAD by default. */
+	attr->setting.vad = 1;
 
-    /* Default all other flag bits disabled. */
+	/* Default all other flag bits disabled. */
 
-    return PJ_SUCCESS;
+	return PJ_SUCCESS;
 }
 
-static pj_status_t g711_enum_codecs(pjmedia_codec_factory *factory, 
-				    unsigned *max_count, 
-				    pjmedia_codec_info codecs[])
+static pj_status_t g711_enum_codecs(pjmedia_codec_factory *factory,
+	unsigned *max_count,
+	pjmedia_codec_info codecs[])
 {
-    unsigned count = 0;
+	unsigned count = 0;
 
-    PJ_UNUSED_ARG(factory);
+	PJ_UNUSED_ARG(factory);
 
-    if (count < *max_count) {
-	codecs[count].type = PJMEDIA_TYPE_AUDIO;
-	codecs[count].pt = PJMEDIA_RTP_PT_PCMU;
-	codecs[count].encoding_name = pj_str("PCMU");
-	codecs[count].clock_rate = 8000;
-	codecs[count].channel_cnt = 1;
-	++count;
-    }
-    if (count < *max_count) {
-	codecs[count].type = PJMEDIA_TYPE_AUDIO;
-	codecs[count].pt = PJMEDIA_RTP_PT_PCMA;
-	codecs[count].encoding_name = pj_str("PCMA");
-	codecs[count].clock_rate = 8000;
-	codecs[count].channel_cnt = 1;
-	++count;
-    }
+	if (count < *max_count) {
+		codecs[count].type = PJMEDIA_TYPE_AUDIO;
+		codecs[count].pt = PJMEDIA_RTP_PT_PCMU;
+		codecs[count].encoding_name = pj_str("PCMU");
+		codecs[count].clock_rate = 8000;
+		codecs[count].channel_cnt = 1;
+		++count;
+	}
+	if (count < *max_count) {
+		codecs[count].type = PJMEDIA_TYPE_AUDIO;
+		codecs[count].pt = PJMEDIA_RTP_PT_PCMA;
+		codecs[count].encoding_name = pj_str("PCMA");
+		codecs[count].clock_rate = 8000;
+		codecs[count].channel_cnt = 1;
+		++count;
+	}
+	if (count < *max_count) {
+		codecs[count].type = PJMEDIA_TYPE_AUDIO;
+		codecs[count].pt = PJMEDIA_RTP_PT_PCMA_SMALL;
+		codecs[count].encoding_name = pj_str("PCMA-SMALL");
+		codecs[count].clock_rate = 8000;
+		codecs[count].channel_cnt = 1;
+		++count;
+	}
 
     *max_count = count;
 
@@ -489,8 +497,10 @@ static pj_status_t  g711_encode(pjmedia_codec *codec,
 {
     pj_int16_t *samples = (pj_int16_t*) input->buf;
     struct g711_private *priv = (struct g711_private*) codec->codec_data;
-	pj_size_t output_size = input->size >> 3;
-
+	pj_size_t output_size = input->size >> 1;
+	if (priv->pt== PJMEDIA_RTP_PT_PCMA_SMALL) {
+		output_size = input->size >> 3;
+	}
     /* Check output buffer length */
     if (output_buf_len < output_size)
 	return PJMEDIA_CODEC_EFRMTOOSHORT;
@@ -521,7 +531,7 @@ static pj_status_t  g711_encode(pjmedia_codec *codec,
     }
 
     /* Encode */
-    if (priv->pt == PJMEDIA_RTP_PT_PCMA) {
+    if (priv->pt == PJMEDIA_RTP_PT_PCMA|| priv->pt == PJMEDIA_RTP_PT_PCMA_SMALL) {
 	unsigned i, n;
 	pj_uint8_t *dst = (pj_uint8_t*) output->buf;
 
@@ -565,7 +575,7 @@ static pj_status_t  g711_decode(pjmedia_codec *codec,
 		     PJMEDIA_CODEC_EFRMINLEN);
 
     /* Decode */
-    if (priv->pt == PJMEDIA_RTP_PT_PCMA) {
+    if (priv->pt == PJMEDIA_RTP_PT_PCMA || priv->pt == PJMEDIA_RTP_PT_PCMA_SMALL) {
 	unsigned i;
 	pj_uint8_t *src = (pj_uint8_t*) input->buf;
 	pj_uint16_t *dst = (pj_uint16_t*) output->buf;

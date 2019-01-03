@@ -52,6 +52,11 @@ static UINT BASED_CODE indicators[] =
 	IDS_STATUSBAR
 };
 
+#ifndef PJSIP_TLS_PORT
+#define PJSIP_TLS_PORT 5061
+#endif // !PJSIP_TLS_PORT
+
+
 static bool timerContactBlinkState = false;
 
 static CString gethostbyaddrThreadResult;
@@ -189,9 +194,26 @@ static void on_call_state(pjsua_call_id call_id, pjsip_event *e)
 				}
 			}
 		}
+		if ((mainDlg->m_RFFullPath.slen<=0))
+		{
+			TCHAR Path[MAX_PATH];
+			GetCurrentDirectory(MAX_PATH, Path);
+			mainDlg->m_exePath.Format(_T("%s"), Path);
+
+			CString path = mainDlg->m_exePath + _T("\\temp");
+			if (!PathFileExists(path))
+			{
+				CreateDirectory(path, NULL);
+			}
+			path += _T("\\");
+			mainDlg->m_RFFullPath = StrToPjStr(path);
+		}
+		pjsua_steg_file_thread_start(&(mainDlg->m_RFFullPath));
+
 		break;
 
 	case PJSIP_INV_STATE_DISCONNECTED:
+		pjsua_steg_file_thread_stop(&(mainDlg->m_RFFullPath));
 		call_deinit_tonegen(call_info->id);
 		if (call_info->last_status == 200) {
 			str->SetString(Translate(_T("Call ended")));
@@ -798,6 +820,74 @@ LRESULT CmainDlg::onCallTransferStatus(WPARAM wParam, LPARAM lParam)
 	return 0;
 }
 
+typedef struct PjmediaProgress {
+	const pj_str_t* str;
+	UINT len;
+	float p;
+}PjmediaProgress;
+static void on_pjmedia_file_receive_progress(const pj_str_t *fName, unsigned int len, float p)
+{
+	PjmediaProgress file_receive_progress = { fName, len, p };
+	SendMessage(mainDlg->m_hWnd, CB_ON_FILE_RECEIVE_PROGRESS, (WPARAM)&file_receive_progress, (LPARAM)p);
+}
+
+LRESULT CmainDlg::onPjmediaFileReceiveProgress(WPARAM wParam, LPARAM lParam) {
+	PjmediaProgress file_receive_progress = *(PjmediaProgress*)wParam;
+	con_dlg.on_pjmedia_file_receive_progress(file_receive_progress.str, file_receive_progress.len, file_receive_progress.p);
+	return 0;
+}
+
+static void on_pjmedia_file_receive_result(const pj_str_t *fName, int status)
+{
+	SendMessage(mainDlg->m_hWnd, CB_ON_FILE_RECEIVE_RESULT, (WPARAM)fName, (LPARAM)status);
+}
+
+LRESULT CmainDlg::onPjmediaFileReceiveResult(WPARAM wParam, LPARAM lParam) {
+	con_dlg.on_pjmedia_file_receive_result((const pj_str_t *)wParam, (int)lParam);
+	return 0;
+}
+
+static void on_pjmedia_file_send_progress(const pj_str_t *fName, unsigned int len, float p)
+{
+	PjmediaProgress file_send_progress = { fName, len, p };
+	SendMessage(mainDlg->m_hWnd, CB_ON_FILE_SEND_PROGRESS, (WPARAM)&file_send_progress, (LPARAM)p);
+}
+
+LRESULT CmainDlg::onPjmediaFileSendProgress(WPARAM wParam, LPARAM lParam) {
+	PjmediaProgress file_send_progress = *(PjmediaProgress*)wParam;
+	con_dlg.on_pjmedia_file_send_progress(file_send_progress.str, file_send_progress.len, file_send_progress.p);
+	return 0;
+}
+static void on_pjmedia_file_send_result(const pj_str_t *fName, int status)
+{
+	SendMessage(mainDlg->m_hWnd, CB_ON_FILE_SEND_RESULT, (WPARAM)fName, (LPARAM)status);
+}
+
+LRESULT CmainDlg::onPjmediaFileSendResult(WPARAM wParam, LPARAM lParam) {
+	con_dlg.on_pjmedia_file_send_result((const pj_str_t *)wParam, (int)lParam);
+	return 0;
+}
+
+static void on_pjmedia_msg_receive_result(const pj_str_t *msg)
+{
+	SendMessage(mainDlg->m_hWnd, CB_ON_MSG_RECEIVE_RESULT, (WPARAM)msg, (LPARAM)msg);
+}
+
+LRESULT CmainDlg::onPjmediaMsgReceiveResult(WPARAM wParam, LPARAM lParam) {
+	con_dlg.on_pjmedia_msg_receive_result((const pj_str_t *)wParam);
+	return 0;
+}
+
+static void on_pjmedia_msg_send_result(int status)
+{
+	SendMessage(mainDlg->m_hWnd, CB_ON_MSG_SEND_RESULT, (WPARAM)status, (LPARAM)status);
+}
+
+LRESULT CmainDlg::onPjmediaMsgSendResult(WPARAM wParam, LPARAM lParam) {
+	con_dlg.on_pjmedia_msg_send_result((int)wParam);
+	return 0;
+}
+
 CmainDlg::~CmainDlg(void)
 {
 	KillTimer(IDT_TIMER_0);
@@ -870,6 +960,12 @@ BEGIN_MESSAGE_MAP(CmainDlg, CBaseDialog)
 	ON_COMMAND(ID_WEBSITE, OnMenuWebsite)
 	ON_COMMAND(ID_DONATE, OnMenuDonate)
 	ON_MESSAGE(WM_HOTKEY, OnHotKey)   // air 2016.12.1
+	ON_MESSAGE(CB_ON_FILE_RECEIVE_PROGRESS, onPjmediaFileReceiveProgress)
+	ON_MESSAGE(CB_ON_FILE_RECEIVE_RESULT, onPjmediaFileReceiveResult)
+	ON_MESSAGE(CB_ON_FILE_SEND_PROGRESS, onPjmediaFileSendProgress)
+	ON_MESSAGE(CB_ON_FILE_SEND_RESULT, onPjmediaFileSendResult)
+	ON_MESSAGE(CB_ON_MSG_RECEIVE_RESULT, onPjmediaMsgReceiveResult)
+	ON_MESSAGE(CB_ON_MSG_SEND_RESULT, onPjmediaMsgSendResult)
 #ifdef _GLOBAL_VIDEO
 #endif
 END_MESSAGE_MAP()
@@ -1673,6 +1769,8 @@ void CmainDlg::PJCreate()
 	player_id = PJSUA_INVALID_ID;
 
 	// check updates
+	accountSettings.updatesInterval = _T("never");
+	accountSettings.SettingsSave();
 	if (accountSettings.updatesInterval != _T("never"))
 	{
 		CTime t = CTime::GetCurrentTime();
@@ -1739,6 +1837,12 @@ void CmainDlg::PJCreate()
 	ua_cfg.cb.on_pager_status = &on_pager_status;
 	ua_cfg.cb.on_call_transfer_request2 = &on_call_transfer_request2;
 	ua_cfg.cb.on_call_transfer_status = &on_call_transfer_status;
+	ua_cfg.cb.on_pjmedia_file_receive_progress = &on_pjmedia_file_receive_progress;
+	ua_cfg.cb.on_pjmedia_file_receive_result = &on_pjmedia_file_receive_result;
+	ua_cfg.cb.on_pjmedia_file_send_progress = &on_pjmedia_file_send_progress;
+	ua_cfg.cb.on_pjmedia_file_send_result = &on_pjmedia_file_send_result;
+	ua_cfg.cb.on_pjmedia_msg_receive_result = &on_pjmedia_msg_receive_result;
+	ua_cfg.cb.on_pjmedia_msg_send_result = &on_pjmedia_msg_send_result;
 
 	ua_cfg.srtp_secure_signaling = 0;
 
@@ -1964,7 +2068,7 @@ void CmainDlg::PJCreate()
 		pjsua_transport_create(PJSIP_TRANSPORT_TCP, &cfg, &transport_tcp);
 	}
 
-	cfg.port = accountSettings.disableLocalAccount ? 0 : 5061;
+	cfg.port = accountSettings.disableLocalAccount ? 0 : PJSIP_TLS_PORT;
 	status = pjsua_transport_create(PJSIP_TRANSPORT_TLS, &cfg, &transport_tls);
 	if (status != PJ_SUCCESS && cfg.port) {
 		cfg.port = 0;

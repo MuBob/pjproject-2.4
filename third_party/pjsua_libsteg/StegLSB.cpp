@@ -85,7 +85,7 @@ bool CStegLSB::Extract(unsigned char* Dt, unsigned int Dtlen, bool * Sn, unsigne
 		}
 	}
 	//提取数据
-	if ( Dtlen != NULL )
+	if ( Dt != NULL )
 	{
 		for ( unsigned int i = 0; i < Dtlen; i ++ )
 		{

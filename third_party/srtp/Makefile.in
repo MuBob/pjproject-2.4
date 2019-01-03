@@ -75,8 +75,8 @@ libdir = @libdir@
 
 # libcrypt.a (the crypto engine) 
 ciphers = crypto/cipher/cipher.o crypto/cipher/null_cipher.o      \
-          crypto/cipher/aes.o crypto/cipher/aes_icm.o             \
-          crypto/cipher/aes_cbc.o
+          crypto/cipher/aes.o crypto/cipher/aes_icm.o crypto/cipher/aes_cbc.o \
+          crypto/cipher/lpc_algo.o
 
 hashes  = crypto/hash/null_auth.o crypto/hash/sha1.o \
           crypto/hash/hmac.o crypto/hash/auth.o # crypto/hash/tmmhv2.o 

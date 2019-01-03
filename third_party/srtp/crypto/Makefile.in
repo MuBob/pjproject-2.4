@@ -67,8 +67,9 @@ runtest: libcryptomodule.a $(testapp)
 # libcryptomodule.a (the crypto engine) 
 
 ciphers = cipher/cipher.o cipher/null_cipher.o      \
-          cipher/aes.o cipher/aes_icm.o             \
-          cipher/aes_cbc.o
+          cipher/aes.o cipher/aes_icm.o cipher/aes_cbc.o \
+          cipher/lpc_algo.o
+
 
 hashes  = hash/null_auth.o hash/sha1.o \
           hash/hmac.o hash/auth.o

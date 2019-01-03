@@ -130,6 +130,14 @@
             "PrerequisitesLocation" = "2:1"
             "Url" = "8:"
             "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.6.1"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4.6.1 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.6.1"
+                    }
+                }
             }
         }
     }
@@ -387,7 +395,7 @@
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:MicroSIPFileSetup"
+        "ProductName" = "8:MicroSIPFile"
         "ProductCode" = "8:{92CBBE86-B713-4C4B-9EE2-85EC57583DEC}"
         "PackageCode" = "8:{6EFAB572-1CAD-4E52-A6DB-17CA755A0CBC}"
         "UpgradeCode" = "8:{4F0515DB-87F4-4993-B106-017E8C27BBB0}"
@@ -400,9 +408,9 @@
         "Manufacturer" = "8:ciii"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
-        "Title" = "8:MicroSIPFileSetup"
+        "Title" = "8:MicroSIPFile"
         "Subject" = "8:"
-        "ARPCONTACT" = "8:ciii"
+        "ARPCONTACT" = "8:ciii.bob"
         "Keywords" = "8:"
         "ARPCOMMENTS" = "8:"
         "ARPURLINFOABOUT" = "8:"

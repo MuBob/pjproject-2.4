@@ -56,7 +56,7 @@ static void init_data()
 
     pj_bzero(&pjsua_var, sizeof(pjsua_var));
 
-    for (i=0; i<PJ_ARRAY_SIZE(pjsua_var.acc); ++i)//最多支持8个account
+    for (i=0; i<PJ_ARRAY_SIZE(pjsua_var.acc); ++i)
 	pjsua_var.acc[i].index = i;
     
     for (i=0; i<PJ_ARRAY_SIZE(pjsua_var.tpdata); ++i)
@@ -754,7 +754,7 @@ static void init_random_seed(void)
 }
 
 /*
- * Instantiate pjsua application.   函数定义，创建pjsua
+ * Instantiate pjsua application.
  */
 PJ_DEF(pj_status_t) pjsua_create(void)
 {
@@ -1125,6 +1125,7 @@ PJ_DEF(pj_status_t) pjsua_init( const pjsua_config *ua_cfg,
 	pjsua_acc_id id = pjsua_var.default_acc;
 	pjsua_acc acc = pjsua_var.acc[id];
     pjsua_set_state(PJSUA_STATE_INIT);
+	pjsua_file_init(pjsua_var.pool);
     pj_log_pop_indent();
     return PJ_SUCCESS;
 

@@ -223,7 +223,8 @@ enum pjmedia_rtp_pt
     PJMEDIA_RTP_PT_MP2T = 33,	    /**< video MPEG2 transport		    */
     PJMEDIA_RTP_PT_H263 = 34,	    /**< video H263			    */
 
-    PJMEDIA_RTP_PT_DYNAMIC = 96     /**< start of dynamic RTP payload	    */
+    PJMEDIA_RTP_PT_DYNAMIC = 96,     /**< start of dynamic RTP payload	    */
+	PJMEDIA_RTP_PT_PCMA_SMALL = 97	    /**< audio PCMA	with 40 in 160		    */
 
 };
 

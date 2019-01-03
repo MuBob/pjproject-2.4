@@ -18,9 +18,6 @@
     <ClCompile Include="..\src\pjsua\wm\main_wm.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\pjsua\pjsua_app.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\pjsua\pjsua_app_cli.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -34,6 +31,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\src\pjsua\pjsua_app_legacy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\pjsua\pjsua_app.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

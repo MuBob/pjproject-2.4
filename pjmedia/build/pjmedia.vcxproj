@@ -213,7 +213,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>../include;../../pjlib/include;../../pjlib-util/include;../../pjnath/include;../../third_party/portaudio/include;../../third_party/speex/include;../../third_party/build/srtp;../../third_party/srtp/include;../../third_party/srtp/crypto/include;../..;$(DXSDK_DIR)include;../../third_party;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../include;../../pjlib/include;../../pjlib-util/include;../../pjnath/include;../../third_party/portaudio/include;../../third_party/pjsua_libsteg/include;../../third_party/speex/include;../../third_party/build/srtp;../../third_party/srtp/include;../../third_party/srtp/crypto/include;../..;$(DXSDK_DIR)include;../../third_party/ffmpeg/include;../../third_party/pjsua_libsteg;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderOutputFile />
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -361,6 +361,7 @@
     <ClCompile Include="..\src\pjmedia\sound_legacy.c" />
     <ClCompile Include="..\src\pjmedia\sound_port.c" />
     <ClCompile Include="..\src\pjmedia\splitcomb.c" />
+    <ClCompile Include="..\src\pjmedia\steg_file.cpp" />
     <ClCompile Include="..\src\pjmedia\stereo_port.c" />
     <ClCompile Include="..\src\pjmedia\stream.cpp" />
     <ClCompile Include="..\src\pjmedia\stream_common.c" />
@@ -423,6 +424,7 @@
     <ClInclude Include="..\include\pjmedia\sound.h" />
     <ClInclude Include="..\include\pjmedia\sound_port.h" />
     <ClInclude Include="..\include\pjmedia\splitcomb.h" />
+    <ClInclude Include="..\include\pjmedia\steg_file.h" />
     <ClInclude Include="..\include\pjmedia\stereo.h" />
     <ClInclude Include="..\include\pjmedia\stream.h" />
     <ClInclude Include="..\include\pjmedia\stream_common.h" />

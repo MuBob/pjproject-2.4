@@ -59,6 +59,13 @@ enum EUserWndMessages
 	UM_CLOSETAB,
 	UM_DBLCLICKTAB,
 	UM_QUERYTAB,
+
+	CB_ON_FILE_RECEIVE_PROGRESS,
+	CB_ON_FILE_RECEIVE_RESULT,
+	CB_ON_FILE_SEND_PROGRESS,
+	CB_ON_FILE_SEND_RESULT,
+	CB_ON_MSG_RECEIVE_RESULT,
+	CB_ON_MSG_SEND_RESULT,
 };
 
 enum {MSIP_MESSAGE_TYPE_LOCAL, MSIP_MESSAGE_TYPE_REMOTE, MSIP_MESSAGE_TYPE_SYSTEM};
@@ -128,7 +135,9 @@ CString RemovePort(CString domain);
 void ParseSIPURI(CString in, SIPURI* out);
 CString PjToStr(const pj_str_t* str, BOOL utf = FALSE);
 pj_str_t StrToPjStr(CString str);
+pj_str_t StrAToPjStr(CStringA stra);
 char* StrToPj(CString str);
+char* StrAToPj(CStringA stra);
 CString Utf8DecodeUni(CStringA str);
 CStringA UnicodeToAnsi(CString str);
 CString AnsiToUnicode(CStringA str);

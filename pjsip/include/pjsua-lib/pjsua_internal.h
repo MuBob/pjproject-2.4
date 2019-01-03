@@ -20,7 +20,7 @@
 #ifndef __PJSUA_INTERNAL_H__
 #define __PJSUA_INTERNAL_H__
 
-/** 
+ /** 
  * This is the private header used by pjsua library implementation. 
  * Applications should not include this file.
  */

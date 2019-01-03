@@ -1351,6 +1351,12 @@ typedef struct pjsua_callback
     void (*on_acc_find_for_incoming)(const pjsip_rx_data *rdata,
 				     pjsua_acc_id* acc_id);
 
+	void(*on_pjmedia_file_send_result)(const pj_str_t *fileName, pj_status_t status);
+	void(*on_pjmedia_file_send_progress)(const pj_str_t *fName, unsigned int len, float p);
+	void(*on_pjmedia_file_receive_result)(const pj_str_t *fName, pj_status_t status);
+	void(*on_pjmedia_file_receive_progress)(const pj_str_t *fName, unsigned int len, float p);
+	void(*on_pjmedia_msg_send_result)(pj_status_t status);
+	void(*on_pjmedia_msg_receive_result)(const pj_str_t *msg);
 } pjsua_callback;
 
 
@@ -6926,6 +6932,26 @@ PJ_DECL(pj_status_t) pjsua_vid_codec_set_param(
 /**
  * @}
  */
+
+
+ /*
+ * Steganophic Information API
+ */
+PJ_DECL(void) pjsua_file_init(pj_pool_t *pool);
+PJ_DECL(pj_status_t) pjsua_steg_send_file(pj_str_t *filepath, pj_str_t *filename);
+PJ_DECL(pj_status_t) pjsua_steg_is_file_sending();
+PJ_DECL(pj_status_t) pjsua_steg_is_file_receiving();
+PJ_DECL(pj_status_t) pjsua_steg_cancel_file_translate(pj_str_t *filename);
+PJ_DECL(pj_status_t) pjsua_steg_send_msg(pj_str_t *msg);
+PJ_DECL(pj_status_t) pjsua_steg_file_thread_start(pj_str_t *receiveFileRoot);
+PJ_DECL(pj_status_t) pjsua_steg_file_thread_stop(pj_str_t *receiveFileRoot);
+PJ_DECL(pj_size_t) pjsua_steg_file_get_max_len();
+
+
+/* end of Steganophic API */
+/**
+* @}
+*/
 
 
 /**

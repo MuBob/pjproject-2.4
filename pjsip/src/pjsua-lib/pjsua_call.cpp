@@ -23,6 +23,9 @@
 
 #define THIS_FILE		"pjsua_call.c"
 
+#if USE_CSIPSIMPLE_HACKS
+	pj_bool_t pjsua_no_update = PJ_FALSE;
+#endif
 
 /* Retry interval of sending re-INVITE for locking a codec when remote
  * SDP answer contains multiple codec, in milliseconds.
@@ -1511,7 +1514,7 @@ pj_bool_t pjsua_call_on_incoming(pjsip_rx_data *rdata)
      * For incoming call without SDP offer, media channel init will be done
      * in pjsua_call_answer(), see ticket #1526.
      */
-    if (offer || replaced_dlg) {//Í¨¹ý
+    if (offer || replaced_dlg) {
 	status = pjsua_media_channel_init(call->index, PJSIP_ROLE_UAS,
 					  call->secure_level,
 					  rdata->tp_info.pool,
@@ -3377,6 +3380,10 @@ static pj_status_t process_pending_reinvite(pjsua_call *call)
     rem_can_update = pjsip_dlg_remote_has_cap(inv->dlg, PJSIP_H_ALLOW, NULL,
 					      &ST_UPDATE) ==
 						PJSIP_DIALOG_CAP_SUPPORTED;
+#if USE_CSIPSIMPLE_HACKS
+    rem_can_update &= !pjsua_no_update;
+#endif
+
 
     /* Logging stuff */
     {
@@ -4909,4 +4916,3 @@ static pjsip_redirect_op pjsua_call_on_redirected(pjsip_inv_session *inv,
 
     return op;
 }
-

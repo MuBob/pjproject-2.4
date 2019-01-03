@@ -372,7 +372,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\src\pjsua\pjsua_app.c" />
+    <ClCompile Include="..\src\pjsua\pjsua_app.cpp" />
     <ClCompile Include="..\src\pjsua\pjsua_app_cli.c" />
     <ClCompile Include="..\src\pjsua\pjsua_app_common.c" />
     <ClCompile Include="..\src\pjsua\pjsua_app_config.c" />

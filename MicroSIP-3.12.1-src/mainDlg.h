@@ -62,13 +62,16 @@ public:
 	CmainDlg(CWnd* pParent = NULL);	// standard constructor
 	~CmainDlg();
 
+	CString m_exePath;      // 用于保存应用程序所在路径
+	pj_str_t m_RFFullPath;      // 用于保存接收文件所在路径
+
 	// Dialog Data
 	enum { IDD = IDD_MAIN };
 
 	bool m_startMinimized;
 
 	SettingsDlg* settingsDlg;
-MessagesDlg* messagesDlg;
+	MessagesDlg* messagesDlg;
 	Transfer* transferDlg;
 
 	Dialer* pageDialer;
@@ -169,6 +172,12 @@ protected:
 	afx_msg LRESULT onShellExecute(WPARAM wParam,LPARAM lParam);
 	afx_msg LRESULT onDialNumber(WPARAM, LPARAM);
 	afx_msg LRESULT CreationComplete(WPARAM, LPARAM);
+	afx_msg LRESULT onPjmediaFileReceiveProgress(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT onPjmediaFileReceiveResult(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT onPjmediaFileSendProgress(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT onPjmediaFileSendResult(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT onPjmediaMsgReceiveResult(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT onPjmediaMsgSendResult(WPARAM wParam, LPARAM lParam);
 	DECLARE_MESSAGE_MAP()
 public:
 	afx_msg LRESULT OnAccount(WPARAM wParam,LPARAM lParam);
