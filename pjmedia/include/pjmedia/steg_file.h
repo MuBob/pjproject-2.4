@@ -69,7 +69,8 @@ private:
 	pj_str_t m_SFP, m_RFP;  //发送和接收提示字符串，在java层回调时使用
 	pj_pool_t *pool_file_steg;
 	FileCallback file_cb;
-	pj_str_t *tag_file_cancel = NULL, *tag_file_received = NULL, *tag_file_sended = NULL;
+	pj_str_t *tag_receiver_file_cancel = NULL, *tag_receiver_file_success_request = NULL, *tag_receiver_file_success_reply = NULL;
+	pj_str_t *tag_sender_file_cancel = NULL, *tag_sender_file_success_request = NULL, *tag_sender_file_success_reply = NULL;
 	int count_receive = -1, MAX_COUNT_RECEIVE = 0, count_send_wait_reply=-1, MAX_COUNT_SEND_WAIT_REPLY=0;
 	void releaseCaching();
 };

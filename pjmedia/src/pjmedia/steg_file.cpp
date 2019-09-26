@@ -176,9 +176,9 @@ UINT file_size(char* filename)
 
 pj_status_t StegFile::sendFile(pj_str_t *filepath, pj_str_t *filename)
 {
-	if (m_SFPath != NULL)
+	if (m_SFPath)
 	{
-		if (m_SFPath->ptr != NULL)
+		if (m_SFPath->ptr)
 		{
 			delete[] m_SFPath->ptr;
 			m_SFPath->ptr = NULL;
@@ -193,9 +193,9 @@ pj_status_t StegFile::sendFile(pj_str_t *filepath, pj_str_t *filename)
 	m_SFPath->slen = filepath->slen;
 //	PJ_LOG(4, (THIS_FILE, "sendFile():before copy file dir:%s!", filepath->ptr));
 //	PJ_LOG(4, (THIS_FILE, "sendFile():after copy file dir:%s!", m_SFPath->ptr));
-	if (m_SFName != NULL)
+	if (m_SFName)
 	{
-		if (m_SFName->ptr != NULL)
+		if (m_SFName->ptr)
 		{
 			delete[] m_SFName->ptr;
 			m_SFName->ptr = NULL;
@@ -206,9 +206,9 @@ pj_status_t StegFile::sendFile(pj_str_t *filepath, pj_str_t *filename)
 	}
 	m_SFName = new pj_str_t;
 	m_SFName->ptr = new char[filename->slen - 1];
-	pj_memset(m_SFName->ptr, 0, (filename->slen - 1) * sizeof(char));
-	pj_memcpy(m_SFName->ptr, filename->ptr + 1 * sizeof(char), (filename->slen - 2) * sizeof(char));
-	m_SFName->slen = filename->slen - 2;
+	pj_memset(m_SFName->ptr, 0, (filename->slen - 1 * sizeof(char)));
+	pj_memcpy(m_SFName->ptr, filename->ptr + 1 * sizeof(char), (filename->slen - 2 * sizeof(char)));
+	m_SFName->slen = filename->slen - 2 * sizeof(char);
 	PJ_LOG(4, (THIS_FILE, "sendFile():send file name:%s, len=%d!", m_SFName->ptr, m_SFName->slen));
 
 	m_SFStep = 1;
@@ -232,44 +232,56 @@ pj_status_t StegFile::sendFile(pj_str_t *filepath, pj_str_t *filename)
 		}
 
 		//todo: new file tags on sender
-		if (tag_file_cancel != NULL)
+		if (tag_sender_file_cancel)
 		{
-			delete[] tag_file_cancel->ptr;
-			tag_file_cancel->ptr = NULL;
-			delete[] tag_file_cancel;
-			tag_file_cancel = NULL;
+			if (tag_sender_file_cancel->ptr)
+			{
+				delete[] tag_sender_file_cancel->ptr;
+				tag_sender_file_cancel->ptr = NULL;
+				tag_sender_file_cancel->slen = 0;
+			}
+			delete[] tag_sender_file_cancel;
+			tag_sender_file_cancel = NULL;
 		}
-		tag_file_cancel = new pj_str_t;
-		tag_file_cancel->ptr = new char[m_SFName->slen + 3 + 1];
-		pj_strcpy(tag_file_cancel, m_SFName);
-		pj_strcat2(tag_file_cancel, LAST_TAG_FILE_CANCEL);
-		tag_file_cancel->ptr[tag_file_cancel->slen] = LAST_END_STR;
+		tag_sender_file_cancel = new pj_str_t;
+		tag_sender_file_cancel->ptr = new char[m_SFName->slen + 3 + 1];
+		pj_strcpy(tag_sender_file_cancel, m_SFName);
+		pj_strcat2(tag_sender_file_cancel, LAST_TAG_FILE_CANCEL);
+		tag_sender_file_cancel->ptr[tag_sender_file_cancel->slen] = LAST_END_STR;
 
-		if (tag_file_sended != NULL)
+		if (tag_sender_file_success_request)
 		{
-			delete[] tag_file_sended->ptr;
-			tag_file_sended->ptr = NULL;
-			delete[] tag_file_sended;
-			tag_file_sended = NULL;
+			if (tag_sender_file_success_request->ptr)
+			{
+				delete[] tag_sender_file_success_request->ptr;
+				tag_sender_file_success_request->ptr = NULL;
+				tag_sender_file_success_request->slen = 0;
+			}
+			delete[] tag_sender_file_success_request;
+			tag_sender_file_success_request = NULL;
 		}
-		tag_file_sended = new pj_str_t;
-		tag_file_sended->ptr = new char[m_SFName->slen + 3 + 1];
-		pj_strcpy(tag_file_sended, m_SFName);
-		pj_strcat2(tag_file_sended, LAST_TAG_FILE_SENDED_REQUEST);
-		tag_file_sended->ptr[tag_file_sended->slen] = LAST_END_STR;
+		tag_sender_file_success_request = new pj_str_t;
+		tag_sender_file_success_request->ptr = new char[m_SFName->slen + 3 + 1];
+		pj_strcpy(tag_sender_file_success_request, m_SFName);
+		pj_strcat2(tag_sender_file_success_request, LAST_TAG_FILE_SENDED_REQUEST);
+		tag_sender_file_success_request->ptr[tag_sender_file_success_request->slen] = LAST_END_STR;
 
-		if (tag_file_received != NULL)
+		if (tag_sender_file_success_reply)
 		{
-			delete[] tag_file_received->ptr;
-			tag_file_received->ptr = NULL;
-			delete[] tag_file_received;
-			tag_file_received = NULL;
+			if (tag_sender_file_success_reply->ptr)
+			{
+				delete[] tag_sender_file_success_reply->ptr;
+				tag_sender_file_success_reply->ptr = NULL;
+				tag_sender_file_success_reply->slen = 0;
+			}
+			delete[] tag_sender_file_success_reply;
+			tag_sender_file_success_reply = NULL;
 		}
-		tag_file_received = new pj_str_t;
-		tag_file_received->ptr = new char[m_SFName->slen + 3 + 1];
-		pj_strcpy(tag_file_received, m_SFName);
-		pj_strcat2(tag_file_received, LAST_TAG_FILE_RECEIVED_REPLY);
-		tag_file_received->ptr[tag_file_received->slen] = LAST_END_STR;
+		tag_sender_file_success_reply = new pj_str_t;
+		tag_sender_file_success_reply->ptr = new char[m_SFName->slen + 3 + 1];
+		pj_strcpy(tag_sender_file_success_reply, m_SFName);
+		pj_strcat2(tag_sender_file_success_reply, LAST_TAG_FILE_RECEIVED_REPLY);
+		tag_sender_file_success_reply->ptr[tag_sender_file_success_reply->slen] = LAST_END_STR;
 	}
 	return status;
 }
@@ -339,7 +351,7 @@ pj_status_t StegFile::sendMsg(pj_str_t *strmsg)
 		state = -2;
 	}
 	else {
-		PJ_LOG(4, (THIS_FILE, "sendMsg:slock=%d", m_pSteg.SLock != NULL));
+		PJ_LOG(4, (THIS_FILE, "sendMsg:slock=%d", m_pSteg.SLock));
 		if (m_pSteg.SLock) {
 			m_pSteg.lock();
 			state = m_pSteg.Send((void *)tmp->ptr, tmp->slen, 1);
@@ -380,20 +392,22 @@ pj_status_t StegFile::OnSIAClear(pj_pool_factory *pf, pj_pool_t *pool, int type)
 		pj_status_t status;
 		if (m_SFStep == 1)
 		{
-			PJ_LOG(4, (THIS_FILE, "OnSIAClear():create file end tag str=%s, slen=%d, received str=%s, slen=%d, sended str=%s, slen=%d!", tag_file_cancel->ptr, tag_file_cancel->slen, tag_file_received->ptr, tag_file_received->slen, tag_file_sended->ptr, tag_file_sended->slen));
+			PJ_LOG(4, (THIS_FILE, "OnSIAClear():create file sender tag str=%s, slen=%d, sended str=%s, slen=%d!",
+				tag_sender_file_cancel->ptr, tag_sender_file_cancel->slen, tag_sender_file_success_request->ptr, tag_sender_file_success_request->slen));
 
 			//第一步：获取文件长度
-			if (pool == NULL)
+			if (!pool)
 			{
 				pool = pool_file_steg;
 			}
-			if (pool == NULL)
+			if (!pool)
 			{
 				m_SFStep = 0;
 				(file_cb.on_file_send_result)(m_SFName, -1);
 				PJ_LOG(4, ("steg_threadTAG", "++++++++++++++++++++steg_thread():-1 file send after run, ready to sleep!"));
 				return -1;
 			}
+
 			char* filePath = m_SFPath->ptr;
 			m_SLength = 0;
 			m_SndLength = 0;
@@ -444,7 +458,9 @@ pj_status_t StegFile::OnSIAClear(pj_pool_factory *pf, pj_pool_t *pool, int type)
 				pj_strcpy(file_sended_tag, m_SFName);
 				pj_strcat2(file_sended_tag, LAST_TAG_FILE_SENDED_REQUEST);
 				file_sended_tag->ptr[file_sended_tag->slen] = LAST_END_STR;
+
 				sendMsg(file_sended_tag);
+
 				delete[] file_sended_tag->ptr;
 				file_sended_tag->ptr = NULL;
 				file_sended_tag->slen = 0;
@@ -461,7 +477,9 @@ pj_status_t StegFile::OnSIAClear(pj_pool_factory *pf, pj_pool_t *pool, int type)
 			pj_strcpy(file_sended_tag, m_SFName);
 			pj_strcat2(file_sended_tag, LAST_TAG_FILE_SENDED_REQUEST);
 			file_sended_tag->ptr[file_sended_tag->slen] = LAST_END_STR;
+
 			sendMsg(file_sended_tag);
+
 			delete[] file_sended_tag->ptr;
 			file_sended_tag->ptr = NULL;
 			file_sended_tag->slen = 0;
@@ -485,35 +503,41 @@ pj_status_t StegFile::OnSIAClear(pj_pool_factory *pf, pj_pool_t *pool, int type)
 			}
 			PJ_LOG(4, (THIS_FILE, "OnSIAClear():success send file %s, all length=%d!", m_SFName->ptr, m_SLength));
 			(file_cb.on_file_send_result)(m_SFName, PJ_SUCCESS);
-
-			if (m_SFName != NULL)
+			/*
+			if (m_SFName)
 			{
-				delete[] m_SFName->ptr;
-				m_SFName->ptr = NULL;
+				if (m_SFName->ptr)
+				{
+					delete[] m_SFName->ptr;
+					m_SFName->ptr = NULL;
+					m_SFName->slen = 0;
+				}
 				delete[] m_SFName;
 				m_SFName = NULL;
 			}
-			if (tag_file_cancel != NULL)
+			if (tag_sender_file_cancel)
 			{
-				delete[] tag_file_cancel->ptr;
-				tag_file_cancel->ptr = NULL;
-				delete[] tag_file_cancel;
-				tag_file_cancel = NULL;
+				if (tag_sender_file_cancel->ptr)
+				{
+					delete[] tag_sender_file_cancel->ptr;
+					tag_sender_file_cancel->ptr = NULL;
+					tag_sender_file_cancel->slen = 0;
+				}
+				delete[] tag_sender_file_cancel;
+				tag_sender_file_cancel = NULL;
 			}
-			if (tag_file_received != NULL)
+			if (tag_sender_file_success)
 			{
-				delete[] tag_file_received->ptr;
-				tag_file_received->ptr = NULL;
-				delete[] tag_file_received;
-				tag_file_received = NULL;
+				if (tag_sender_file_success->ptr)
+				{
+					delete[] tag_sender_file_success->ptr;
+					tag_sender_file_success->ptr = NULL;
+					tag_sender_file_success->slen = 0;
+				}
+				delete[] tag_sender_file_success;
+				tag_sender_file_success = NULL;
 			}
-			if (tag_file_sended != NULL)
-			{
-				delete[] tag_file_sended->ptr;
-				tag_file_sended->ptr = NULL;
-				delete[] tag_file_sended;
-				tag_file_sended = NULL;
-			}
+			*/
 			m_SFStep = 0;
 		}
 		else if (m_SFStep == 10)
@@ -541,40 +565,41 @@ pj_status_t StegFile::OnSIAClear(pj_pool_factory *pf, pj_pool_t *pool, int type)
 					}
 					(file_cb.on_file_send_result)(m_SFName, -10);
 				}
-				if (m_SFName != NULL)
+			}
+/*
+			if (m_SFName)
+			{
+				if (m_SFName->ptr)
 				{
-					if (m_SFName->ptr != NULL)
-					{
-						delete[] m_SFName->ptr;
-						m_SFName->ptr = NULL;
-						m_SFName->slen = 0;
-					}
-					delete[] m_SFName;
-					m_SFName = NULL;
+					delete[] m_SFName->ptr;
+					m_SFName->ptr = NULL;
+					m_SFName->slen = 0;
 				}
+				delete[] m_SFName;
+				m_SFName = NULL;
 			}
-
-			if (tag_file_cancel != NULL)
+			if (tag_sender_file_cancel)
 			{
-				delete[] tag_file_cancel->ptr;
-				tag_file_cancel->ptr = NULL;
-				delete[] tag_file_cancel;
-				tag_file_cancel = NULL;
+				if (tag_sender_file_cancel->ptr)
+				{
+					delete[] tag_sender_file_cancel->ptr;
+					tag_sender_file_cancel->ptr = NULL;
+					tag_sender_file_cancel->slen = 0;
+				}
+				delete[] tag_sender_file_cancel;
+				tag_sender_file_cancel = NULL;
 			}
-			if (tag_file_received != NULL)
+			if (tag_sender_file_success)
 			{
-				delete[] tag_file_received->ptr;
-				tag_file_received->ptr = NULL;
-				delete[] tag_file_received;
-				tag_file_received = NULL;
-			}
-			if (tag_file_sended != NULL)
-			{
-				delete[] tag_file_sended->ptr;
-				tag_file_sended->ptr = NULL;
-				delete[] tag_file_sended;
-				tag_file_sended = NULL;
-			}
+				if (tag_sender_file_success->ptr)
+				{
+					delete[] tag_sender_file_success->ptr;
+					tag_sender_file_success->ptr = NULL;
+					tag_sender_file_success->slen = 0;
+				}
+				delete[] tag_sender_file_success;
+				tag_sender_file_success = NULL;
+			}*/
 		}
 //		PJ_LOG(4, ("steg_threadTAG", "++++++++++++++++++++steg_thread():2 file send after run, ready to sleep!"));
 		return 2;
@@ -590,7 +615,7 @@ pj_status_t StegFile::OnSIArrive(pj_pool_factory *pf, pj_pool_t *pool, int type)
 	pj_memset(Msg, 0, sizeof(char) *m_pSteg.SIADU);
 	if (type == 1)
 	{
-		if (m_pSteg.SLock == NULL)
+		if (!m_pSteg.SLock)
 		{
 			return -1;
 		}
@@ -604,43 +629,84 @@ pj_status_t StegFile::OnSIArrive(pj_pool_factory *pf, pj_pool_t *pool, int type)
 			msg->ptr = new char[m_pSteg.SIADU + 1];
 			pj_memset(msg->ptr, 0, sizeof(char) * m_pSteg.SIADU);
 			pj_strcpy2(msg, (char *)Msg);
+			bool isMsg=true;
 			PJ_LOG(4, (THIS_FILE, "OnSIArrive():receive msg, str=%s, len=%d", msg->ptr, msg->slen));
-			if (tag_file_cancel&& tag_file_cancel->slen>0|| tag_file_received && tag_file_received->slen>0||tag_file_sended&&tag_file_sended->slen>0)
+			if (tag_sender_file_cancel&& tag_sender_file_cancel->slen>0
+				|| tag_sender_file_success_request && tag_sender_file_success_request->slen > 0
+				|| tag_sender_file_success_reply && tag_sender_file_success_reply->slen > 0)
 			{
-				if (tag_file_cancel && pj_strcmp(msg, tag_file_cancel) == 0)
+				//发送方标志位操作
+				isMsg = false;
+				if (tag_sender_file_cancel && pj_strcmp(msg, tag_sender_file_cancel) == 0)
 				{
-					// case1: sender cancel or receiver cancel
-					// case2: receiver not all receive for fail sending msg to sender 
-					PJ_LOG(4, (THIS_FILE, "OnSIArrive():compare tag_file_cancel str=%s, len=%d", tag_file_cancel->ptr, tag_file_cancel->slen));
-					if (m_RFStep>0)
-					{
-						m_RFStep = 10;
-						m_pSteg.bFileArrived = true;
-					}
-					if (m_SFStep>0) {
+					PJ_LOG(4, (THIS_FILE, "OnSIArrive():compare tag_sender_file_cancel str=%s, len=%d",
+						tag_sender_file_cancel->ptr, tag_sender_file_cancel->slen));
+					if (m_SFStep > 0) {
 						m_SFStep = 10;
 						m_pSteg.bFileSent = true;
 					}
-
-					delete[] tag_file_cancel->ptr;
-					tag_file_cancel->ptr = NULL;
-					delete[] tag_file_cancel;
-					tag_file_cancel = NULL;
+				/*	if (tag_sender_file_cancel)
+					{
+						if (tag_sender_file_cancel->ptr)
+						{
+							delete[] tag_sender_file_cancel->ptr;
+							tag_sender_file_cancel->ptr = NULL;
+							tag_sender_file_cancel->slen = 0;
+						}
+						delete[] tag_sender_file_cancel;
+						tag_sender_file_cancel = NULL;
+					}*/
 				}
-				else if (tag_file_received && pj_strcmp(msg, tag_file_received) == 0)
+				else if (tag_sender_file_success_reply && pj_strcmp(msg, tag_sender_file_success_reply) == 0)
 				{
 					//receiver success for sending msg to sender
-					PJ_LOG(4, (THIS_FILE, "OnSIArrive():compare tag_file_received str=%s, len=%d", tag_file_received->ptr, tag_file_received->slen));
+					PJ_LOG(4, (THIS_FILE, "OnSIArrive():compare tag_sender_file_success_reply str=%s, len=%d",
+						tag_sender_file_success_reply->ptr, tag_sender_file_success_reply->slen));
 					if (m_SFStep == 3) m_SFStep = 4;
 					else m_SFStep = 10;
 					m_pSteg.bFileSent = true;
 
-					delete[] tag_file_received->ptr;
-					tag_file_received->ptr = NULL;
-					delete[] tag_file_received;
-					tag_file_received = NULL;
+					/*if (tag_sender_file_success_reply)
+					{
+						if (tag_sender_file_success_reply->ptr)
+						{
+							delete[] tag_sender_file_success_reply->ptr;
+							tag_sender_file_success_reply->ptr = NULL;
+							tag_sender_file_success_reply->slen = 0;
+						}
+						delete[] tag_sender_file_success_reply;
+						tag_sender_file_success_reply = NULL;
+					}*/
 				}
-				else if (tag_file_sended &&pj_strcmp(msg, tag_file_sended)==0) {
+			}
+			if (tag_receiver_file_cancel&& tag_receiver_file_cancel->slen > 0
+				||tag_receiver_file_success_request && tag_receiver_file_success_request->slen > 0
+				|| tag_receiver_file_success_reply && tag_receiver_file_success_reply->slen > 0)
+			{
+				//接收方标志位操作
+				isMsg = false;
+				if (tag_receiver_file_cancel && pj_strcmp(msg, tag_receiver_file_cancel) == 0)
+				{
+					PJ_LOG(4, (THIS_FILE, "OnSIArrive():compare tag_receiver_file_cancel str=%s, len=%d",
+						tag_receiver_file_cancel->ptr, tag_receiver_file_cancel->slen));
+					if (m_RFStep > 0)
+					{
+						m_RFStep = 10;
+						m_pSteg.bFileArrived = true;
+					}
+					/*if (tag_receiver_file_cancel)
+					{
+						if (tag_receiver_file_cancel->ptr)
+						{
+							delete[] tag_receiver_file_cancel->ptr;
+							tag_receiver_file_cancel->ptr = NULL;
+							tag_receiver_file_cancel->slen = 0;
+						}
+						delete[] tag_receiver_file_cancel;
+						tag_receiver_file_cancel = NULL;
+					}*/
+				}
+				else if (tag_receiver_file_success_request &&pj_strcmp(msg, tag_receiver_file_success_request) == 0) {
 					//sender success for sending msg to receiver
 					if (count_receive < 0) {
 
@@ -655,11 +721,9 @@ pj_status_t StegFile::OnSIArrive(pj_pool_factory *pf, pj_pool_t *pool, int type)
 						count_receive = 0;
 					}
 				}
-				else {
-					file_cb.on_msg_receive_result(msg);
-				}
 			}
-			else {
+			if (isMsg)
+			{
 				file_cb.on_msg_receive_result(msg);
 			}
 //			file_cb.on_msg_receive_result(msg);
@@ -674,12 +738,12 @@ pj_status_t StegFile::OnSIArrive(pj_pool_factory *pf, pj_pool_t *pool, int type)
 	}
 	else if (type == 2) {
 		pj_status_t status;
-		if (pool == NULL)
+		if (!pool)
 		{
 			pool = pool_file_steg;
 		}
 		//TODO; 2018/5/31 by BobMu 突然中断通话时直接跳显示接收失败
-		if (m_pSteg.SLock == NULL)
+		if (!m_pSteg.SLock)
 		{
 			m_RFStep = 10;
 		}
@@ -691,9 +755,9 @@ pj_status_t StegFile::OnSIArrive(pj_pool_factory *pf, pj_pool_t *pool, int type)
 			UINT ret = m_pSteg.Receive((void *)Msg, -1, 2);
 			m_pSteg.unlock();
 			m_RLength = 0;
-			if (m_RFName != NULL)
+			if (m_RFName)
 			{
-				if (m_RFName->ptr != NULL)
+				if (m_RFName->ptr)
 				{
 					delete[] m_RFName->ptr;
 					m_RFName->ptr = NULL;
@@ -710,9 +774,9 @@ pj_status_t StegFile::OnSIArrive(pj_pool_factory *pf, pj_pool_t *pool, int type)
 			{
 				pj_memset(m_RFName->ptr, 0, m_pSteg.SIADU * sizeof(char));
 				pj_strcpy2(m_RFName, (const char *)Msg);
-				if (m_RFPath != NULL)
+				if (m_RFPath)
 				{
-					if (m_RFPath->ptr != NULL)
+					if (m_RFPath->ptr)
 					{
 						delete[] m_RFPath->ptr;
 						m_RFPath->ptr = NULL;
@@ -742,53 +806,66 @@ pj_status_t StegFile::OnSIArrive(pj_pool_factory *pf, pj_pool_t *pool, int type)
 					(file_cb.on_file_receive_result)(m_RFName, -status);
 				}
 				//todo: new file tags on receiver
-				if (tag_file_cancel != NULL)
+				if (tag_receiver_file_cancel)
 				{
-					delete[] tag_file_cancel->ptr;
-					tag_file_cancel->ptr = NULL;
-					delete[] tag_file_cancel;
-					tag_file_cancel = NULL;
+					if (tag_receiver_file_cancel->ptr)
+					{
+						delete[] tag_receiver_file_cancel->ptr;
+						tag_receiver_file_cancel->ptr = NULL;
+						tag_receiver_file_cancel->slen = 0;
+					}
+					delete[] tag_receiver_file_cancel;
+					tag_receiver_file_cancel = NULL;
 				}
-				tag_file_cancel = new pj_str_t;
-				tag_file_cancel->ptr = new char[m_RFName->slen + 3 + 1];
-				pj_strcpy(tag_file_cancel, m_RFName);
-				pj_strcat2(tag_file_cancel, LAST_TAG_FILE_CANCEL);
-				tag_file_cancel->ptr[tag_file_cancel->slen] = LAST_END_STR;
+				tag_receiver_file_cancel = new pj_str_t;
+				tag_receiver_file_cancel->ptr = new char[m_RFName->slen + 3 + 1];
+				pj_strcpy(tag_receiver_file_cancel, m_RFName);
+				pj_strcat2(tag_receiver_file_cancel, LAST_TAG_FILE_CANCEL);
+				tag_receiver_file_cancel->ptr[tag_receiver_file_cancel->slen] = LAST_END_STR;
 
-				if (tag_file_received != NULL)
+				if (tag_receiver_file_success_request)
 				{
-					delete[] tag_file_received->ptr;
-					tag_file_received->ptr = NULL;
-					delete[] tag_file_received;
-					tag_file_received = NULL;
+					if (tag_receiver_file_success_request->ptr)
+					{
+						delete[] tag_receiver_file_success_request->ptr;
+						tag_receiver_file_success_request->ptr = NULL;
+						tag_receiver_file_success_request->slen = 0;
+					}
+					delete[] tag_receiver_file_success_request;
+					tag_receiver_file_success_request = NULL;
 				}
-				tag_file_received = new pj_str_t;
-				tag_file_received->ptr = new char[m_RFName->slen + 3 + 1];
-				pj_strcpy(tag_file_received, m_RFName);
-				pj_strcat2(tag_file_received, LAST_TAG_FILE_RECEIVED_REPLY);
-				tag_file_received->ptr[tag_file_received->slen] = LAST_END_STR;
+				tag_receiver_file_success_request = new pj_str_t;
+				tag_receiver_file_success_request->ptr = new char[m_RFName->slen + 3 + 1];
+				pj_strcpy(tag_receiver_file_success_request, m_RFName);
+				pj_strcat2(tag_receiver_file_success_request, LAST_TAG_FILE_SENDED_REQUEST);
+				tag_receiver_file_success_request->ptr[tag_receiver_file_success_request->slen] = LAST_END_STR;
 
-				if (tag_file_sended != NULL)
+				if (tag_receiver_file_success_reply)
 				{
-					delete[] tag_file_sended->ptr;
-					tag_file_sended->ptr = NULL;
-					delete[] tag_file_sended;
-					tag_file_sended = NULL;
+					if (tag_receiver_file_success_reply->ptr)
+					{
+						delete[] tag_receiver_file_success_reply->ptr;
+						tag_receiver_file_success_reply->ptr = NULL;
+						tag_receiver_file_success_reply->slen = 0;
+					}
+					delete[] tag_receiver_file_success_reply;
+					tag_receiver_file_success_reply = NULL;
 				}
-				tag_file_sended = new pj_str_t;
-				tag_file_sended->ptr = new char[m_RFName->slen + 3 + 1];
-				pj_strcpy(tag_file_sended, m_RFName);
-				pj_strcat2(tag_file_sended, LAST_TAG_FILE_SENDED_REQUEST);
-				tag_file_sended->ptr[tag_file_sended->slen] = LAST_END_STR;
+				tag_receiver_file_success_reply = new pj_str_t;
+				tag_receiver_file_success_reply->ptr = new char[m_RFName->slen + 3 + 1];
+				pj_strcpy(tag_receiver_file_success_reply, m_RFName);
+				pj_strcat2(tag_receiver_file_success_reply, LAST_TAG_FILE_RECEIVED_REPLY);
+				tag_receiver_file_success_reply->ptr[tag_receiver_file_success_reply->slen] = LAST_END_STR;
 
-				PJ_LOG(4, (THIS_FILE, "OnSIArrive():create file end tag str=%s, slen=%d; file received tag=%s, slen=%d; file sended str=%s, slen=%d!", tag_file_cancel->ptr, tag_file_cancel->slen, tag_file_received->ptr, tag_file_received->slen, tag_file_sended->ptr, tag_file_sended->slen));
+				PJ_LOG(4, (THIS_FILE, "OnSIArrive():create file receiver tag str=%s, slen=%d; file received tag=%s, slen=%d!",
+					tag_receiver_file_cancel->ptr, tag_receiver_file_cancel->slen, tag_receiver_file_success_request->ptr, tag_receiver_file_success_request->slen));
 
 			}
 		}
 		else if (m_RFStep == 1)
 		{
 			//Step2: receive length of file
-			UINT TLength;
+			UINT TLength = 0;
 			m_pSteg.lock();
 			m_pSteg.bFileArrived = false;
 			UINT ret = m_pSteg.Receive((void *)&TLength, -2, 2);
@@ -863,16 +940,32 @@ pj_status_t StegFile::OnSIArrive(pj_pool_factory *pf, pj_pool_t *pool, int type)
 				file_received_tag = NULL;
 
 				(file_cb.on_file_receive_result)(m_RFPath, PJ_SUCCESS);
-				if (tag_file_cancel != NULL)
+				/*
+				if (tag_receiver_file_cancel)
 				{
-					delete[] tag_file_cancel->ptr;
-					tag_file_cancel->ptr = NULL;
-					delete[] tag_file_cancel;
-					tag_file_cancel = NULL;
+					if (tag_receiver_file_cancel->ptr)
+					{
+						delete[] tag_receiver_file_cancel->ptr;
+						tag_receiver_file_cancel->ptr = NULL;
+						tag_receiver_file_cancel->slen = 0;
+					}
+					delete[] tag_receiver_file_cancel;
+					tag_receiver_file_cancel = NULL;
 				}
-				if (m_RFName != NULL)
+				if (tag_receiver_file_success)
 				{
-					if (m_RFName->ptr != NULL)
+					if (tag_receiver_file_success->ptr)
+					{
+						delete[] tag_receiver_file_success->ptr;
+						tag_receiver_file_success->ptr = NULL;
+						tag_receiver_file_success->slen = 0;
+					}
+					delete[] tag_receiver_file_success;
+					tag_receiver_file_success = NULL;
+				}
+				if (m_RFName)
+				{
+					if (m_RFName->ptr)
 					{
 						delete[] m_RFName->ptr;
 						m_RFName->ptr = NULL;
@@ -881,6 +974,7 @@ pj_status_t StegFile::OnSIArrive(pj_pool_factory *pf, pj_pool_t *pool, int type)
 					delete[] m_RFName;
 					m_RFName = NULL;
 				}
+*/
 				PJ_LOG(4, (THIS_FILE, "OnSIArrive():success receive file:%s!", m_RFPath->ptr));
 			}
 		}
@@ -910,16 +1004,32 @@ pj_status_t StegFile::OnSIArrive(pj_pool_factory *pf, pj_pool_t *pool, int type)
 					}
 					(file_cb.on_file_receive_result)(m_RFName, -10);
 				}
-				if (tag_file_cancel != NULL)
+/*
+				if (tag_receiver_file_cancel)
 				{
-					delete[] tag_file_cancel->ptr;
-					tag_file_cancel->ptr = NULL;
-					delete[] tag_file_cancel;
-					tag_file_cancel = NULL;
+					if (tag_receiver_file_cancel->ptr)
+					{
+						delete[] tag_receiver_file_cancel->ptr;
+						tag_receiver_file_cancel->ptr = NULL;
+						tag_receiver_file_cancel->slen = 0;
+					}
+					delete[] tag_receiver_file_cancel;
+					tag_receiver_file_cancel = NULL;
 				}
-				if (m_RFName != NULL)
+				if (tag_receiver_file_success)
 				{
-					if (m_RFName->ptr != NULL)
+					if (tag_receiver_file_success->ptr)
+					{
+						delete[] tag_receiver_file_success->ptr;
+						tag_receiver_file_success->ptr = NULL;
+						tag_receiver_file_success->slen = 0;
+					}
+					delete[] tag_receiver_file_success;
+					tag_receiver_file_success = NULL;
+				}
+				if (m_RFName)
+				{
+					if (m_RFName->ptr)
 					{
 						delete[] m_RFName->ptr;
 						m_RFName->ptr = NULL;
@@ -928,6 +1038,7 @@ pj_status_t StegFile::OnSIArrive(pj_pool_factory *pf, pj_pool_t *pool, int type)
 					delete[] m_RFName;
 					m_RFName = NULL;
 				}
+*/
 			}
 		}
 		delete[] Msg;
@@ -962,7 +1073,6 @@ void StegFile::OnReceiverTimer() {
 	if (count_receive >= 0)
 	{
 		count_receive++;
-//		PJ_LOG(4, (THIS_FILE, "OnSIArrive():tag_file_sended received: empty_count=%d, max_count=%d!", count_receive, MAX_COUNT_RECEIVE));
 		if (count_receive > MAX_COUNT_RECEIVE)
 		{
 			count_receive = -1;
@@ -1016,7 +1126,7 @@ pj_status_t StegFile::thread_start(pj_str_t *receiveFileRoot) {
 
 pj_status_t StegFile::thread_stop(pj_str_t *receiveFileRoot) {
 	if (thread_id_RFRoot && receiveFileRoot&&pj_strcmp(receiveFileRoot, thread_id_RFRoot) == 0) {
-		if (thread_id_RFRoot->ptr != NULL)
+		if (thread_id_RFRoot->ptr)
 		{
 			delete[] thread_id_RFRoot->ptr;
 			thread_id_RFRoot->ptr = NULL;
@@ -1036,7 +1146,95 @@ pj_status_t StegFile::thread_stop(pj_str_t *receiveFileRoot) {
 			thread_file_steg_receive = NULL;
 			return PJ_SUCCESS;
 		}
-		
+		if (tag_receiver_file_success_request)
+		{
+			if (tag_receiver_file_success_request->ptr)
+			{
+				delete[] tag_receiver_file_success_request->ptr;
+				tag_receiver_file_success_request->ptr = NULL;
+				tag_receiver_file_success_request->slen = 0;
+			}
+			delete[] tag_receiver_file_success_request;
+			tag_receiver_file_success_request = NULL;
+		}
+
+		if (tag_receiver_file_success_reply)
+		{
+			if (tag_receiver_file_success_reply->ptr)
+			{
+				delete[] tag_receiver_file_success_reply->ptr;
+				tag_receiver_file_success_reply->ptr = NULL;
+				tag_receiver_file_success_reply->slen = 0;
+			}
+			delete[] tag_receiver_file_success_reply;
+			tag_receiver_file_success_reply = NULL;
+		}
+		if (tag_receiver_file_cancel)
+		{
+			if (tag_receiver_file_cancel->ptr)
+			{
+				delete[] tag_receiver_file_cancel->ptr;
+				tag_receiver_file_cancel->ptr = NULL;
+				tag_receiver_file_cancel->slen = 0;
+			}
+			delete[] tag_receiver_file_cancel;
+			tag_receiver_file_cancel = NULL;
+		}
+		if (m_RFName)
+		{
+			if (m_RFName->ptr)
+			{
+				delete[] m_RFName->ptr;
+				m_RFName->ptr = NULL;
+				m_RFName->slen = 0;
+			}
+			delete[] m_RFName;
+			m_RFName = NULL;
+		}
+		if (tag_sender_file_success_request)
+		{
+			if (tag_sender_file_success_request->ptr)
+			{
+				delete[] tag_sender_file_success_request->ptr;
+				tag_sender_file_success_request->ptr = NULL;
+				tag_sender_file_success_request->slen = 0;
+			}
+			delete[] tag_sender_file_success_request;
+			tag_sender_file_success_request = NULL;
+		}
+		if (tag_sender_file_success_reply)
+		{
+			if (tag_sender_file_success_reply->ptr)
+			{
+				delete[] tag_sender_file_success_reply->ptr;
+				tag_sender_file_success_reply->ptr = NULL;
+				tag_sender_file_success_reply->slen = 0;
+			}
+			delete[] tag_sender_file_success_reply;
+			tag_sender_file_success_reply = NULL;
+		}
+		if (tag_sender_file_cancel)
+		{
+			if (tag_sender_file_cancel->ptr)
+			{
+				delete[] tag_sender_file_cancel->ptr;
+				tag_sender_file_cancel->ptr = NULL;
+				tag_sender_file_cancel->slen = 0;
+			}
+			delete[] tag_sender_file_cancel;
+			tag_sender_file_cancel = NULL;
+		}
+		if (m_SFName)
+		{
+			if (m_SFName->ptr)
+			{
+				delete[] m_SFName->ptr;
+				m_SFName->ptr = NULL;
+				m_SFName->slen = 0;
+			}
+			delete[] m_SFName;
+			m_SFName = NULL;
+		}
 		/*
 
 		if (pool_file_steg) {
@@ -1069,9 +1267,9 @@ void StegFile::releaseCaching()
 	m_SndLength = 0;
 	m_RLength = 0;
 	m_RcvLength = 0;
-	if (m_SFPath != NULL)
+	if (m_SFPath)
 	{
-		if (m_SFPath->ptr != NULL)
+		if (m_SFPath->ptr)
 		{
 			delete[] m_SFPath->ptr;
 			m_SFPath->ptr = NULL;
@@ -1080,9 +1278,9 @@ void StegFile::releaseCaching()
 		delete[] m_SFPath;
 		m_SFPath = NULL;
 	}
-	if (m_SFName != NULL)
+	if (m_SFName)
 	{
-		if (m_SFName->ptr != NULL)
+		if (m_SFName->ptr)
 		{
 			delete[] m_SFName->ptr;
 			m_SFName->ptr = NULL;
@@ -1091,9 +1289,9 @@ void StegFile::releaseCaching()
 		delete[] m_SFName;
 		m_SFName = NULL;
 	}
-	if (m_RFPath != NULL)
+	if (m_RFPath)
 	{
-		if (m_RFPath->ptr != NULL)
+		if (m_RFPath->ptr)
 		{
 			delete[] m_RFPath->ptr;
 			m_RFPath->ptr = NULL;
@@ -1102,9 +1300,9 @@ void StegFile::releaseCaching()
 		delete[] m_RFPath;
 		m_RFPath = NULL;
 	}
-	if (m_RFName != NULL)
+	if (m_RFName)
 	{
-		if (m_RFName->ptr != NULL)
+		if (m_RFName->ptr)
 		{
 			delete[] m_RFName->ptr;
 			m_RFName->ptr = NULL;

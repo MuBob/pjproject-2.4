@@ -1359,6 +1359,8 @@ static pj_status_t put_frame_imp( pjmedia_port *port,
 				delete[]pFloat;
 			}else if(channel->pt == PJMEDIA_RTP_PT_PCMA|| channel->pt == PJMEDIA_RTP_PT_PCMU || channel->pt == PJMEDIA_RTP_PT_PCMA_SMALL){
 			
+				int len_s = sizeof(short);
+				int len_f = sizeof(float);
 				short *pShort = new short[240];
 				memset(pShort, 0, sizeof(short) * 240);
 				for (int i = 0; i<frame_out.size; ++i) {

@@ -52,4 +52,7 @@ public:
 	void on_pjmedia_file_send_result(const pj_str_t *fName, int status);
 	void on_pjmedia_msg_receive_result(const pj_str_t *msg);
 	void on_pjmedia_msg_send_result(int status);
+private:
+	CString ConvertUTF8ToCString(const pj_str_t* str);
+	pj_str_t *UnicodeToUtf8(CString Unicodestr);
 };
